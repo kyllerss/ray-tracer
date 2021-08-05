@@ -1,22 +1,32 @@
 mod tests;
 
+#[derive(Copy, Clone, Debug)]
+struct RayTuple {
+    x: f64,
+    y: f64,
+    z: f64,
+    w: f64,
+}
+
+impl RayTuple {
+    fn new(x: f64, y: f64, z: f64, w: f64) -> RayTuple {
+        RayTuple{x, y, z, w}
+    }
+}
+
 // Convert into a raytracing tuple
-trait RayTuple {
-    fn to_tuple(&self) -> (f64, f64, f64, f64);
+trait ToRayTuple {
+    fn to_ray_tuple(&self) -> (f64, f64, f64, f64);
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct Point {
-    x: f64,
-    y: f64,
-    z: f64,
+    ray_tuple: RayTuple
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vector {
-    x: f64,
-    y: f64,
-    z: f64,
+    ray_tuple: RayTuple
 }
 
 impl Point {
@@ -24,13 +34,16 @@ impl Point {
 
     // constructor
     pub fn new(x: f64, y: f64, z: f64) -> Point {
-        Point {x, y, z}
+        Point { ray_tuple: RayTuple::new(x, y, z, Point::W) }
     }
 }
 
-impl RayTuple for Point {
-    fn to_tuple(&self) -> (f64, f64, f64, f64) {
-        (self.x, self.y, self.z, Point::W)
+impl ToRayTuple for Point {
+    fn to_ray_tuple(&self) -> (f64, f64, f64, f64) {
+        (self.ray_tuple.x,
+         self.ray_tuple.y,
+         self.ray_tuple.z,
+         self.ray_tuple.w)
     }
 }
 
@@ -39,12 +52,15 @@ impl Vector {
 
     // constructor
     pub fn new(x: f64, y: f64, z: f64) -> Vector {
-        Vector {x, y, z}
+        Vector { ray_tuple: RayTuple::new(x, y, z, Vector::W) }
     }
 }
 
-impl RayTuple for Vector {
-    fn to_tuple(&self) -> (f64, f64, f64, f64) {
-        (self.x, self.y, self.z, Vector::W)
+impl ToRayTuple for Vector {
+    fn to_ray_tuple(&self) -> (f64, f64, f64, f64) {
+        (self.ray_tuple.x,
+         self.ray_tuple.y,
+         self.ray_tuple.z,
+         self.ray_tuple.w)
     }
 }
