@@ -1,4 +1,3 @@
-mod tests;
 mod operations;
 
 #[derive(Copy, Clone, Debug)]
@@ -32,7 +31,7 @@ impl PartialEq for RayTuple {
 }
 
 // Convert into a raytracing tuple
-trait ToRayTuple {
+pub trait ToRayTuple {
     fn to_ray_tuple(&self) -> (f64, f64, f64, f64);
 }
 

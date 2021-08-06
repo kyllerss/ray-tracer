@@ -4,7 +4,7 @@ mod tests {
     use crate::domain::*;
 
     #[test]
-    fn ch1_test1_and_2_build_and_validate_type_point() {
+    fn test1_and_2_build_and_validate_type_point() {
 
         let _x = 1.1;
         let _y = -2.2;
@@ -23,7 +23,7 @@ mod tests {
     }
 
     #[test]
-    fn ch1_test1_and_2_build_and_validate_type_vector() {
+    fn test1_and_2_build_and_validate_type_vector() {
 
         let _x = 1.1;
         let _y = -2.2;
@@ -42,7 +42,7 @@ mod tests {
     }
 
     #[test]
-    fn ch1_test3_adding_two_tuples() {
+    fn test3_adding_two_tuples() {
 
         let p = Point::new(3.0,-2.0,5.0);
         let v = Vector::new(-2.0, 3.0, 1.0);
@@ -58,7 +58,7 @@ mod tests {
     }
 
     #[test]
-    fn ch1_test4_subtracting_two_points() {
+    fn test4_subtracting_two_points() {
         let p1 = Point::new(3.0, 2.0, 1.0);
         let p2 = Point::new(5.0, 6.0, 7.0);
 
@@ -68,7 +68,7 @@ mod tests {
     }
 
     #[test]
-    fn ch1_test5_subtracting_vector_from_point() {
+    fn test5_subtracting_vector_from_point() {
         let p = Point::new(3.0, 2.0, 1.0);
         let v = Vector::new(5.0, 6.0, 7.0);
 
@@ -78,12 +78,32 @@ mod tests {
     }
 
     #[test]
-    fn ch1_test6_subtracting_vectors() {
+    fn test6_subtracting_vectors() {
         let v1 = Vector::new(3.0, 2.0, 1.0);
         let v2 = Vector::new(5.0, 6.0, 7.0);
 
         let r = v1 - v2;
         let exp = Vector::new(-2.0, -4.0, -6.0);
+        assert_eq!(r, exp);
+    }
+
+    #[test]
+    fn test7_negating_vectors() {
+        let v_pos = Vector::new(1.0, -2.0, 3.0);
+        let v_neg = -v_pos;
+
+        let exp = Vector::new(-1.0, 2.0, -3.0);
+        assert_eq!(v_neg, exp);
+    }
+
+    #[test]
+    fn test8_multiply_by_scale() {
+        let v1 = Vector::new(1.0, -2.0, 3.0);
+        let scalar = 3.5 as f64;
+
+        let r = v1 * scalar;
+        let exp = Vector::new(3.5, -7.0, 10.5);
+
         assert_eq!(r, exp);
     }
 }

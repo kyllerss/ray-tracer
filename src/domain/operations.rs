@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, Sub, Neg, Mul};
 use crate::domain::*;
 
 impl Add for RayTuple {
@@ -20,6 +20,23 @@ impl Sub for RayTuple {
                       self.y - rhs.y,
                       self.z - rhs.z,
                       self.w - rhs.w)
+    }
+}
+
+impl Neg for RayTuple {
+    type Output = RayTuple;
+    fn neg(self) -> Self::Output {
+        RayTuple::new(-self.x, -self.y, -self.z, -self.w)
+    }
+}
+
+impl Mul<f64> for RayTuple {
+    type Output = RayTuple;
+    fn mul(self, rhs: f64) -> Self::Output {
+        RayTuple::new(self.x * rhs,
+                      self.y * rhs,
+                      self.z * rhs,
+                      self.w * rhs)
     }
 }
 
@@ -76,5 +93,21 @@ impl Sub<Vector> for Vector {
     fn sub(self, rhs: Vector) -> Self::Output {
         let result = self.ray_tuple - rhs.ray_tuple;
         Vector::new(result.x, result.y, result.z)
+    }
+}
+
+impl Neg for Vector {
+    type Output = Vector;
+    fn neg(self) -> Self::Output {
+        let n = -self.ray_tuple;
+        Vector::new(n.x, n.y, n.z)
+    }
+}
+
+impl Mul<f64> for Vector {
+    type Output = Vector;
+    fn mul(self, rhs: f64) -> Self::Output {
+        let rt = self.ray_tuple * rhs;
+        Vector::new(rt.x, rt.y, rt.z)
     }
 }
