@@ -41,4 +41,19 @@ mod tests {
         assert_ne!(c, d);
     }
 
+    #[test]
+    fn ch1_test3_adding_two_tuples() {
+
+        let p = Point::new(3.0,-2.0,5.0);
+        let v = Vector::new(-2.0, 3.0, 1.0);
+
+        // add point to vector
+        let p1 = p + v;
+        let expected = Point::new(1.0, 1.0, 6.0);
+        assert_eq!(p1, expected);
+
+        // test commutative property
+        let p2 = v + p;
+        assert_eq!(p2, expected);
+    }
 }
