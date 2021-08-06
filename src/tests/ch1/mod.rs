@@ -98,11 +98,33 @@ mod tests {
 
     #[test]
     fn test8_multiply_by_scale() {
+
+        // scalar
         let v1 = Vector::new(1.0, -2.0, 3.0);
         let scalar = 3.5 as f64;
 
         let r = v1 * scalar;
         let exp = Vector::new(3.5, -7.0, 10.5);
+
+        assert_eq!(r, exp);
+
+        // fraction
+        let fraction = 0.5 as f64;
+        let r2 = v1 * fraction;
+        let exp2 = Vector::new(0.5, -1.0, 1.5);
+
+        assert_eq!(r2, exp2);
+    }
+
+    #[test]
+    fn test9_divide_by_scalar() {
+
+        // scalar
+        let v = Vector::new(1.0, -2.0, 3.0);
+        let scalar = 2.0 as f64;
+
+        let r = v / scalar;
+        let exp = Vector::new(0.5, -1.0, 1.5);
 
         assert_eq!(r, exp);
     }

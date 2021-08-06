@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Neg, Mul};
+use std::ops::{Add, Sub, Neg, Mul, Div};
 use crate::domain::*;
 
 impl Add for RayTuple {
@@ -37,6 +37,16 @@ impl Mul<f64> for RayTuple {
                       self.y * rhs,
                       self.z * rhs,
                       self.w * rhs)
+    }
+}
+
+impl Div<f64> for RayTuple {
+    type Output = RayTuple;
+    fn div(self, rhs: f64) -> Self::Output {
+        RayTuple::new(self.x / rhs,
+                      self.y / rhs,
+                      self.z / rhs,
+                      self.w / rhs)
     }
 }
 
@@ -108,6 +118,14 @@ impl Mul<f64> for Vector {
     type Output = Vector;
     fn mul(self, rhs: f64) -> Self::Output {
         let rt = self.ray_tuple * rhs;
+        Vector::new(rt.x, rt.y, rt.z)
+    }
+}
+
+impl Div<f64> for Vector {
+    type Output = Vector;
+    fn div(self, rhs: f64) -> Self::Output {
+        let rt = self.ray_tuple / rhs;
         Vector::new(rt.x, rt.y, rt.z)
     }
 }
