@@ -1,6 +1,5 @@
-use std::ops::Add;
-
 mod tests;
+mod operations;
 
 #[derive(Copy, Clone, Debug)]
 struct RayTuple {
@@ -29,17 +28,6 @@ impl PartialEq for RayTuple {
             && RayTuple::epsilon_eq(self.y, other.y)
             && RayTuple::epsilon_eq(self.z, other.z)
             && RayTuple::epsilon_eq(self.w, other.w)
-    }
-}
-
-impl Add for RayTuple {
-
-    type Output = RayTuple;
-    fn add(self, rhs: Self) -> Self::Output {
-        RayTuple::new(self.x + rhs.x,
-                      self.y + rhs.y,
-                      self.z + rhs.z,
-                      self.w + rhs.w)
     }
 }
 
@@ -82,16 +70,6 @@ impl ToRayTuple for Point {
     }
 }
 
-impl Add<Vector> for Point {
-    type Output = Point;
-    fn add(self, rhs: Vector) -> Self::Output {
-        let rt = self.ray_tuple;
-        let rhs_rt = rhs.ray_tuple;
-        let added = rt + rhs_rt;
-        Point::new(added.x, added.y, added.z)
-    }
-}
-
 impl Vector {
     const W: f64 = 0.0;
 
@@ -113,15 +91,5 @@ impl ToRayTuple for Vector {
          self.ray_tuple.y,
          self.ray_tuple.z,
          self.ray_tuple.w)
-    }
-}
-
-impl Add<Point> for Vector {
-    type Output = Point;
-    fn add(self, rhs: Point) -> Self::Output {
-        let rt = self.ray_tuple;
-        let rhs_rt = rhs.ray_tuple;
-        let added = rt + rhs_rt;
-        Point::new(added.x, added.y, added.z)
     }
 }

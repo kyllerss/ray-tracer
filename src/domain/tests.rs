@@ -56,4 +56,34 @@ mod tests {
         let p2 = v + p;
         assert_eq!(p2, expected);
     }
+
+    #[test]
+    fn ch1_test4_subtracting_two_points() {
+        let p1 = Point::new(3.0, 2.0, 1.0);
+        let p2 = Point::new(5.0, 6.0, 7.0);
+
+        let r = p1 - p2;
+        let exp = Vector::new(-2.0, -4.0, -6.0);
+        assert_eq!(r, exp);
+    }
+
+    #[test]
+    fn ch1_test5_subtracting_vector_from_point() {
+        let p = Point::new(3.0, 2.0, 1.0);
+        let v = Vector::new(5.0, 6.0, 7.0);
+
+        let r = p - v;
+        let exp = Point::new(-2.0, -4.0, -6.0);
+        assert_eq!(r, exp);
+    }
+
+    #[test]
+    fn ch1_test6_subtracting_vectors() {
+        let v1 = Vector::new(3.0, 2.0, 1.0);
+        let v2 = Vector::new(5.0, 6.0, 7.0);
+
+        let r = v1 - v2;
+        let exp = Vector::new(-2.0, -4.0, -6.0);
+        assert_eq!(r, exp);
+    }
 }
