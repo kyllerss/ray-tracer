@@ -183,6 +183,19 @@ mod tests {
         let dot = v1.dot_product(v2);
         let exp = 20.0;
         assert_eq!(dot, exp);
+    }
 
+    #[test]
+    fn test13_cross_product() {
+        let v1 = Vector::new(1.0, 2.0, 3.0);
+        let v2 = Vector::new(2.0, 3.0, 4.0);
+
+        let cross_product = v1.cross_product(v2);
+        let exp = Vector::new(-1.0, 2.0, -1.0);
+        assert_eq!(cross_product, exp);
+
+        let cross_product = v2.cross_product(v1);
+        let exp = Vector::new(1.0, -2.0, 1.0);
+        assert_eq!(cross_product, exp);
     }
 }

@@ -114,6 +114,16 @@ impl Vector {
         + self.ray_tuple.y * v.ray_tuple.y
         + self.ray_tuple.z * v.ray_tuple.z
     }
+
+    // calculates cross product
+    pub fn cross_product(&self, v: Vector) -> Vector {
+        let rt1 = self.ray_tuple;
+        let rt2 = v.ray_tuple;
+        let x = rt1.y * rt2.z - rt1.z * rt2.y;
+        let y = rt1.z * rt2.x - rt1.x * rt2.z;
+        let z = rt1.x * rt2.y - rt1.y * rt2.x;
+        Vector::new(x, y, z)
+    }
 }
 
 impl PartialEq for Vector {
