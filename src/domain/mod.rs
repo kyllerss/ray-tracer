@@ -106,6 +106,14 @@ impl Vector {
         let rt_norm = self.ray_tuple.normalize();
         Vector::new(rt_norm.x, rt_norm.y, rt_norm.z)
     }
+
+    // calculates the dot product
+    pub fn dot_product(&self, v: Vector) -> f64 {
+
+        self.ray_tuple.x* v.ray_tuple.x
+        + self.ray_tuple.y * v.ray_tuple.y
+        + self.ray_tuple.z * v.ray_tuple.z
+    }
 }
 
 impl PartialEq for Vector {
