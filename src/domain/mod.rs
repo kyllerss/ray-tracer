@@ -29,10 +29,11 @@ impl RayTuple {
 
     // normalize vector
     pub fn normalize(&self) -> RayTuple {
-        let x_norm = self.x / self.magnitude();
-        let y_norm = self.y / self.magnitude();
-        let z_norm = self.z / self.magnitude();
-        let w_norm = self.w / self.magnitude();
+        let magnitude = self.magnitude();
+        let x_norm = self.x / magnitude;
+        let y_norm = self.y / magnitude;
+        let z_norm = self.z / magnitude;
+        let w_norm = self.w / magnitude;
         RayTuple::new(x_norm, y_norm, z_norm, w_norm)
     }
 

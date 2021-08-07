@@ -160,11 +160,19 @@ mod tests {
 
     #[test]
     fn test11_normalize_vectors() {
-
         let v = Vector::new(4.0, 0.0, 0.0);
         let n = v.normalize();
-
         let exp = Vector::new(1.0, 0.0, 0.0);
         assert_eq!(n, exp);
+
+        let v = Vector::new(1.0, 2.0, 3.0);
+        let n = v.normalize();
+        let exp = Vector::new(0.26726, 0.53452, 0.80178);
+        assert_eq!(n, exp);
+
+        let v = Vector::new(1.0, 2.0, 3.0);
+        let mag = v.normalize().magnitude();
+        let exp_mag = 1.0;
+        assert_eq!(mag, exp_mag);
     }
 }
