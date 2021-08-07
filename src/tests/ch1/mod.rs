@@ -157,4 +157,14 @@ mod tests {
         let exp = f64::sqrt(14.0);
         assert_eq!(m, exp);
     }
+
+    #[test]
+    fn test11_normalize_vectors() {
+
+        let v = Vector::new(4.0, 0.0, 0.0);
+        let n = v.normalize();
+
+        let exp = Vector::new(1.0, 0.0, 0.0);
+        assert_eq!(n, exp);
+    }
 }

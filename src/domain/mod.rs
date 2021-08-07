@@ -27,6 +27,15 @@ impl RayTuple {
         f64::sqrt(sum)
     }
 
+    // normalize vector
+    pub fn normalize(&self) -> RayTuple {
+        let x_norm = self.x / self.magnitude();
+        let y_norm = self.y / self.magnitude();
+        let z_norm = self.z / self.magnitude();
+        let w_norm = self.w / self.magnitude();
+        RayTuple::new(x_norm, y_norm, z_norm, w_norm)
+    }
+
 }
 
 impl PartialEq for RayTuple {
@@ -89,6 +98,12 @@ impl Vector {
     // calculates magnitude
     pub fn magnitude(&self) -> f64 {
         self.ray_tuple.magnitude()
+    }
+
+    // normalize vector
+    pub fn normalize(&self) -> Vector {
+        let rt_norm = self.ray_tuple.normalize();
+        Vector::new(rt_norm.x, rt_norm.y, rt_norm.z)
     }
 }
 
