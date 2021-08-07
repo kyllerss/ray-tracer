@@ -18,6 +18,15 @@ impl RayTuple {
     fn epsilon_eq(a: f64, b: f64) -> bool {
         f64::abs(a - b) < RayTuple::EPSILON
     }
+
+    // calculates magnitude
+    pub fn magnitude(&self) -> f64 {
+        let sum = self.x.powi(2)
+                  + self.y.powi(2)
+                  + self.z.powi(2);
+        f64::sqrt(sum)
+    }
+
 }
 
 impl PartialEq for RayTuple {
@@ -75,6 +84,11 @@ impl Vector {
     // constructor
     pub fn new(x: f64, y: f64, z: f64) -> Vector {
         Vector { ray_tuple: RayTuple::new(x, y, z, Vector::W) }
+    }
+
+    // calculates magnitude
+    pub fn magnitude(&self) -> f64 {
+        self.ray_tuple.magnitude()
     }
 }
 

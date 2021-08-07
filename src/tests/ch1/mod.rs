@@ -128,4 +128,33 @@ mod tests {
 
         assert_eq!(r, exp);
     }
+
+    #[test]
+    fn test10_compute_magnitude_of_vector() {
+
+        let v = Vector::new(1.0, 0.0, 0.0);
+        let m = v.magnitude();
+        let exp = 1.0;
+        assert_eq!(m, exp);
+
+        let v = Vector::new(0.0, 1.0, 0.0);
+        let m = v.magnitude();
+        let exp = 1.0;
+        assert_eq!(m, exp);
+
+        let v = Vector::new(0.0, 0.0, 1.0);
+        let m = v.magnitude();
+        let exp = 1.0;
+        assert_eq!(m, exp);
+
+        let v = Vector::new(1.0, 2.0, 3.0);
+        let m = v.magnitude();
+        let exp = f64::sqrt(14.0);
+        assert_eq!(m, exp);
+
+        let v = Vector::new(-1.0, -2.0, -3.0);
+        let m = v.magnitude();
+        let exp = f64::sqrt(14.0);
+        assert_eq!(m, exp);
+    }
 }
