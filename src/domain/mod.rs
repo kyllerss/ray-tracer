@@ -1,4 +1,16 @@
 mod operations;
+pub(crate) mod color;
+
+use num::{Float, NumCast};
+
+const EPSILON: f64 = 0.00001;
+pub fn epsilon_eq<F>(a: F, b: F) -> bool
+    where F: Float + NumCast
+{
+    let abs: F = (a - b).abs();
+    let c: Option<f64> = num::cast(abs);
+    c.unwrap() < EPSILON
+}
 
 #[derive(Copy, Clone, Debug)]
 struct RayTuple {
@@ -9,15 +21,11 @@ struct RayTuple {
 }
 
 impl RayTuple {
-    const EPSILON: f64 = 0.00001;
 
     fn new(x: f64, y: f64, z: f64, w: f64) -> RayTuple {
         RayTuple{x, y, z, w}
     }
 
-    fn epsilon_eq(a: f64, b: f64) -> bool {
-        f64::abs(a - b) < RayTuple::EPSILON
-    }
 
     // calculates magnitude
     pub fn magnitude(&self) -> f64 {
@@ -42,10 +50,10 @@ impl RayTuple {
 impl PartialEq for RayTuple {
 
     fn eq(&self, other: &Self) -> bool {
-        RayTuple::epsilon_eq(self.x, other.x)
-            && RayTuple::epsilon_eq(self.y, other.y)
-            && RayTuple::epsilon_eq(self.z, other.z)
-            && RayTuple::epsilon_eq(self.w, other.w)
+        epsilon_eq(self.x, other.x)
+            && epsilon_eq(self.y, other.y)
+            && epsilon_eq(self.z, other.z)
+            && epsilon_eq(self.w, other.w)
     }
 }
 
