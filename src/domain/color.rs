@@ -1,5 +1,5 @@
 use crate::domain::*;
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Mul, Sub};
 
 #[derive(Copy, Clone, Debug)]
 pub struct Color {
@@ -9,15 +9,19 @@ pub struct Color {
 }
 
 impl Color {
-
     // constructor
     pub fn new(red: f32, green: f32, blue: f32) -> Color {
-        Color{red, green, blue}
+        Color { red, green, blue }
+    }
+}
+
+impl Default for Color {
+    fn default() -> Color {
+        Color::new(0.0, 0.0, 0.0)
     }
 }
 
 impl PartialEq for Color {
-
     fn eq(&self, other: &Self) -> bool {
         epsilon_eq(self.red, other.red)
             && epsilon_eq(self.green, other.green)
@@ -26,7 +30,6 @@ impl PartialEq for Color {
 }
 
 impl Add for Color {
-
     type Output = Color;
     fn add(self, rhs: Self) -> Self::Output {
         let r = self.red + rhs.red;
@@ -52,7 +55,7 @@ impl Mul<Color> for Color {
         let r = self.red * rhs.red;
         let g = self.green * rhs.green;
         let b = self.blue * rhs.blue;
-        Color::new(r,g,b)
+        Color::new(r, g, b)
     }
 }
 
@@ -62,6 +65,6 @@ impl Mul<f32> for Color {
         let r = self.red * rhs;
         let g = self.green * rhs;
         let b = self.blue * rhs;
-        Color::new(r,g,b)
+        Color::new(r, g, b)
     }
 }

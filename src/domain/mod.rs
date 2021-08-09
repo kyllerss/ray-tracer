@@ -1,11 +1,13 @@
-mod operations;
+pub(crate) mod canvas;
 pub(crate) mod color;
+mod operations;
 
 use num::{Float, NumCast};
 
 const EPSILON: f64 = 0.00001;
 pub fn epsilon_eq<F>(a: F, b: F) -> bool
-    where F: Float + NumCast
+where
+    F: Float + NumCast,
 {
     let abs: F = (a - b).abs();
     let c: Option<f64> = num::cast(abs);
@@ -21,17 +23,13 @@ struct RayTuple {
 }
 
 impl RayTuple {
-
     fn new(x: f64, y: f64, z: f64, w: f64) -> RayTuple {
-        RayTuple{x, y, z, w}
+        RayTuple { x, y, z, w }
     }
-
 
     // calculates magnitude
     pub fn magnitude(&self) -> f64 {
-        let sum = self.x.powi(2)
-                  + self.y.powi(2)
-                  + self.z.powi(2);
+        let sum = self.x.powi(2) + self.y.powi(2) + self.z.powi(2);
         f64::sqrt(sum)
     }
 
@@ -44,11 +42,9 @@ impl RayTuple {
         let w_norm = self.w / magnitude;
         RayTuple::new(x_norm, y_norm, z_norm, w_norm)
     }
-
 }
 
 impl PartialEq for RayTuple {
-
     fn eq(&self, other: &Self) -> bool {
         epsilon_eq(self.x, other.x)
             && epsilon_eq(self.y, other.y)
@@ -64,12 +60,12 @@ pub trait ToRayTuple {
 
 #[derive(Copy, Clone, Debug)]
 pub struct Point {
-    ray_tuple: RayTuple
+    ray_tuple: RayTuple,
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vector {
-    ray_tuple: RayTuple
+    ray_tuple: RayTuple,
 }
 
 impl Point {
@@ -77,7 +73,9 @@ impl Point {
 
     // constructor
     pub fn new(x: f64, y: f64, z: f64) -> Point {
-        Point { ray_tuple: RayTuple::new(x, y, z, Point::W) }
+        Point {
+            ray_tuple: RayTuple::new(x, y, z, Point::W),
+        }
     }
 }
 
@@ -89,10 +87,12 @@ impl PartialEq for Point {
 
 impl ToRayTuple for Point {
     fn to_ray_tuple(&self) -> (f64, f64, f64, f64) {
-        (self.ray_tuple.x,
-         self.ray_tuple.y,
-         self.ray_tuple.z,
-         self.ray_tuple.w)
+        (
+            self.ray_tuple.x,
+            self.ray_tuple.y,
+            self.ray_tuple.z,
+            self.ray_tuple.w,
+        )
     }
 }
 
@@ -101,7 +101,9 @@ impl Vector {
 
     // constructor
     pub fn new(x: f64, y: f64, z: f64) -> Vector {
-        Vector { ray_tuple: RayTuple::new(x, y, z, Vector::W) }
+        Vector {
+            ray_tuple: RayTuple::new(x, y, z, Vector::W),
+        }
     }
 
     // calculates magnitude
@@ -117,10 +119,9 @@ impl Vector {
 
     // calculates the dot product
     pub fn dot_product(&self, v: Vector) -> f64 {
-
-        self.ray_tuple.x* v.ray_tuple.x
-        + self.ray_tuple.y * v.ray_tuple.y
-        + self.ray_tuple.z * v.ray_tuple.z
+        self.ray_tuple.x * v.ray_tuple.x
+            + self.ray_tuple.y * v.ray_tuple.y
+            + self.ray_tuple.z * v.ray_tuple.z
     }
 
     // calculates cross product
@@ -142,9 +143,11 @@ impl PartialEq for Vector {
 
 impl ToRayTuple for Vector {
     fn to_ray_tuple(&self) -> (f64, f64, f64, f64) {
-        (self.ray_tuple.x,
-         self.ray_tuple.y,
-         self.ray_tuple.z,
-         self.ray_tuple.w)
+        (
+            self.ray_tuple.x,
+            self.ray_tuple.y,
+            self.ray_tuple.z,
+            self.ray_tuple.w,
+        )
     }
 }
