@@ -10,7 +10,6 @@ mod tests {
         let width: usize = 10;
         let height: usize = 20;
         let black = Color::new(0.0, 0.0, 0.0);
-        //let green = Color::new(0.0, 1.0, 0.0);
         let c = Canvas::new(width, height, black);
 
         assert_eq!(c.width, width);
@@ -33,6 +32,36 @@ mod tests {
                 //let p: &Color = &row[h];
                 let p: &Color = &c[w][h];
                 assert_eq!(*p, black);
+            }
+        }
+    }
+
+    #[test]
+    fn test2_write_pixel() {
+
+        let width: usize = 10;
+        let height: usize = 20;
+        let black = Color::new(0.0, 0.0, 0.0);
+        let red = Color::new(1.0, 0.0, 0.0);
+        let mut c = Canvas::new(width, height, black);
+
+        let p_x: usize = 2;
+        let p_y: usize = 3;
+        c[p_x][p_y] = red;
+
+        // verify all pixels
+        for x in 0..width {
+            for y in 0..height {
+
+                let p: &Color = &c[x][y];
+                let exp_p: Color;
+                if x == p_x && y == p_y {
+                    exp_p = red;
+                } else {
+                    exp_p = black;
+                }
+
+                assert_eq!(*p, exp_p);
             }
         }
     }
