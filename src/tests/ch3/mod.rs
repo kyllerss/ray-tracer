@@ -25,14 +25,14 @@ mod tests {
         }
         assert!(iterated);
 
-        // // verify by index lookup
-        // for w in 0..width {
-        //     for h in 0..height {
-        //         let row: &[Color] = &c[w];
-        //         let cell = row[h];
-        //         //let p: &Color = &c[w][h];
-        //         assert_eq!(cell, black);
-        //     }
-        // }
+        // verify by index lookup
+        for w in 0..width {
+            for h in 0..height {
+                // let row: &[Color] = &c[w];
+                // let cell = row[h];
+                let p: &Color = &c[w][h];
+                assert_eq!(*p, black);
+            }
+        }
     }
 }
