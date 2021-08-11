@@ -1,19 +1,24 @@
-use std::ops::{Index, IndexMut};
+//use std::ops::{Index, IndexMut};
+use std::ops::Index;
 
 use crate::domain::color::Color;
+//use std::iter::{StepBy, Chain, Zip, Intersperse, IntersperseWith, Map, Filter, FilterMap, Enumerate, Peekable, SkipWhile, TakeWhile, MapWhile, Skip, Take, Scan, FlatMap, Flatten, Fuse, Inspect, FromIterator, Rev, Copied, Cloned, Cycle, Sum, Product, TrustedRandomAccess};
+//use std::convert::Infallible;
+//use std::cmp::Ordering;
 
 #[derive(Clone, Debug)]
-pub struct Canvas<'a> {
+pub struct Canvas {
     pub width: usize,
     pub height: usize,
-    pub pixels: Vec<&'a Color>,
+    pub pixels: Vec<Color>,
 }
 
-impl<'a> Canvas<'a> {
+impl Canvas {
     // constructor
-    pub fn new(width: usize, height: usize, default_color: &Color) -> Canvas {
+    pub fn new(width: usize, height: usize, default_color: Color) -> Canvas {
         let vec_length = width * height;
-        let pixels = vec![default_color; vec_length];
+        let mut pixels = vec![default_color; vec_length];
+        // pixels.push(default_color);
 
         Canvas {
             width,
@@ -23,42 +28,49 @@ impl<'a> Canvas<'a> {
     }
 }
 
-impl<'a> Index<usize> for Canvas<'a> {
-    type Output = [&'a Color];
-    fn index(&self, x: usize) -> &[&'a Color] {
+impl<'a> Index<usize> for &'a Canvas {
+    type Output = [Color];
+    fn index(&self, x: usize) -> &Self::Output {
         let start = x * self.width;
-        &self.pixels[start..start + self.width]
+        let p = &self.pixels;
+        let r: &[Color] = &p[start..start + self.width];
+        r
     }
 }
 
-impl<'a> IndexMut<usize> for Canvas<'a> {
-    fn index_mut(&mut self, x: usize) -> &mut [&'a Color] {
-        let start = x * self.width;
-        &mut self.pixels[start..start + self.width]
-    }
-}
 
-impl<'a> IntoIterator for &Canvas<'a> {
+
+// impl<'a> IndexMut<usize> for &'a Canvas {
+//     fn index_mut(&mut self, x: usize) -> &mut [Color] {
+//         let start = x * self.width;
+//         //let p = &mut self.pixels;
+//         let mut p = self.pixels;
+//         &mut p[start..start + self.width]
+//     }
+// }
+
+impl<'a> IntoIterator for &'a Canvas {
     type Item = &'a Color;
     type IntoIter = CanvasIterator<'a>;
     fn into_iter(self) -> Self::IntoIter {
-        CanvasIterator::new(&mut self.pixels.into_iter())
+        CanvasIterator{pixels: &self.pixels, current_idx: 0 as usize}
     }
 }
 
-struct CanvasIterator<'a> {
-    pixel_itr: &'a mut dyn Iterator<Item = &'a Color>,
-}
-
-impl<'a> CanvasIterator<'a> {
-    fn new(itr: &'a mut dyn Iterator<Item = &'a Color>) -> CanvasIterator<'a> {
-        CanvasIterator{pixel_itr: itr}
-    }
+pub struct CanvasIterator<'a> {
+    pixels: &'a Vec<Color>,
+    current_idx: usize,
 }
 
 impl<'a> Iterator for CanvasIterator<'a> {
     type Item = &'a Color;
     fn next(&mut self) -> Option<Self::Item> {
-        self.pixel_itr.next()
+        if self.current_idx >= self.pixels.len() {
+            return None;
+        }
+        let result = Some(&self.pixels[self.current_idx]);
+        self.current_idx += 1;
+        result
     }
+
 }
