@@ -142,6 +142,7 @@ mod tests {
             0 0 0 0 0 0 0 0 0 0 0 0 0 0 255
         "};
 
+        println!("{}", ppm);
         assert_eq!(ppm, exp_ppm);
     }
 }
