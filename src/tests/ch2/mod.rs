@@ -3,6 +3,7 @@ mod tests {
 
     use crate::domain::canvas::Canvas;
     use crate::domain::color::*;
+    use crate::utils::image_writer::*;
     use indoc::indoc;
 
     #[test]
@@ -108,11 +109,38 @@ mod tests {
     #[test]
     fn test6_construct_ppm_header() {
         let c = Canvas::new(5, 3, Color::default());
-        let ppm = c.to_ppm();
+
+        let writer = ImageWriter::new(Format::Ppm3, &c);
+        let ppm = writer.to_string();
         let exp_ppm = indoc! {"P3
                                5 3
                                255
                               "};
+
+        assert_eq!(ppm, exp_ppm);
+    }
+
+    #[test]
+    fn test7_construct_ppm_pixel_data() {
+        let mut c = Canvas::new(5, 3, Color::default());
+        let p1 = Color::new(1.5, 0.0, 0.0);
+        let p2 = Color::new(0.0, 0.5, 0.0);
+        let p3 = Color::new(-0.5, 0.0, 1.0);
+
+        c[0][0] = p1;
+        c[2][1] = p2;
+        c[4][2] = p3;
+
+        let writer = ImageWriter::new(Format::Ppm3, &c);
+        let ppm = writer.to_string();
+        let exp_ppm = indoc! {"
+            P3
+            5 3
+            255
+            255 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 128 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0 0 0 0 0 255
+        "};
 
         assert_eq!(ppm, exp_ppm);
     }

@@ -2,7 +2,6 @@
 use std::ops::{Index, IndexMut};
 
 use crate::domain::color::Color;
-use std::fmt::Write;
 //use std::iter::{StepBy, Chain, Zip, Intersperse, IntersperseWith, Map, Filter, FilterMap, Enumerate, Peekable, SkipWhile, TakeWhile, MapWhile, Skip, Take, Scan, FlatMap, Flatten, Fuse, Inspect, FromIterator, Rev, Copied, Cloned, Cycle, Sum, Product, TrustedRandomAccess};
 //use std::convert::Infallible;
 //use std::cmp::Ordering;
@@ -25,25 +24,6 @@ impl Canvas {
             height,
             pixels,
         }
-    }
-
-    pub fn to_ppm(&self) -> String {
-        // header
-        let mut ppm = String::new();
-        writeln!(ppm, "P3").unwrap();
-        writeln!(
-            ppm,
-            "{} {}",
-            self.width.to_string(),
-            self.height.to_string()
-        )
-        .unwrap();
-        writeln!(ppm, "255").unwrap();
-
-        // body
-
-        // answer
-        ppm
     }
 }
 
