@@ -2,6 +2,7 @@
 use std::ops::{Index, IndexMut};
 
 use crate::domain::color::Color;
+use std::fmt::Write;
 //use std::iter::{StepBy, Chain, Zip, Intersperse, IntersperseWith, Map, Filter, FilterMap, Enumerate, Peekable, SkipWhile, TakeWhile, MapWhile, Skip, Take, Scan, FlatMap, Flatten, Fuse, Inspect, FromIterator, Rev, Copied, Cloned, Cycle, Sum, Product, TrustedRandomAccess};
 //use std::convert::Infallible;
 //use std::cmp::Ordering;
@@ -25,6 +26,25 @@ impl Canvas {
             pixels,
         }
     }
+
+    pub fn to_ppm(&self) -> String {
+        // header
+        let mut ppm = String::new();
+        writeln!(ppm, "P3").unwrap();
+        writeln!(
+            ppm,
+            "{} {}",
+            self.width.to_string(),
+            self.height.to_string()
+        )
+        .unwrap();
+        writeln!(ppm, "255").unwrap();
+
+        // body
+
+        // answer
+        ppm
+    }
 }
 
 impl Index<usize> for Canvas {
@@ -46,20 +66,14 @@ impl IndexMut<usize> for Canvas {
     }
 }
 
-// impl IndexMut<usize> for Canvas {
-//     fn index_mut(&mut self, x: usize) -> &mut [Color] {
-//         let start = x * self.width;
-//         //let p = &mut self.pixels;
-//         let &mut p = &self.pixels;
-//         &mut p[start..start + self.width]
-//     }
-// }
-
 impl<'a> IntoIterator for &'a Canvas {
     type Item = &'a Color;
     type IntoIter = CanvasIterator<'a>;
     fn into_iter(self) -> Self::IntoIter {
-        CanvasIterator{pixels: &self.pixels, current_idx: 0 as usize}
+        CanvasIterator {
+            pixels: &self.pixels,
+            current_idx: 0 as usize,
+        }
     }
 }
 
@@ -78,5 +92,4 @@ impl<'a> Iterator for CanvasIterator<'a> {
         self.current_idx += 1;
         result
     }
-
 }

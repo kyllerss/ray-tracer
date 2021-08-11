@@ -3,6 +3,7 @@ mod tests {
 
     use crate::domain::canvas::Canvas;
     use crate::domain::color::*;
+    use indoc::indoc;
 
     #[test]
     fn test1_build_color() {
@@ -102,5 +103,17 @@ mod tests {
                 assert_eq!(*p, exp_p);
             }
         }
+    }
+
+    #[test]
+    fn test6_construct_ppm_header() {
+        let c = Canvas::new(5, 3, Color::default());
+        let ppm = c.to_ppm();
+        let exp_ppm = indoc! {"P3
+                               5 3
+                               255
+                              "};
+
+        assert_eq!(ppm, exp_ppm);
     }
 }
