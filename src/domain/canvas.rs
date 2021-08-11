@@ -1,5 +1,5 @@
 //use std::ops::{Index, IndexMut};
-use std::ops::{Index, IndexMut};
+use std::ops::Index;
 
 use crate::domain::color::Color;
 //use std::iter::{StepBy, Chain, Zip, Intersperse, IntersperseWith, Map, Filter, FilterMap, Enumerate, Peekable, SkipWhile, TakeWhile, MapWhile, Skip, Take, Scan, FlatMap, Flatten, Fuse, Inspect, FromIterator, Rev, Copied, Cloned, Cycle, Sum, Product, TrustedRandomAccess};
@@ -17,8 +17,7 @@ impl Canvas {
     // constructor
     pub fn new(width: usize, height: usize, default_color: Color) -> Canvas {
         let vec_length = width * height;
-        let mut pixels = vec![default_color; vec_length];
-        // pixels.push(default_color);
+        let pixels = vec![default_color; vec_length];
 
         Canvas {
             width,
@@ -31,9 +30,9 @@ impl Canvas {
 impl Index<usize> for Canvas {
     type Output = [Color];
     fn index(&self, x: usize) -> &Self::Output {
-        let start = x * self.width;
+        let start = x * self.height;
         let p = &self.pixels;
-        let r: &[Color] = &p[start..start + self.width];
+        let r: &[Color] = &p[start..start + self.height];
         r
     }
 }

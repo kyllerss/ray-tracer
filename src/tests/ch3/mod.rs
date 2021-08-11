@@ -6,11 +6,12 @@ mod tests {
 
     #[test]
     fn test1_build_canvas() {
-        let black = Color::new(0.0, 0.0, 0.0);
-        //let green = Color::new(0.0, 1.0, 0.0);
-        let mut c = Canvas::new(10, 20, black);
+
         let width: usize = 10;
         let height: usize = 20;
+        let black = Color::new(0.0, 0.0, 0.0);
+        //let green = Color::new(0.0, 1.0, 0.0);
+        let c = Canvas::new(width, height, black);
 
         assert_eq!(c.width, width);
         assert_eq!(c.height, height);
@@ -28,8 +29,8 @@ mod tests {
         // verify by index lookup
         for w in 0..width {
             for h in 0..height {
-                // let row: &[Color] = &c[w];
-                // let cell = row[h];
+                //let row: &[Color] = &c[w];
+                //let p: &Color = &row[h];
                 let p: &Color = &c[w][h];
                 assert_eq!(*p, black);
             }
