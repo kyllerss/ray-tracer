@@ -2,9 +2,11 @@ use crate::domain::canvas::Canvas;
 use crate::domain::color::Color;
 use std::fmt::Write;
 
-pub const PPM3_MAGIC_NUMBER: &str = "P3";
-pub const PPM3_MAX_COLOR_VALUE: u8 = 255;
-pub const PPM3_MAX_LINE_LENGTH: usize = 70;
+const PPM3_MAGIC_NUMBER: &str = "P3";
+const PPM3_MAX_COLOR_VALUE: u8 = 255;
+const PPM3_MAX_LINE_LENGTH: usize = 70;
+const PPM3_PIXEL_SEPARATOR: char = ' ';
+const PPM3_END_OF_FILE: char = '\n';
 
 pub enum Format {
     Ppm3,
@@ -73,27 +75,26 @@ impl<'a> ImageWriter<'a> {
         let mut line_length: usize = 0;
         for pixel in self.canvas {
             let p_str = self.to_string_encoding(pixel);
-            if p_str.len() + line_length >= PPM3_MAX_LINE_LENGTH {
+            let append_width = p_str.len() + 1; // includes separator
+
+            if append_width + line_length >= PPM3_MAX_LINE_LENGTH {
                 body.push('\n');
                 line_length = 0;
             }
 
             if line_length != 0 {
-                body.push(' ');
+                body.push(PPM3_PIXEL_SEPARATOR);
+                line_length += 1;
             }
 
             line_length += p_str.len();
             body.push_str(&*p_str);
         }
-        // match &self.format {
-        //     Format::Ppm3 => {
-        //         let
-        //     }
-        // }
 
         // answer
         ppm.push_str(&*header);
         ppm.push_str(&*body);
+        ppm.push(PPM3_END_OF_FILE);
 
         ppm
     }

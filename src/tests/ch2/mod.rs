@@ -112,11 +112,14 @@ mod tests {
 
         let writer = ImageWriter::new(Format::Ppm3, &c);
         let ppm = writer.to_string();
-        let exp_ppm = indoc! {"P3
-                               5 3
-                               255
-                              "};
-
+        let exp_ppm = indoc! {"
+            P3
+            5 3
+            255
+            0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0 0 0
+            "};
+        //println!("{}", ppm);
         assert_eq!(ppm, exp_ppm);
     }
 
@@ -133,16 +136,50 @@ mod tests {
 
         let writer = ImageWriter::new(Format::Ppm3, &c);
         let ppm = writer.to_string();
+        // let exp_ppm = indoc! {"
+        //     P3
+        //     5 3
+        //     255
+        //     255 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        //     0 0 0 0 0 0 0 128 0 0 0 0 0 0 0
+        //     0 0 0 0 0 0 0 0 0 0 0 0 0 0 255
+        // "};
+
+        //println!("{}", ppm);
         let exp_ppm = indoc! {"
             P3
             5 3
             255
-            255 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-            0 0 0 0 0 0 0 128 0 0 0 0 0 0 0
-            0 0 0 0 0 0 0 0 0 0 0 0 0 0 255
-        "};
-
-        println!("{}", ppm);
+            255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0 0 255
+            "};
         assert_eq!(ppm, exp_ppm);
+    }
+
+    #[test]
+    fn test8_no_lines_exceed_70_chars() {
+        let default_color = Color::new(1.0, 0.8, 0.6);
+        let c = Canvas::new(10, 2, default_color);
+        let writer = ImageWriter::new(Format::Ppm3, &c);
+        let ppm = writer.to_string();
+
+        //println!("{}", ppm);
+
+        assert!(!ppm.is_empty());
+
+        let lines = ppm.lines();
+        for line in lines {
+            assert!(line.len() < 70);
+        }
+    }
+
+    #[test]
+    fn test9_ppm_terminated_by_new_line_character() {
+        let c = Canvas::new(10, 2, Color::default());
+        let writer = ImageWriter::new(Format::Ppm3, &c);
+        let ppm = writer.to_string();
+
+        assert!(!ppm.is_empty());
+        assert!(ppm.ends_with("\n"));
     }
 }
