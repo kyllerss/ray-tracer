@@ -2,6 +2,7 @@
 use std::ops::{Index, IndexMut};
 
 use crate::domain::color::Color;
+use crate::domain::Point;
 //use std::iter::{StepBy, Chain, Zip, Intersperse, IntersperseWith, Map, Filter, FilterMap, Enumerate, Peekable, SkipWhile, TakeWhile, MapWhile, Skip, Take, Scan, FlatMap, Flatten, Fuse, Inspect, FromIterator, Rev, Copied, Cloned, Cycle, Sum, Product, TrustedRandomAccess};
 //use std::convert::Infallible;
 //use std::cmp::Ordering;
@@ -24,6 +25,18 @@ impl Canvas {
             height,
             pixels,
         }
+    }
+
+    // renders a given point with a given color applying all necessary coord translations
+    pub fn render(&mut self, point: Point, color: Color) {
+        if point.ray_tuple.x as usize >= self.width || point.ray_tuple.y as usize >= self.height {
+            return;
+        }
+
+        let x = point.ray_tuple.x as usize;
+        let y = point.ray_tuple.y as usize;
+
+        self[x][y] = color;
     }
 }
 

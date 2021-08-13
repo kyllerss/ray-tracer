@@ -1,4 +1,5 @@
 mod ch1;
+mod ch2;
 pub mod domain;
 mod tests;
 pub mod utils;
@@ -34,13 +35,14 @@ fn main() {
             ch1::run();
         }
         2 => {
-            println!("Chapter 2")
+            println!("Chapter 2...");
+            ch2::run();
         }
         3 => {
-            println!("Chapter 3")
+            println!("Chapter 3");
         }
         _ => {
-            panic!("Unsupported chapter {}!", chapter)
+            panic!("Unsupported chapter {}!", chapter);
         }
     }
 }

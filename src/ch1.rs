@@ -1,14 +1,14 @@
 use crate::domain::{Point, Vector};
 
 #[derive(Debug)]
-struct Tick {
-    gravity: Vector,
-    wind: Vector,
-    projectile: Point,
-    projectile_velocity: Vector,
+pub struct Tick {
+    pub gravity: Vector,
+    pub wind: Vector,
+    pub projectile: Point,
+    pub projectile_velocity: Vector,
 }
 
-fn apply_tick(tick: &mut Tick) {
+pub fn apply_tick(tick: &mut Tick) {
     tick.gravity = tick.gravity + tick.gravity; // gravity accelerates every tick
     let env_forces = tick.gravity + tick.wind;
     tick.projectile = tick.projectile + (tick.projectile_velocity + env_forces);
