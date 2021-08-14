@@ -73,7 +73,7 @@ mod tests {
             for row in 0..height {
                 //let row: &[Color] = &c[w];
                 //let p: &Color = &row[h];
-                let p: &Color = &c[col][row];
+                let p: &Color = &c[row][col];
                 assert_eq!(*p, black);
             }
         }
@@ -89,12 +89,12 @@ mod tests {
 
         let p_col: usize = 2;
         let p_row: usize = 3;
-        c[p_col][p_row] = red;
+        c[p_row][p_col] = red;
 
         // verify all pixels
         for col in 0..width {
             for row in 0..height {
-                let p: &Color = &c[col][row];
+                let p: &Color = &c[row][col];
                 let exp_p: Color;
                 if col == p_col && row == p_row {
                     exp_p = red;
@@ -132,8 +132,8 @@ mod tests {
         let p3 = Color::new(-0.5, 0.0, 1.0);
 
         c[0][0] = p1;
-        c[2][1] = p2;
-        c[4][2] = p3;
+        c[1][2] = p2;
+        c[2][4] = p3;
 
         let writer = ImageWriter::new(Format::Ppm3, &c);
         let ppm = writer.to_string();
@@ -185,33 +185,49 @@ mod tests {
     }
 
     #[test]
-    // [BUG] Canvases that are wider than taller don't render pixels consistently.
-    fn test_pit_1_width_longer_than_height_rendering_bug() {
-        let width: usize = 10;
-        let height: usize = 5;
-        let mut c = Canvas::new(width, height, Color::default());
+    fn test_pit_1_invert_y_coord() {
+        let mut c = Canvas::new(10, 10, Color::default());
         let color = Color::new(1.0, 0.0, 0.0);
+        let row = 2;
+        let col = 2;
+        let point = Point::new(col as f64, row as f64, 0.0);
+        c.render(point, color);
+        assert_eq!(c[row][col], color);
 
-        c[0][0] = color;
-        c[1][1] = color;
-        c[2][2] = color;
-        c[3][3] = color;
-        c[4][4] = color;
-        // c[5][5] = color;
-        // c[6][6] = color;
-        // c[7][7] = color;
-        // c[8][8] = color;
-        // c[9][9] = color;
-        // c[100][50] = color;
-
-        println!("---------------");
-        for (i, pixel) in c.into_iter().enumerate() {
-            if i % 5 == 0 {
-                println!("")
-            };
-            let hit = *pixel == color;
-            print!("{}", if hit { 1 } else { 0 });
-        }
-        println!("");
+        c.invert_y();
+        let exp_row = 8;
+        let exp_col = 2;
+        assert_eq!(c[row][col], Color::default());
+        assert_eq!(c[exp_row][exp_col], color);
     }
+
+    // #[test]
+    // // [BUG] Canvases that are wider than taller don't render pixels consistently.
+    // fn test_pit_1_width_longer_than_height_rendering_bug() {
+    //     let width: usize = 10;
+    //     let height: usize = 5;
+    //     let mut c = Canvas::new(width, height, Color::default());
+    //     let color = Color::new(1.0, 0.0, 0.0);
+    //
+    //     c.render(Point::new(0.0, 0.0, 0.0), color);
+    //     c.render(Point::new(1.0, 1.0, 0.0), color);
+    //     c.render(Point::new(2.0, 2.0, 0.0), color);
+    //     c.render(Point::new(3.0, 3.0, 0.0), color);
+    //     c.render(Point::new(4.0, 4.0, 0.0), color);
+    //     c.render(Point::new(5.0, 5.0, 0.0), color);
+    //     c.render(Point::new(6.0, 6.0, 0.0), color);
+    //     c.render(Point::new(7.0, 7.0, 0.0), color);
+    //     c.render(Point::new(8.0, 8.0, 0.0), color);
+    //     c.render(Point::new(9.0, 9.0, 0.0), color);
+    //
+    //     println!("---------------");
+    //     for (i, pixel) in c.into_iter().enumerate() {
+    //         if i % 10 == 0 {
+    //             println!("")
+    //         };
+    //         let hit = *pixel == color;
+    //         print!("{}", if hit { 1 } else { 0 });
+    //     }
+    //     println!("");
+    // }
 }

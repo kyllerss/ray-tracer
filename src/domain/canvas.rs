@@ -29,8 +29,8 @@ impl Canvas {
 
     // renders a given point with a given color applying all necessary coord translations
     pub fn render(&mut self, point: Point, color: Color) {
-        let row = point.ray_tuple.x as usize;
-        let column = point.ray_tuple.y as usize;
+        let column = point.x() as usize;
+        let row = point.y() as usize;
 
         if column >= self.width || row >= self.height {
             return;
@@ -40,23 +40,27 @@ impl Canvas {
 
         self[row][column] = color;
     }
+
+    // for rendering purposes, inverts y coordinates to ensure upper-left coord system
+    // translated to bottom-left coord system.
+    pub fn invert_y(&mut self) {}
 }
 
 impl Index<usize> for Canvas {
     type Output = [Color];
     fn index(&self, row: usize) -> &Self::Output {
-        let start = row * self.height;
+        let start = row * self.width;
         let p = &self.pixels;
-        let r: &[Color] = &p[start..start + self.height];
+        let r: &[Color] = &p[start..start + self.width];
         r
     }
 }
 
 impl IndexMut<usize> for Canvas {
     fn index_mut(&mut self, row: usize) -> &mut Self::Output {
-        let start = row * self.height;
+        let start = row * self.width;
         let p = &mut self.pixels;
-        let r: &mut [Color] = &mut p[start..start + self.height];
+        let r: &mut [Color] = &mut p[start..start + self.width];
         r
     }
 }
