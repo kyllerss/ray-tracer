@@ -26,14 +26,14 @@ impl Canvas {
 
     // renders a given point with a given color applying all necessary coord translations
     pub fn render(&mut self, point: Point, color: Color) {
-        let column = point.x() as usize;
-        let row = point.y() as usize;
+        let column = point.x().round() as usize;
+        let row = point.y().round() as usize;
 
         if column >= self.width || row >= self.height {
             return;
         }
 
-        println!("Coords ({}, {})", column, row);
+        //println!("Coords ({}, {})", column, row);
 
         self[row][column] = color;
     }
@@ -42,19 +42,14 @@ impl Canvas {
     // translated to bottom-left coord system.
     pub fn invert_y(&mut self) {
         // iterate across half of pixels - leave odd-numbered middle row untouched
-        let mid_row = if self.height % 2 == 1 {
-            (self.height - 1) / 2
-        } else {
-            self.height / 2
-        };
+        let mid_row = f64::floor(self.height as f64 / 2.0) as usize;
 
-        let mid_idx = mid_row * self.height;
+        let mid_idx = mid_row * self.width;
         for idx in 0..mid_idx + 1 {
             let row = (idx / self.width) as usize;
             let col = (idx % self.width) as usize;
-            let row_inv = self.height - row;
-            let inv_idx = row_inv + col;
-            //swap(&mut self.pixels[idx], &mut self.pixels[inv_idx]);
+            let row_inv = (self.height - 1) - row;
+            let inv_idx = (row_inv * self.width) + col;
             self.pixels.swap(idx, inv_idx);
         }
 
