@@ -29,21 +29,23 @@ impl Canvas {
 
     // renders a given point with a given color applying all necessary coord translations
     pub fn render(&mut self, point: Point, color: Color) {
-        if point.ray_tuple.x as usize >= self.width || point.ray_tuple.y as usize >= self.height {
+        let row = point.ray_tuple.x as usize;
+        let column = point.ray_tuple.y as usize;
+
+        if column >= self.width || row >= self.height {
             return;
         }
 
-        let x = point.ray_tuple.x as usize;
-        let y = point.ray_tuple.y as usize;
+        println!("Coords ({}, {})", column, row);
 
-        self[x][y] = color;
+        self[row][column] = color;
     }
 }
 
 impl Index<usize> for Canvas {
     type Output = [Color];
-    fn index(&self, x: usize) -> &Self::Output {
-        let start = x * self.height;
+    fn index(&self, row: usize) -> &Self::Output {
+        let start = row * self.height;
         let p = &self.pixels;
         let r: &[Color] = &p[start..start + self.height];
         r
@@ -51,8 +53,8 @@ impl Index<usize> for Canvas {
 }
 
 impl IndexMut<usize> for Canvas {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        let start = index * self.height;
+    fn index_mut(&mut self, row: usize) -> &mut Self::Output {
+        let start = row * self.height;
         let p = &mut self.pixels;
         let r: &mut [Color] = &mut p[start..start + self.height];
         r

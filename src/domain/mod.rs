@@ -77,6 +77,16 @@ impl Point {
             ray_tuple: RayTuple::new(x, y, z, Point::W),
         }
     }
+
+    // accessor
+    pub fn x(&self) -> f64 {
+        self.ray_tuple.x
+    }
+
+    // accessor
+    pub fn y(&self) -> f64 {
+        self.ray_tuple.y
+    }
 }
 
 impl PartialEq for Point {

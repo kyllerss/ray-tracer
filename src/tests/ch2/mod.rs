@@ -3,6 +3,7 @@ mod tests {
 
     use crate::domain::canvas::Canvas;
     use crate::domain::color::*;
+    use crate::domain::Point;
     use crate::utils::image_writer::*;
     use indoc::indoc;
 
@@ -68,11 +69,11 @@ mod tests {
         assert!(iterated);
 
         // verify by index lookup
-        for w in 0..width {
-            for h in 0..height {
+        for col in 0..width {
+            for row in 0..height {
                 //let row: &[Color] = &c[w];
                 //let p: &Color = &row[h];
-                let p: &Color = &c[w][h];
+                let p: &Color = &c[col][row];
                 assert_eq!(*p, black);
             }
         }
@@ -86,16 +87,16 @@ mod tests {
         let red = Color::new(1.0, 0.0, 0.0);
         let mut c = Canvas::new(width, height, black);
 
-        let p_x: usize = 2;
-        let p_y: usize = 3;
-        c[p_x][p_y] = red;
+        let p_col: usize = 2;
+        let p_row: usize = 3;
+        c[p_col][p_row] = red;
 
         // verify all pixels
-        for x in 0..width {
-            for y in 0..height {
-                let p: &Color = &c[x][y];
+        for col in 0..width {
+            for row in 0..height {
+                let p: &Color = &c[col][row];
                 let exp_p: Color;
-                if x == p_x && y == p_y {
+                if col == p_col && row == p_row {
                     exp_p = red;
                 } else {
                     exp_p = black;
@@ -181,5 +182,36 @@ mod tests {
 
         assert!(!ppm.is_empty());
         assert!(ppm.ends_with("\n"));
+    }
+
+    #[test]
+    // [BUG] Canvases that are wider than taller don't render pixels consistently.
+    fn test_pit_1_width_longer_than_height_rendering_bug() {
+        let width: usize = 10;
+        let height: usize = 5;
+        let mut c = Canvas::new(width, height, Color::default());
+        let color = Color::new(1.0, 0.0, 0.0);
+
+        c[0][0] = color;
+        c[1][1] = color;
+        c[2][2] = color;
+        c[3][3] = color;
+        c[4][4] = color;
+        // c[5][5] = color;
+        // c[6][6] = color;
+        // c[7][7] = color;
+        // c[8][8] = color;
+        // c[9][9] = color;
+        // c[100][50] = color;
+
+        println!("---------------");
+        for (i, pixel) in c.into_iter().enumerate() {
+            if i % 5 == 0 {
+                println!("")
+            };
+            let hit = *pixel == color;
+            print!("{}", if hit { 1 } else { 0 });
+        }
+        println!("");
     }
 }
