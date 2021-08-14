@@ -3,9 +3,6 @@ use std::ops::{Index, IndexMut};
 
 use crate::domain::color::Color;
 use crate::domain::Point;
-//use std::iter::{StepBy, Chain, Zip, Intersperse, IntersperseWith, Map, Filter, FilterMap, Enumerate, Peekable, SkipWhile, TakeWhile, MapWhile, Skip, Take, Scan, FlatMap, Flatten, Fuse, Inspect, FromIterator, Rev, Copied, Cloned, Cycle, Sum, Product, TrustedRandomAccess};
-//use std::convert::Infallible;
-//use std::cmp::Ordering;
 
 #[derive(Clone, Debug)]
 pub struct Canvas {
@@ -43,7 +40,33 @@ impl Canvas {
 
     // for rendering purposes, inverts y coordinates to ensure upper-left coord system
     // translated to bottom-left coord system.
-    pub fn invert_y(&mut self) {}
+    pub fn invert_y(&mut self) {
+        // iterate across half of pixels - leave odd-numbered middle row untouched
+        let mid_row = if self.height % 2 == 1 {
+            (self.height - 1) / 2
+        } else {
+            self.height / 2
+        };
+
+        let mid_idx = mid_row * self.height;
+        for idx in 0..mid_idx + 1 {
+            let row = (idx / self.width) as usize;
+            let col = (idx % self.width) as usize;
+            let row_inv = self.height - row;
+            let inv_idx = row_inv + col;
+            //swap(&mut self.pixels[idx], &mut self.pixels[inv_idx]);
+            self.pixels.swap(idx, inv_idx);
+        }
+
+        // for row_idx in 0..(mid_row + 1) {
+        //     let inv_row_idx = (self.height - 1) - row_idx;
+        //     let row = &mut self[row_idx];
+        //     let row_inv = &mut self[inv_row_idx];
+        //     for col in 0..self.width {
+        //         swap(&mut row[col], &mut row_inv[col]);
+        //     }
+        // }
+    }
 }
 
 impl Index<usize> for Canvas {
