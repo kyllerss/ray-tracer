@@ -6,6 +6,7 @@ pub mod utils;
 use std::env;
 use std::process::exit;
 
+#[rustfmt::skip::macros(vec)]
 fn main() {
     let mut chapter: usize = 0;
 

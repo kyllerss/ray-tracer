@@ -1,5 +1,6 @@
 pub(crate) mod canvas;
 pub(crate) mod color;
+pub(crate) mod matrix;
 mod operations;
 
 use num::{Float, NumCast};
