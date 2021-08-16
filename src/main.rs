@@ -1,8 +1,11 @@
 mod ch1;
 mod ch2;
 pub mod domain;
+#[macro_use]
+mod macros;
 mod tests;
 pub mod utils;
+
 use std::env;
 use std::process::exit;
 

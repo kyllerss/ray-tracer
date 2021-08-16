@@ -1,5 +1,6 @@
 use std::ops::{Index, IndexMut};
 
+#[derive(Clone, Debug, PartialEq)]
 pub struct Matrix {
     pub width: usize,
     pub height: usize,
@@ -9,6 +10,10 @@ pub struct Matrix {
 impl Matrix {
     // constructor
     pub fn new(width: usize, height: usize, contents: Vec<f64>) -> Matrix {
+        if width * height != contents.len() {
+            panic!("Dimensions for matrix do not match contents.");
+        }
+
         Matrix {
             width,
             height,
