@@ -88,6 +88,11 @@ impl Point {
     pub fn y(&self) -> f64 {
         self.ray_tuple.y
     }
+
+    // accessor
+    pub fn z(&self) -> f64 {
+        self.ray_tuple.z
+    }
 }
 
 impl PartialEq for Point {
@@ -143,6 +148,21 @@ impl Vector {
         let y = rt1.z * rt2.x - rt1.x * rt2.z;
         let z = rt1.x * rt2.y - rt1.y * rt2.x;
         Vector::new(x, y, z)
+    }
+
+    // accessor
+    pub fn x(&self) -> f64 {
+        self.ray_tuple.x
+    }
+
+    // accessor
+    pub fn y(&self) -> f64 {
+        self.ray_tuple.y
+    }
+
+    // accessor
+    pub fn z(&self) -> f64 {
+        self.ray_tuple.z
     }
 }
 

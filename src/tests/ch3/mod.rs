@@ -1,6 +1,8 @@
 #[cfg(test)]
 #[rustfmt::skip::macros(vec, matrix)]
 mod tests {
+    use crate::domain::matrix::Matrix;
+    use crate::domain::{Point, Vector};
 
     #[test]
     fn test1_construct_and_inspect_4x4_matrix() {
@@ -59,7 +61,7 @@ mod tests {
 
     #[test]
     fn test4_multiplying_two_matrices() {
-        let a = matrix![1.0, 2.0, 3.0, 4.0;
+        let a = &matrix![1.0, 2.0, 3.0, 4.0;
                         5.0, 6.0, 7.0, 8.0;
                         9.0, 8.0, 7.0, 6.0;
                         5.0, 4.0, 3.0, 2.0];
@@ -73,6 +75,25 @@ mod tests {
                           16.0, 26.0, 46.0, 42.0];
 
         let r = a * &b;
+        assert_eq!(r, exp);
+    }
+
+    #[test]
+    fn test5_multiplying_matrix_by_tuple() {
+        let a: &Matrix = &matrix![1.0, 2.0, 3.0, 4.0;
+                        2.0, 4.0, 4.0, 2.0;
+                        8.0, 6.0, 4.0, 1.0;
+                        0.0, 0.0, 0.0, 1.0];
+        let point = Point::new(1.0, 2.0, 3.0);
+        let exp = Point::new(18.0, 24.0, 33.0);
+
+        let r = a * &point;
+        assert_eq!(r, exp);
+
+        // additional test for vectors
+        let vector = Vector::new(1.0, 2.0, 3.0);
+        let exp = Vector::new(14.0, 22.0, 32.0);
+        let r = a * &vector;
         assert_eq!(r, exp);
     }
 }
