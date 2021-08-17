@@ -96,4 +96,14 @@ mod tests {
         let r = a * &vector;
         assert_eq!(r, exp);
     }
+
+    #[test]
+    fn test6_multiply_by_identify_matrix() {
+        let a: &Matrix = &matrix![0.0, 1.0, 2.0, 4.0;
+                                  1.0, 2.0, 4.0, 8.0;
+                                  2.0, 4.0, 8.0, 16.0;
+                                  4.0, 8.0, 16.0, 32.0];
+        let a1 = a * &*crate::domain::matrix::IDENTITY;
+        assert_eq!(*a, a1);
+    }
 }

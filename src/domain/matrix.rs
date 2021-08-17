@@ -1,4 +1,5 @@
 use crate::domain::{Point, Vector};
+use lazy_static::lazy_static;
 use std::ops::{Index, IndexMut, Mul};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -6,6 +7,19 @@ pub struct Matrix {
     pub width: usize,
     pub height: usize,
     contents: Vec<f64>,
+}
+
+// All references need to be dereferenced
+#[rustfmt::skip::macros(vec, matrix)]
+lazy_static! {
+    pub static ref IDENTITY: Matrix = Matrix::new(
+        4,
+        4,
+        vec![1.0, 0.0, 0.0, 0.0,
+             0.0, 1.0, 0.0, 0.0,
+             0.0, 0.0, 1.0, 0.0,
+             0.0, 0.0, 0.0, 1.0],
+    );
 }
 
 impl Matrix {
