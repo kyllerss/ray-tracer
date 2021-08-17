@@ -35,6 +35,22 @@ impl Matrix {
             contents,
         }
     }
+
+    // transposes a matrix
+    pub fn transpose(&mut self) {
+        'outer: for row in 0..self.height {
+            for col in 0..self.width {
+                if row == col {
+                    continue 'outer; // iterate only up to diagonal
+                }
+
+                let a = row * self.height + col;
+                let b = col * self.width + row;
+
+                self.contents.swap(a, b);
+            }
+        }
+    }
 }
 
 impl Index<usize> for Matrix {

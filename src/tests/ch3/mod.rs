@@ -106,4 +106,19 @@ mod tests {
         let a1 = a * &*crate::domain::matrix::IDENTITY;
         assert_eq!(*a, a1);
     }
+
+    #[test]
+    fn test7_transposing_matrix() {
+        let mut a: Matrix = matrix![0.0, 9.0, 3.0, 0.0;
+                                    9.0, 8.0, 0.0, 8.0;
+                                    1.0, 8.0, 5.0, 3.0;
+                                    0.0, 0.0, 5.0, 8.0];
+        let exp: Matrix = matrix![0.0, 9.0, 1.0, 0.0;
+                                  9.0, 8.0, 8.0, 0.0;
+                                  3.0, 0.0, 5.0, 5.0;
+                                  0.0, 8.0, 3.0, 8.0];
+
+        a.transpose();
+        assert_eq!(a, exp);
+    }
 }
