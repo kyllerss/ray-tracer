@@ -121,4 +121,11 @@ mod tests {
         a.transpose();
         assert_eq!(a, exp);
     }
+
+    #[test]
+    fn test8_transposing_identity_matrix() {
+        let mut identity_clone = crate::domain::matrix::IDENTITY.clone();
+        identity_clone.transpose();
+        assert_eq!(identity_clone, *crate::domain::matrix::IDENTITY);
+    }
 }
