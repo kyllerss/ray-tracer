@@ -205,4 +205,21 @@ mod tests {
         let exp = -4071.0;
         assert_eq!(r, exp);
     }
+
+    #[test]
+    fn test14_invertability_of_matrices() {
+        // invertible
+        let m = matrix![6.0, 4.0, 4.0, 4.0;
+                        5.0, 5.0, 7.0, 6.0;
+                        4.0, -9.0, 3.0, -7.0;
+                        9.0, 1.0, 7.0, -6.0];
+        assert!(m.is_invertible());
+
+        // not invertible
+        let m = matrix![-4.0, 2.0, -2.0, -3.0;
+                        9.0, 6.0, 2.0, 6.0;
+                        0.0, -5.0, 1.0, -5.0;
+                        0.0, 0.0, 0.0, 0.0];
+        assert!(!m.is_invertible());
+    }
 }

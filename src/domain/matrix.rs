@@ -100,6 +100,10 @@ impl Matrix {
             minor
         }
     }
+
+    pub fn is_invertible(&self) -> bool {
+        self.determinant() != 0.0
+    }
 }
 
 impl Index<usize> for Matrix {
