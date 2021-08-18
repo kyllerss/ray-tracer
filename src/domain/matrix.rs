@@ -1,7 +1,7 @@
 use crate::domain::{Point, Vector};
 use lazy_static::lazy_static;
 use num::Integer;
-use std::ops::{Index, IndexMut, Mul, Neg};
+use std::ops::{Index, IndexMut, Mul};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Matrix {
