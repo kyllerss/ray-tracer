@@ -55,13 +55,16 @@ impl Matrix {
 
     // calculate determinant on 2x2 matrix
     // Returns None if matrix is not 2x2
-    pub fn determinant(&self) -> Option<f64> {
-        if self.width != 2 || self.height != 2 {
-            return None;
+    pub fn determinant(&self) -> f64 {
+        let mut result: f64 = 0.0;
+        if self.width == 2 && self.height == 2 {
+            result = self[0][0] * self[1][1] - self[0][1] * self[1][0];
+        } else {
+            for col in 0..self.width {
+                result += self[0][col] * self.cofactor(0, col);
+            }
         }
-
-        let result = self[0][0] * self[1][1] - self[0][1] * self[1][0];
-        Some(result)
+        result
     }
 
     pub fn submatrix(&self, row: usize, col: usize) -> Matrix {
@@ -85,7 +88,7 @@ impl Matrix {
 
     pub fn minor(&self, row: usize, col: usize) -> f64 {
         let sm = &self.submatrix(row, col);
-        sm.determinant().unwrap()
+        sm.determinant()
     }
 
     pub fn cofactor(&self, row: usize, col: usize) -> f64 {

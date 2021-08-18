@@ -133,8 +133,8 @@ mod tests {
     fn test9_determinant_of_2x2() {
         let m = matrix![1.0, 5.0;
                         -3.0, 2.0];
-        let r: Option<f64> = m.determinant();
-        let exp = Some(17.0);
+        let r: f64 = m.determinant();
+        let exp = 17.0;
 
         assert_eq!(r, exp);
     }
@@ -183,6 +183,26 @@ mod tests {
 
         let r = m.cofactor(1, 0);
         let exp = -25.0;
+        assert_eq!(r, exp);
+    }
+
+    #[test]
+    fn test13_calculate_determinant_3x3_and_4x4_matrices() {
+        // 3x3 test
+        let m = matrix![1.0, 2.0, 6.0;
+                        -5.0, 8.0, -4.0;
+                        2.0, 6.0, 4.0];
+        let r = m.determinant();
+        let exp = -196.0;
+        assert_eq!(r, exp);
+
+        // 4x4 test
+        let m = matrix![-2.0, -8.0, 3.0, 5.0;
+                        -3.0, 1.0, 7.0, 3.0;
+                        1.0, 2.0, -9.0, 6.0;
+                        -6.0, 7.0, 7.0, -9.0];
+        let r = m.determinant();
+        let exp = -4071.0;
         assert_eq!(r, exp);
     }
 }
