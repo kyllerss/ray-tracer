@@ -1,6 +1,7 @@
 use crate::domain::{Point, Vector};
 use lazy_static::lazy_static;
-use std::ops::{Index, IndexMut, Mul};
+use num::Integer;
+use std::ops::{Index, IndexMut, Mul, Neg};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Matrix {
@@ -80,6 +81,21 @@ impl Matrix {
         }
 
         Matrix::new(self.width - 1, self.height - 1, v)
+    }
+
+    pub fn minor(&self, row: usize, col: usize) -> f64 {
+        let sm = &self.submatrix(row, col);
+        sm.determinant().unwrap()
+    }
+
+    pub fn cofactor(&self, row: usize, col: usize) -> f64 {
+        let minor = self.minor(row, col);
+        let negate = (row + col).is_odd();
+        if negate {
+            -minor
+        } else {
+            minor
+        }
     }
 }
 

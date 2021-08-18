@@ -161,4 +161,28 @@ mod tests {
                           -7.0, -1.0, 1.0];
         assert_eq!(r, exp);
     }
+
+    #[test]
+    fn test11_calculate_minor_of_3x3_matrix() {
+        let m = matrix![3.0, 5.0, 0.0;
+                        2.0, -1.0, -7.0;
+                        6.0, -1.0, 5.0];
+        let r = m.minor(1, 0);
+        let exp = 25.0;
+        assert_eq!(r, exp);
+    }
+
+    #[test]
+    fn test12_calculate_cofactor_of_3x3_matrix() {
+        let m = matrix![3.0, 5.0, 0.0;
+                        2.0, -1.0, -7.0;
+                        6.0, -1.0, 5.0];
+        let r = m.cofactor(0, 0);
+        let exp = -12.0;
+        assert_eq!(r, exp);
+
+        let r = m.cofactor(1, 0);
+        let exp = -25.0;
+        assert_eq!(r, exp);
+    }
 }
