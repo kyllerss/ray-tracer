@@ -138,4 +138,27 @@ mod tests {
 
         assert_eq!(r, exp);
     }
+
+    #[test]
+    fn test10_calculate_submatrices() {
+        // 3x3 matrix
+        let m = matrix![1.0, 5.0, 0.0;
+                        -3.0, 2.0, 7.0;
+                        0.0, 6.0, -3.0];
+        let r = m.submatrix(0, 2);
+        let exp = matrix![-3.0, 2.0;
+                          0.0, 6.0];
+        assert_eq!(r, exp);
+
+        // 4x4 matrix
+        let m = matrix![-6.0, 1.0, 1.0, 6.0;
+                        -8.0, 5.0, 8.0, 6.0;
+                        -1.0, 0.0, 8.0, 2.0;
+                        -7.0, 1.0, -1.0, 1.0];
+        let r = m.submatrix(2, 1);
+        let exp = matrix![-6.0, 1.0, 6.0;
+                          -8.0, 8.0, 6.0;
+                          -7.0, -1.0, 1.0];
+        assert_eq!(r, exp);
+    }
 }

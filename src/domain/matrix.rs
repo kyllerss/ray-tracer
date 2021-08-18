@@ -62,6 +62,25 @@ impl Matrix {
         let result = self[0][0] * self[1][1] - self[0][1] * self[1][0];
         Some(result)
     }
+
+    pub fn submatrix(&self, row: usize, col: usize) -> Matrix {
+        let mut v: Vec<f64> = Vec::with_capacity(row * col);
+        for row_idx in 0..self.height {
+            if row_idx == row {
+                continue; // exclude row
+            }
+
+            for col_idx in 0..self.width {
+                if col_idx == col {
+                    continue; // exclude col
+                }
+
+                v.push(self[row_idx][col_idx]);
+            }
+        }
+
+        Matrix::new(self.width - 1, self.height - 1, v)
+    }
 }
 
 impl Index<usize> for Matrix {
@@ -91,6 +110,8 @@ impl<'a> Mul<&'a Matrix> for &'a Matrix {
     type Output = Matrix;
     fn mul(self, rhs: &'a Matrix) -> Self::Output {
         use crate::matrix;
+
+        //unrolled loop
         matrix![m(0,0,&self,rhs), m(0,1,&self,rhs), m(0,2,&self,rhs), m(0,3,&self,rhs);
                 m(1,0,&self,rhs), m(1,1,&self,rhs), m(1,2,&self,rhs), m(1,3,&self,rhs);
                 m(2,0,&self,rhs), m(2,1,&self,rhs), m(2,2,&self,rhs), m(2,3,&self,rhs);
