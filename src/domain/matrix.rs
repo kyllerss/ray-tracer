@@ -51,6 +51,17 @@ impl Matrix {
             }
         }
     }
+
+    // calculate determinant on 2x2 matrix
+    // Returns None if matrix is not 2x2
+    pub fn determinant(&self) -> Option<f64> {
+        if self.width != 2 || self.height != 2 {
+            return None;
+        }
+
+        let result = self[0][0] * self[1][1] - self[0][1] * self[1][0];
+        Some(result)
+    }
 }
 
 impl Index<usize> for Matrix {

@@ -128,4 +128,14 @@ mod tests {
         identity_clone.transpose();
         assert_eq!(identity_clone, *crate::domain::matrix::IDENTITY);
     }
+
+    #[test]
+    fn test9_determinant_of_2x2() {
+        let m = matrix![1.0, 5.0;
+                        -3.0, 2.0];
+        let r: Option<f64> = m.determinant();
+        let exp = Some(17.0);
+
+        assert_eq!(r, exp);
+    }
 }
