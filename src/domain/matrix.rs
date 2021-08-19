@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 use num::Integer;
 use std::ops::{Index, IndexMut, Mul};
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct Matrix {
     pub width: usize,
     pub height: usize,
@@ -104,6 +104,28 @@ impl Matrix {
     pub fn is_invertible(&self) -> bool {
         self.determinant() != 0.0
     }
+
+    pub fn inverse(&self) -> Option<Matrix> {
+        if !self.is_invertible() {
+            return None;
+        }
+        let mut m_inv = Matrix::new(
+            self.width,
+            self.height,
+            vec![f64::default(); self.width * self.height],
+        );
+
+        let determinant = self.determinant();
+
+        for row in 0..self.height {
+            for col in 0..self.width {
+                let cofactor = self.cofactor(row, col);
+                m_inv[col][row] = cofactor / determinant; // col/row switch handles transpose
+            }
+        }
+
+        Some(m_inv)
+    }
 }
 
 impl Index<usize> for Matrix {
@@ -177,5 +199,18 @@ impl<'a> Mul<&'a Vector> for &'a Matrix {
             + self[2][2] * rhs.z()
             + self[2][3] * Vector::W;
         Vector::new(x, y, z)
+    }
+}
+
+impl PartialEq for Matrix {
+    fn eq(&self, other: &Self) -> bool {
+        self.width == other.width
+            && self.height == other.height
+            && self.contents.len() == other.contents.len()
+            && self
+                .contents
+                .iter()
+                .zip(other.contents.iter())
+                .all(|(a, b): (&f64, &f64)| crate::domain::epsilon_eq(*a, *b))
     }
 }
