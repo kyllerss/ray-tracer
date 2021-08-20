@@ -278,4 +278,31 @@ mod tests {
         let result = &product * &inverse.unwrap();
         assert_eq!(result, a);
     }
+
+    #[test]
+    fn test18_multiply_point_by_translation_matrix() {
+        let t = Matrix::new_translation(5.0, -3.0, 2.0);
+        let p = Point::new(-3.0, 4.0, 5.0);
+        let r = &t * &p;
+        let exp = Point::new(2.0, 1.0, 7.0);
+        assert_eq!(r, exp);
+    }
+
+    #[test]
+    fn test19_multiply_by_inverse_of_translation_matrix() {
+        let t_inv = Matrix::new_translation(5.0, -3.0, 2.0).inverse();
+        assert!(t_inv.is_some());
+        let p = Point::new(-3.0, 4.0, 5.0);
+        let r = &t_inv.unwrap() * &p;
+        let exp = Point::new(-8.0, 7.0, 3.0);
+        assert_eq!(r, exp);
+    }
+
+    #[test]
+    fn test20_translation_does_not_affect_vectors() {
+        let t = Matrix::new_translation(5.0, -3.0, 2.0);
+        let v = Vector::new(-3.0, 4.0, 5.0);
+        let r = &t * &v;
+        assert_eq!(r, v);
+    }
 }
