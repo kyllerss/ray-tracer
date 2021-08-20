@@ -74,6 +74,15 @@ impl Matrix {
         Matrix::new(4, 4, contents)
     }
 
+    // rotation along z-axis
+    pub fn new_rotation_z(radians: f64) -> Matrix {
+        let contents: Vec<f64> = vec![ radians.cos(),  -radians.sin(),  0.0, 0.0,
+                                       radians.sin(),  radians.cos(),   0.0, 0.0,
+                                       0.0,            0.0,             1.0, 0.0,
+                                       0.0,            0.0,             0.0, 1.0];
+        Matrix::new(4, 4, contents)
+    }
+
     // transposes a matrix
     pub fn transpose(&mut self) {
         'outer: for row in 0..self.height {
