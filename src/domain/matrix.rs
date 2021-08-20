@@ -11,7 +11,7 @@ pub struct Matrix {
 }
 
 // All references need to be dereferenced
-#[rustfmt::skip::macros(vec, matrix)]
+#[rustfmt::skip::macros(vec)]
 lazy_static! {
     pub static ref IDENTITY: Matrix = Matrix::new(
         4,
@@ -23,6 +23,7 @@ lazy_static! {
     );
 }
 
+#[rustfmt::skip::macros(vec, matrix)]
 impl Matrix {
     // constructor
     pub fn new(width: usize, height: usize, contents: Vec<f64>) -> Matrix {
@@ -39,20 +40,20 @@ impl Matrix {
 
     // new translation matrix
     pub fn new_translation(x: f64, y: f64, z: f64) -> Matrix {
-        let mut t = (*IDENTITY).clone();
-        t[0][3] = x;
-        t[1][3] = y;
-        t[2][3] = z;
-        t
+        let contents: Vec<f64> = vec![1.0, 0.0, 0.0,  x ,
+                                      0.0, 1.0, 0.0,  y ,
+                                      0.0, 0.0, 1.0,  z ,
+                                      0.0, 0.0, 0.0, 1.0];
+        Matrix::new(4, 4, contents)
     }
 
     // new translation matrix
     pub fn new_scaling(x: f64, y: f64, z: f64) -> Matrix {
-        let mut t = (*IDENTITY).clone();
-        t[0][0] = x;
-        t[1][1] = y;
-        t[2][2] = z;
-        t
+        let contents: Vec<f64> = vec![ x , 0.0, 0.0, 0.0,
+                                      0.0,  y , 0.0, 0.0,
+                                      0.0, 0.0,  z , 0.0,
+                                      0.0, 0.0, 0.0, 1.0];
+        Matrix::new(4, 4, contents)
     }
 
     // transposes a matrix
