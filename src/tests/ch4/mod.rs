@@ -82,4 +82,15 @@ mod tests {
         let exp = Point::new(0.0, 0.0, 1.0);
         assert_eq!(r, exp);
     }
+
+    #[test]
+    fn test9_inverse_of_x_rotation_rotates_opposite_direction() {
+        let p = Point::new(0.0, 1.0, 0.0);
+        let t_half_quarter = Matrix::new_rotation_x(PI / 4 as f64);
+        let t_inv_hq = t_half_quarter.inverse();
+        assert!(t_inv_hq.is_some());
+        let r = &t_inv_hq.unwrap() * &p;
+        let exp = Point::new(0.0, 2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0);
+        assert_eq!(r, exp);
+    }
 }
