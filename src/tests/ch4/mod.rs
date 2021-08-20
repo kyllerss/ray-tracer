@@ -93,4 +93,18 @@ mod tests {
         let exp = Point::new(0.0, 2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0);
         assert_eq!(r, exp);
     }
+
+    #[test]
+    fn test10_rotating_point_around_y_axis() {
+        let p = Point::new(0.0, 0.0, 1.0);
+        let t_half_quarter = Matrix::new_rotation_y(PI / 4 as f64);
+        let r = &t_half_quarter * &p;
+        let exp = Point::new(2_f64.sqrt() / 2.0, 0.0, 2_f64.sqrt() / 2.0);
+        assert_eq!(r, exp);
+
+        let t_full_quarter = Matrix::new_rotation_y(PI / 2 as f64);
+        let r = &t_full_quarter * &p;
+        let exp = Point::new(1.0, 0.0, 0.0);
+        assert_eq!(r, exp);
+    }
 }
