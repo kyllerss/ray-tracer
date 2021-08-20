@@ -46,6 +46,15 @@ impl Matrix {
         t
     }
 
+    // new translation matrix
+    pub fn new_scaling(x: f64, y: f64, z: f64) -> Matrix {
+        let mut t = (*IDENTITY).clone();
+        t[0][0] = x;
+        t[1][1] = y;
+        t[2][2] = z;
+        t
+    }
+
     // transposes a matrix
     pub fn transpose(&mut self) {
         'outer: for row in 0..self.height {
