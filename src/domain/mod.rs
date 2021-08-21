@@ -43,6 +43,21 @@ impl RayTuple {
         let w_norm = self.w / magnitude;
         RayTuple::new(x_norm, y_norm, z_norm, w_norm)
     }
+
+    // setter x
+    pub fn set_x(self, x_val: f64) -> Self {
+        RayTuple { x: x_val, ..self }
+    }
+
+    // setter y
+    pub fn set_y(self, y_val: f64) -> Self {
+        RayTuple { y: y_val, ..self }
+    }
+
+    // setter z
+    pub fn set_z(self, z_val: f64) -> Self {
+        RayTuple { z: z_val, ..self }
+    }
 }
 
 impl PartialEq for RayTuple {
@@ -92,6 +107,54 @@ impl Point {
     // accessor
     pub fn z(&self) -> f64 {
         self.ray_tuple.z
+    }
+
+    pub fn set_x(&self, x: f64) -> Self {
+        Self {
+            ray_tuple: self.ray_tuple.set_x(x),
+        }
+    }
+
+    pub fn set_y(&self, y: f64) -> Self {
+        Self {
+            ray_tuple: self.ray_tuple.set_y(y),
+        }
+    }
+
+    pub fn set_z(&self, z: f64) -> Self {
+        Self {
+            ray_tuple: self.ray_tuple.set_z(z),
+        }
+    }
+
+    pub fn add_x(&self, val: f64) -> Self {
+        let orig = self.x();
+        self.set_x(orig + val)
+    }
+
+    pub fn add_y(&self, val: f64) -> Self {
+        let orig = self.y();
+        self.set_y(orig + val)
+    }
+
+    pub fn add_z(&self, val: f64) -> Self {
+        let orig = self.z();
+        self.set_z(orig + val)
+    }
+
+    pub fn mult_x(&self, val: f64) -> Self {
+        let orig = self.x();
+        self.set_x(orig * val)
+    }
+
+    pub fn mult_y(&self, val: f64) -> Self {
+        let orig = self.y();
+        self.set_y(orig * val)
+    }
+
+    pub fn mult_z(&self, val: f64) -> Self {
+        let orig = self.z();
+        self.set_z(orig * val)
     }
 }
 

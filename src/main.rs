@@ -1,5 +1,6 @@
 mod ch1;
 mod ch2;
+mod ch4;
 pub mod domain;
 #[macro_use]
 mod macros;
@@ -7,10 +8,11 @@ mod tests;
 pub mod utils;
 
 use std::env;
+use std::io::Error;
 use std::process::exit;
 
 #[rustfmt::skip::macros(vec)]
-fn main() {
+fn main() -> Result<(), Error> {
     let mut chapter: usize = 0;
 
     let mut args_itr = env::args();
@@ -37,13 +39,19 @@ fn main() {
         1 => {
             println!("Chapter 1...");
             ch1::run();
+            Ok(())
         }
         2 => {
             println!("Chapter 2...");
-            ch2::run();
+            ch2::run()
         }
         3 => {
-            println!("Chapter 3");
+            println!("Nothing to do for chapter 3!");
+            Ok(())
+        }
+        4 => {
+            println!("Chapter 4...");
+            ch4::run()
         }
         _ => {
             panic!("Unsupported chapter {}!", chapter);
