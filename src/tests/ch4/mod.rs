@@ -121,4 +121,49 @@ mod tests {
         let exp = Point::new(-1.0, 0.0, 0.0);
         assert_eq!(r, exp);
     }
+
+    #[test]
+    fn test12_and_13_shearing_transformations() {
+        // x in proportion to y
+        let m = Matrix::new_shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+        let r = &m * &p;
+        let exp = Point::new(5.0, 3.0, 4.0);
+        assert_eq!(r, exp);
+
+        // x in proportion to z
+        let m = Matrix::new_shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+        let r = &m * &p;
+        let exp = Point::new(6.0, 3.0, 4.0);
+        assert_eq!(r, exp);
+
+        // y in proportion to x
+        let m = Matrix::new_shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+        let r = &m * &p;
+        let exp = Point::new(2.0, 5.0, 4.0);
+        assert_eq!(r, exp);
+
+        // y in proportion to z
+        let m = Matrix::new_shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+        let r = &m * &p;
+        let exp = Point::new(2.0, 7.0, 4.0);
+        assert_eq!(r, exp);
+
+        // z in proportion to x
+        let m = Matrix::new_shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+        let r = &m * &p;
+        let exp = Point::new(2.0, 3.0, 6.0);
+        assert_eq!(r, exp);
+
+        // z in proportion to y
+        let m = Matrix::new_shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+        let r = &m * &p;
+        let exp = Point::new(2.0, 3.0, 7.0);
+        assert_eq!(r, exp);
+    }
 }

@@ -83,6 +83,15 @@ impl Matrix {
         Matrix::new(4, 4, contents)
     }
 
+    // shearing
+    pub fn new_shearing(x_y: f64, x_z: f64, y_x: f64, y_z: f64, z_x: f64, z_y: f64) -> Matrix {
+        let contents: Vec<f64> = vec![ 1.0, x_y, x_z, 0.0,
+                                       y_x, 1.0, y_z, 0.0,
+                                       z_x, z_y, 1.0, 0.0,
+                                       0.0, 0.0, 0.0, 1.0];
+        Matrix::new(4, 4, contents)
+    }
+
     // transposes a matrix
     pub fn transpose(&mut self) {
         'outer: for row in 0..self.height {
