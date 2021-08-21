@@ -166,4 +166,25 @@ mod tests {
         let exp = Point::new(2.0, 3.0, 7.0);
         assert_eq!(r, exp);
     }
+
+    #[test]
+    fn test_14_chain_transformations() {
+        // sequential transformations
+        let p = Point::new(1.0, 0.0, 1.0);
+        let a = Matrix::new_rotation_x(PI / 2.0);
+        let b = Matrix::new_scaling(5.0, 5.0, 5.0);
+        let c = Matrix::new_translation(10.0, 5.0, 7.0);
+
+        let p2 = &a * &p;
+        let p3 = &b * &p2;
+        let p4 = &c * &p3;
+
+        let exp = Point::new(15.0, 0.0, 7.0);
+        assert_eq!(p4, exp);
+
+        // chained transformations
+        let t = &(&c * &b) * &a;
+        let p5 = &t * &p;
+        assert_eq!(p5, exp);
+    }
 }
