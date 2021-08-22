@@ -2,6 +2,7 @@ pub(crate) mod canvas;
 pub(crate) mod color;
 pub(crate) mod matrix;
 mod operations;
+pub(crate) mod ray;
 
 use num::{Float, NumCast};
 
