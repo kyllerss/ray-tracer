@@ -1,3 +1,4 @@
+use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
 
@@ -33,4 +34,52 @@ fn test2_computing_point_from_distance() {
     let p = r.position(2.5);
     let exp = Point::new(4.5, 3.0, 4.0);
     assert_eq!(p, exp);
+}
+
+#[test]
+fn test3_ray_intersects_sphere_at_two_points() {
+    let ray = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let sphere = Sphere::new_unit();
+    let xs = sphere.intersect(&ray);
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0], 4.0);
+    assert_eq!(xs[1], 6.0);
+}
+
+#[test]
+fn test4_ray_intersects_sphere_at_tangent() {
+    let ray = Ray::new(Point::new(0.0, 1.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let sphere = Sphere::new_unit();
+    let xs = sphere.intersect(&ray);
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0], 5.0);
+    assert_eq!(xs[1], 5.0);
+}
+
+#[test]
+fn test5_ray_misses_intersection_on_sphere() {
+    let ray = Ray::new(Point::new(0.0, 2.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let sphere = Sphere::new_unit();
+    let xs = sphere.intersect(&ray);
+    assert!(xs.is_empty());
+}
+
+#[test]
+fn test6_ray_intersects_sphere_when_ray_at_origin() {
+    let ray = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+    let sphere = Sphere::new_unit();
+    let xs = sphere.intersect(&ray);
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0], -1.0);
+    assert_eq!(xs[1], 1.0);
+}
+
+#[test]
+fn test7_ray_intersects_when_sphere_behind() {
+    let ray = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
+    let sphere = Sphere::new_unit();
+    let xs = sphere.intersect(&ray);
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0], -6.0);
+    assert_eq!(xs[1], -4.0);
 }

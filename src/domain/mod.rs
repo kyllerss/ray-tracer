@@ -1,6 +1,7 @@
 pub(crate) mod canvas;
 pub(crate) mod color;
 pub(crate) mod matrix;
+pub(crate) mod object;
 mod operations;
 pub(crate) mod ray;
 
