@@ -104,8 +104,8 @@ fn test9_aggregating_intersections() {
     xs.push(i2);
 
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0].distance, 1.0);
-    assert_eq!(xs[1].distance, 2.0);
+    assert_eq!(xs.hit().unwrap().distance, 1.0);
+    assert_eq!(xs.hit().unwrap().distance, 2.0);
 }
 
 #[test]
@@ -117,4 +117,84 @@ fn test10_intersect_sets_object_on_intersection() {
     assert_eq!(xs.len(), 2);
     assert_eq!(xs[0].object, &s);
     assert_eq!(xs[1].object, &s);
+}
+
+#[test]
+fn test11_hit_tests() {
+    // all intersections positive
+    let s = Sphere::new_unit();
+    let i1 = Intersection::new(1.0, &s);
+    let i2 = Intersection::new(2.0, &s);
+    let mut xs = Intersections::new();
+    xs.push(i2);
+    xs.push(i1);
+
+    let hit = xs.hit();
+    assert!(hit.is_some());
+    let int = hit.unwrap();
+    assert_eq!(int.distance, 1.0);
+    assert_eq!(int.object, &s);
+
+    // some intersections negative
+    let i1 = Intersection::new(-1.0, &s);
+    let i2 = Intersection::new(1.0, &s);
+    let mut xs = Intersections::new();
+    xs.push(i2);
+    xs.push(i1);
+
+    let hit = xs.hit();
+    assert!(hit.is_some());
+    let int = hit.unwrap();
+    assert_eq!(int.distance, 1.0);
+    assert_eq!(int.object, &s);
+
+    // all intersections have negative
+    let i1 = Intersection::new(-2.0, &s);
+    let i2 = Intersection::new(-1.0, &s);
+    let mut xs = Intersections::new();
+    xs.push(i2);
+    xs.push(i1);
+
+    let hit = xs.hit();
+    assert!(hit.is_none());
+
+    // always lowest non-negative intersection
+    let i1 = Intersection::new(5.0, &s);
+    let i2 = Intersection::new(2.0, &s);
+    let i3 = Intersection::new(-3.0, &s);
+    let i4 = Intersection::new(7.0, &s);
+    let mut xs = Intersections::new();
+    xs.push(i1);
+    xs.push(i2);
+    xs.push(i3);
+    xs.push(i4);
+
+    let hit = xs.hit();
+    assert!(hit.is_some());
+    let int = hit.unwrap();
+    assert_eq!(int.distance, 2.0);
+    assert_eq!(int.object, &s);
+
+    // EDGE CASES (comparison w/ f64 NAN, INFINIT, etc...
+    let i1 = Intersection::new(f64::INFINITY, &s);
+    let i2 = Intersection::new(f64::NEG_INFINITY, &s);
+    let i3 = Intersection::new(f64::NAN, &s);
+    let i_good = Intersection::new(0.0, &s);
+    let i5 = Intersection::new(f64::INFINITY, &s);
+    let i6 = Intersection::new(f64::NEG_INFINITY, &s);
+    let i7 = Intersection::new(f64::NAN, &s);
+    let mut xs = Intersections::new();
+    xs.push(i1);
+    xs.push(i2);
+    xs.push(i3);
+    xs.push(i_good);
+    xs.push(i5);
+    xs.push(i6);
+    xs.push(i7);
+
+    let hit = xs.hit();
+    assert!(hit.is_some());
+    let int = hit.unwrap();
+    assert_eq!(int.distance, 0.0);
+    assert_eq!(int.object, &s);
 }
