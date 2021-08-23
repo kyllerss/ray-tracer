@@ -1,6 +1,7 @@
 use crate::domain::ray::Ray;
 use crate::domain::Point;
 
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub struct Sphere {
     origin: Point,
     //radius: f64,
