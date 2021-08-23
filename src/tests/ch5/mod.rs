@@ -1,4 +1,4 @@
-use crate::domain::intersection::Intersection;
+use crate::domain::intersection::{Intersection, Intersections};
 use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
@@ -89,7 +89,21 @@ fn test7_ray_intersects_when_sphere_behind() {
 fn test8_intersection_object_encapsulates_t_and_obj() {
     let distance = 3.5;
     let sphere = Sphere::new_unit();
-    let intersection = Intersection::new(distance, sphere);
+    let intersection = Intersection::new(distance, &sphere);
     assert_eq!(intersection.distance, distance);
-    assert_eq!(intersection.object, sphere);
+    assert_eq!(intersection.object, &sphere);
+}
+
+#[test]
+fn test9_aggregating_intersections() {
+    let s = Sphere::new_unit();
+    let i1 = Intersection::new(1.0, &s);
+    let i2 = Intersection::new(2.0, &s);
+    let mut xs = Intersections::new();
+    xs.push(i1);
+    xs.push(i2);
+
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0].object, &s);
+    assert_eq!(xs[1].object, &s);
 }
