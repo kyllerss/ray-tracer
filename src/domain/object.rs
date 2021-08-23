@@ -1,3 +1,4 @@
+use crate::domain::intersection::Intersection;
 use crate::domain::ray::Ray;
 use crate::domain::Point;
 
@@ -20,7 +21,7 @@ impl Sphere {
     }
 
     // Finds intersections of ray against sphere instance
-    pub fn intersect(&self, ray: &Ray) -> Vec<f64> {
+    pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
         let sphere_to_ray = ray.origin - self.origin;
         let a: f64 = ray.direction.dot_product(ray.direction);
         let b: f64 = 2.0 * ray.direction.dot_product(sphere_to_ray);
@@ -32,7 +33,7 @@ impl Sphere {
         } else {
             let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
             let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
-            vec![t1, t2]
+            vec![Intersection::new(t1, &self), Intersection::new(t2, &self)]
         }
     }
 }

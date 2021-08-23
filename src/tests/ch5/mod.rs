@@ -43,8 +43,8 @@ fn test3_ray_intersects_sphere_at_two_points() {
     let sphere = Sphere::new_unit();
     let xs = sphere.intersect(&ray);
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], 4.0);
-    assert_eq!(xs[1], 6.0);
+    assert_eq!(xs[0].distance, 4.0);
+    assert_eq!(xs[1].distance, 6.0);
 }
 
 #[test]
@@ -53,8 +53,8 @@ fn test4_ray_intersects_sphere_at_tangent() {
     let sphere = Sphere::new_unit();
     let xs = sphere.intersect(&ray);
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], 5.0);
-    assert_eq!(xs[1], 5.0);
+    assert_eq!(xs[0].distance, 5.0);
+    assert_eq!(xs[1].distance, 5.0);
 }
 
 #[test]
@@ -71,8 +71,8 @@ fn test6_ray_intersects_sphere_when_ray_at_origin() {
     let sphere = Sphere::new_unit();
     let xs = sphere.intersect(&ray);
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], -1.0);
-    assert_eq!(xs[1], 1.0);
+    assert_eq!(xs[0].distance, -1.0);
+    assert_eq!(xs[1].distance, 1.0);
 }
 
 #[test]
@@ -81,8 +81,8 @@ fn test7_ray_intersects_when_sphere_behind() {
     let sphere = Sphere::new_unit();
     let xs = sphere.intersect(&ray);
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], -6.0);
-    assert_eq!(xs[1], -4.0);
+    assert_eq!(xs[0].distance, -6.0);
+    assert_eq!(xs[1].distance, -4.0);
 }
 
 #[test]
@@ -102,6 +102,17 @@ fn test9_aggregating_intersections() {
     let mut xs = Intersections::new();
     xs.push(i1);
     xs.push(i2);
+
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0].distance, 1.0);
+    assert_eq!(xs[1].distance, 2.0);
+}
+
+#[test]
+fn test10_intersect_sets_object_on_intersection() {
+    let ray = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let s = Sphere::new_unit();
+    let xs = s.intersect(&ray);
 
     assert_eq!(xs.len(), 2);
     assert_eq!(xs[0].object, &s);
