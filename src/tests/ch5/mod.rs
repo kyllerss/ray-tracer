@@ -217,3 +217,14 @@ fn test12_translating_and_scaling_a_ray() {
     assert_eq!(ray_2.origin, Point::new(2.0, 6.0, 12.0));
     assert_eq!(ray_2.direction, Vector::new(0.0, 3.0, 0.0));
 }
+
+#[test]
+fn test13_sphere_has_default_and_updatable_transformation() {
+    let mut s = Sphere::new_unit();
+    assert_eq!(s.transformation, crate::domain::matrix::IDENTITY.clone());
+
+    let m = Matrix::new_translation(2.0, 3.0, 4.0);
+    s.transformation = m.clone();
+    assert_ne!(s.transformation, crate::domain::matrix::IDENTITY.clone());
+    assert_eq!(m, s.transformation);
+}

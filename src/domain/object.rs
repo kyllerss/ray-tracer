@@ -1,11 +1,13 @@
 use crate::domain::intersection::Intersection;
+use crate::domain::matrix::Matrix;
 use crate::domain::ray::Ray;
 use crate::domain::Point;
 
-#[derive(PartialEq, Debug, Clone, Copy)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Sphere {
-    origin: Point,
+    pub origin: Point,
     //radius: f64,
+    pub transformation: Matrix,
 }
 
 // Unit measure for shapes.
@@ -17,6 +19,7 @@ impl Sphere {
         Sphere {
             origin: Point::new(0.0, 0.0, 0.0),
             //radius: UNIT,
+            transformation: crate::domain::matrix::IDENTITY.clone(),
         }
     }
 
