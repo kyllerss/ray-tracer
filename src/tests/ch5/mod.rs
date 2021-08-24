@@ -1,4 +1,5 @@
 use crate::domain::intersection::{Intersection, Intersections};
+use crate::domain::matrix::Matrix;
 use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
@@ -197,4 +198,22 @@ fn test11_hit_tests() {
     let int = hit.unwrap();
     assert_eq!(int.distance, 0.0);
     assert_eq!(int.object, &s);
+}
+
+#[test]
+fn test12_translating_and_scaling_a_ray() {
+    // translate ray
+    let ray = Ray::new(Point::new(1.0, 2.0, 3.0), Vector::new(0.0, 1.0, 0.0));
+    let m = Matrix::new_translation(3.0, 4.0, 5.0);
+    let ray_2 = ray.transform(&m);
+
+    assert_eq!(ray_2.origin, Point::new(4.0, 6.0, 8.0));
+    assert_eq!(ray_2.direction, Vector::new(0.0, 1.0, 0.0));
+
+    // scale ray
+    let m = Matrix::new_scaling(2.0, 3.0, 4.0);
+    let ray_2 = ray.transform(&m);
+
+    assert_eq!(ray_2.origin, Point::new(2.0, 6.0, 12.0));
+    assert_eq!(ray_2.direction, Vector::new(0.0, 3.0, 0.0));
 }
