@@ -228,3 +228,23 @@ fn test13_sphere_has_default_and_updatable_transformation() {
     assert_ne!(s.transformation, crate::domain::matrix::IDENTITY.clone());
     assert_eq!(m, s.transformation);
 }
+
+#[test]
+fn test14_intersecting_scaled_translated_sphere_with_ray() {
+    // scaled
+    let ray = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let m = Matrix::new_scaling(2.0, 2.0, 2.0);
+    let s = Sphere::new(m);
+    let xs = s.intersect(&ray);
+
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0].distance, 3.0);
+    assert_eq!(xs[1].distance, 7.0);
+
+    // translated
+    let m = Matrix::new_translation(5.0, 0.0, 0.0);
+    let s = Sphere::new(m);
+    let xs = s.intersect(&ray);
+
+    assert!(xs.is_empty());
+}
