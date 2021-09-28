@@ -65,7 +65,12 @@ impl Sphere {
 
     // Computes the normal at given point.
     pub fn normal_at(&self, point: Point) -> Vector {
-        let v = point - Sphere::ORIGIN;
-        v.normalize()
+        //let v = point - Sphere::ORIGIN;
+        let mut st_inv = self.transformation.inverse().unwrap();
+        let object_point = &st_inv * &point;
+        let object_normal = object_point - Sphere::ORIGIN;
+        let world_normal = &*st_inv.transpose() * &object_normal;
+
+        world_normal.normalize()
     }
 }

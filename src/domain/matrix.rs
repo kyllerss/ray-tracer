@@ -93,7 +93,7 @@ impl Matrix {
     }
 
     // transposes a matrix
-    pub fn transpose(&mut self) {
+    pub fn transpose(&mut self) -> &mut Self {
         'outer: for row in 0..self.height {
             for col in 0..self.width {
                 if row == col {
@@ -106,6 +106,8 @@ impl Matrix {
                 self.contents.swap(a, b);
             }
         }
+
+        self
     }
 
     // calculate determinant on 2x2 matrix
