@@ -28,3 +28,16 @@ fn test1_normal_on_a_sphere() {
     let exp_n = Vector::new(3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0);
     assert_eq!(n, exp_n);
 }
+
+#[test]
+fn test2_normal_is_normalized() {
+    let s = Sphere::new_unit();
+    let n = s.normal_at(Point::new(
+        3_f64.sqrt() / 3.0,
+        3_f64.sqrt() / 3.0,
+        3_f64.sqrt() / 3.0,
+    ));
+    let normalized = n.normalize();
+
+    assert_eq!(n, normalized);
+}
