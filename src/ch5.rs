@@ -28,7 +28,7 @@ pub fn run() -> Result<(), Error> {
     let mut iteration: f64 = 0.0;
 
     let wall_width = 7.0; // TODO make bigger (to test impact)
-    let half = (wall_width as f64 / 2.0);
+    let half = wall_width as f64 / 2.0;
     let pixel_size = wall_width / canvas_length as f64;
     for x in 0..canvas_length {
         for y in 0..canvas_length {
@@ -51,7 +51,7 @@ pub fn run() -> Result<(), Error> {
             iteration += 1.0;
             if ((iteration / (canvas_length as f64 * canvas_length as f64)) * 100.0) % 10.0 == 0.0 {
                 print!("#");
-                stdout().flush();
+                let _ = stdout().flush();
             }
         }
     }

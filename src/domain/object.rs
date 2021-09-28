@@ -1,7 +1,7 @@
 use crate::domain::intersection::Intersection;
 use crate::domain::matrix::Matrix;
 use crate::domain::ray::Ray;
-use crate::domain::Point;
+use crate::domain::{Point, RayTuple, Vector};
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Sphere {
@@ -14,10 +14,19 @@ pub struct Sphere {
 //const UNIT: f64 = 1.0;
 
 impl Sphere {
+    const ORIGIN: Point = Point {
+        ray_tuple: RayTuple {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 0.0,
+        },
+    };
+
     // constructor w/ no transformation matrix (identify matrix default)
     pub fn new_unit() -> Sphere {
         Sphere {
-            origin: Point::new(0.0, 0.0, 0.0),
+            origin: Sphere::ORIGIN,
             //radius: UNIT,
             transformation: crate::domain::matrix::IDENTITY.clone(),
         }
@@ -26,7 +35,7 @@ impl Sphere {
     // constructor w/ initial transformation matrix
     pub fn new(transformation: Matrix) -> Sphere {
         Sphere {
-            origin: Point::new(0.0, 0.0, 0.0),
+            origin: Sphere::ORIGIN,
             transformation: transformation,
         }
     }
@@ -52,5 +61,11 @@ impl Sphere {
             let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
             vec![Intersection::new(t1, &self), Intersection::new(t2, &self)]
         }
+    }
+
+    // Computes the normal at given point.
+    pub fn normal_at(&self, point: Point) -> Vector {
+        let v = point - Sphere::ORIGIN;
+        v.normalize()
     }
 }
