@@ -10,8 +10,8 @@ pub struct Tick {
 }
 
 pub fn apply_tick(tick: &mut Tick) {
-    let env_forces = (&tick.gravity * tick.count) + tick.wind;
-    tick.projectile = tick.projectile + (tick.projectile_velocity + env_forces);
+    let env_forces = &(&tick.gravity * tick.count) + &tick.wind;
+    tick.projectile = &tick.projectile + &(&tick.projectile_velocity + &env_forces);
     tick.count += 1.0;
 }
 

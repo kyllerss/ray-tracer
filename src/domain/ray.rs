@@ -14,7 +14,7 @@ impl Ray {
 
     // calculates points at given position
     pub fn position(&self, distance: f32) -> Point {
-        self.origin + &self.direction * distance as f64
+        &self.origin + &(&self.direction * distance as f64)
     }
 
     // transforms ray (building new instance)

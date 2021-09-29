@@ -1,9 +1,9 @@
 use crate::domain::*;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-impl Add for RayTuple {
+impl<'a> Add for &'a RayTuple {
     type Output = RayTuple;
-    fn add(self, rhs: Self) -> Self::Output {
+    fn add(self: &'a RayTuple, rhs: &'a RayTuple) -> Self::Output {
         RayTuple::new(
             self.x + rhs.x,
             self.y + rhs.y,
@@ -13,9 +13,9 @@ impl Add for RayTuple {
     }
 }
 
-impl Sub for RayTuple {
+impl<'a> Sub for &'a RayTuple {
     type Output = RayTuple;
-    fn sub(self, rhs: Self) -> Self::Output {
+    fn sub(self: &'a RayTuple, rhs: &'a RayTuple) -> Self::Output {
         RayTuple::new(
             self.x - rhs.x,
             self.y - rhs.y,
@@ -32,64 +32,64 @@ impl Neg for RayTuple {
     }
 }
 
-impl Mul<f64> for RayTuple {
+impl<'a> Mul<f64> for &'a RayTuple {
     type Output = RayTuple;
-    fn mul(self, rhs: f64) -> Self::Output {
+    fn mul(self: &'a RayTuple, rhs: f64) -> Self::Output {
         RayTuple::new(self.x * rhs, self.y * rhs, self.z * rhs, self.w * rhs)
     }
 }
 
-impl Div<f64> for RayTuple {
+impl<'a> Div<f64> for &'a RayTuple {
     type Output = RayTuple;
-    fn div(self, rhs: f64) -> Self::Output {
+    fn div(self: &'a RayTuple, rhs: f64) -> Self::Output {
         RayTuple::new(self.x / rhs, self.y / rhs, self.z / rhs, self.w / rhs)
     }
 }
 
-impl Add<Vector> for Point {
+impl<'a> Add<&'a Vector> for &'a Point {
     type Output = Point;
-    fn add(self, rhs: Vector) -> Self::Output {
-        let result = self.ray_tuple + rhs.ray_tuple;
+    fn add(self: &'a Point, rhs: &'a Vector) -> Self::Output {
+        let result = &self.ray_tuple + &rhs.ray_tuple;
         Point::new(result.x, result.y, result.z)
     }
 }
 
-impl Add<Point> for Point {
+impl<'a> Add<&'a Point> for &'a Point {
     type Output = Vector;
-    fn add(self, rhs: Point) -> Self::Output {
-        let result = self.ray_tuple + rhs.ray_tuple;
+    fn add(self: &'a Point, rhs: &'a Point) -> Self::Output {
+        let result = &self.ray_tuple + &rhs.ray_tuple;
         Vector::new(result.x, result.y, result.z)
     }
 }
 
-impl Sub<Point> for Point {
+impl<'a> Sub<&'a Point> for &'a Point {
     type Output = Vector;
-    fn sub(self, rhs: Point) -> Self::Output {
-        let result = self.ray_tuple - rhs.ray_tuple;
+    fn sub(self: &'a Point, rhs: &'a Point) -> Self::Output {
+        let result = &self.ray_tuple - &rhs.ray_tuple;
         Vector::new(result.x, result.y, result.z)
     }
 }
 
-impl Add<Point> for Vector {
+impl<'a> Add<&'a Point> for &'a Vector {
     type Output = Point;
-    fn add(self, rhs: Point) -> Self::Output {
-        let result = self.ray_tuple + rhs.ray_tuple;
+    fn add(self: &'a Vector, rhs: &'a Point) -> Self::Output {
+        let result = &self.ray_tuple + &rhs.ray_tuple;
         Point::new(result.x, result.y, result.z)
     }
 }
 
-impl Sub<Vector> for Point {
+impl<'a> Sub<&'a Vector> for &'a Point {
     type Output = Point;
-    fn sub(self, rhs: Vector) -> Self::Output {
-        let result = self.ray_tuple - rhs.ray_tuple;
+    fn sub(self: &'a Point, rhs: &'a Vector) -> Self::Output {
+        let result = &self.ray_tuple - &rhs.ray_tuple;
         Point::new(result.x, result.y, result.z)
     }
 }
 
-impl Add<Vector> for Vector {
+impl<'a> Add<&'a Vector> for &'a Vector {
     type Output = Vector;
-    fn add(self, rhs: Vector) -> Self::Output {
-        let result = self.ray_tuple + rhs.ray_tuple;
+    fn add(self: &'a Vector, rhs: &'a Vector) -> Self::Output {
+        let result = &self.ray_tuple + &rhs.ray_tuple;
         Vector::new(result.x, result.y, result.z)
     }
 }
@@ -97,7 +97,7 @@ impl Add<Vector> for Vector {
 impl<'a> Sub<&'a Vector> for &'a Vector {
     type Output = Vector;
     fn sub(self: &'a Vector, rhs: &'a Vector) -> Self::Output {
-        let result = self.ray_tuple - rhs.ray_tuple;
+        let result = &self.ray_tuple - &rhs.ray_tuple;
         Vector::new(result.x, result.y, result.z)
     }
 }
@@ -113,15 +113,15 @@ impl Neg for Vector {
 impl<'a> Mul<f64> for &'a Vector {
     type Output = Vector;
     fn mul(self: &'a Vector, rhs: f64) -> Self::Output {
-        let rt = self.ray_tuple * rhs;
+        let rt = &self.ray_tuple * rhs;
         Vector::new(rt.x, rt.y, rt.z)
     }
 }
 
-impl Div<f64> for Vector {
+impl<'a> Div<f64> for &'a Vector {
     type Output = Vector;
-    fn div(self, rhs: f64) -> Self::Output {
-        let rt = self.ray_tuple / rhs;
+    fn div(self: &'a Vector, rhs: f64) -> Self::Output {
+        let rt = &self.ray_tuple / rhs;
         Vector::new(rt.x, rt.y, rt.z)
     }
 }

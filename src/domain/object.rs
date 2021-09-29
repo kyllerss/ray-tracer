@@ -48,7 +48,7 @@ impl Sphere {
         }
         let localized_ray = ray.transform(&inv_sphere_transform.unwrap());
 
-        let sphere_to_ray = localized_ray.origin - self.origin;
+        let sphere_to_ray = &localized_ray.origin - &self.origin;
         let a: f64 = localized_ray
             .direction
             .dot_product(&localized_ray.direction);
@@ -70,7 +70,7 @@ impl Sphere {
         //let v = point - Sphere::ORIGIN;
         let mut st_inv = self.transformation.inverse().unwrap();
         let object_point = &st_inv * &point;
-        let object_normal = object_point - Sphere::ORIGIN;
+        let object_normal = &object_point - &Sphere::ORIGIN;
         let world_normal = &*st_inv.transpose() * &object_normal;
 
         world_normal.normalize()

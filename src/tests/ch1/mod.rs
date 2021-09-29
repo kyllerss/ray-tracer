@@ -45,12 +45,12 @@ mod tests {
         let v = Vector::new(-2.0, 3.0, 1.0);
 
         // add point to vector
-        let p1 = p + v;
+        let p1 = &p + &v;
         let expected = Point::new(1.0, 1.0, 6.0);
         assert_eq!(p1, expected);
 
         // test commutative property
-        let p2 = v + p;
+        let p2 = &v + &p;
         assert_eq!(p2, expected);
     }
 
@@ -59,7 +59,7 @@ mod tests {
         let p1 = Point::new(3.0, 2.0, 1.0);
         let p2 = Point::new(5.0, 6.0, 7.0);
 
-        let r = p1 - p2;
+        let r = &p1 - &p2;
         let exp = Vector::new(-2.0, -4.0, -6.0);
         assert_eq!(r, exp);
     }
@@ -69,7 +69,7 @@ mod tests {
         let p = Point::new(3.0, 2.0, 1.0);
         let v = Vector::new(5.0, 6.0, 7.0);
 
-        let r = p - v;
+        let r = &p - &v;
         let exp = Point::new(-2.0, -4.0, -6.0);
         assert_eq!(r, exp);
     }
@@ -118,7 +118,7 @@ mod tests {
         let v = Vector::new(1.0, -2.0, 3.0);
         let scalar = 2.0 as f64;
 
-        let r = v / scalar;
+        let r = &v / scalar;
         let exp = Vector::new(0.5, -1.0, 1.5);
 
         assert_eq!(r, exp);

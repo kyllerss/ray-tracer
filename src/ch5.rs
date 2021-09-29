@@ -36,7 +36,7 @@ pub fn run() -> Result<(), Error> {
             let x_wall_point = (x as f64 * pixel_size) - half;
             let y_wall_point = (y as f64 * pixel_size) - half;
             let wall_point = Point::new(x_wall_point, y_wall_point, wall_z);
-            let wall_pixel_vector = wall_point - ray_origin;
+            let wall_pixel_vector = &wall_point - &ray_origin;
 
             let ray = Ray::new(ray_origin, wall_pixel_vector);
             let intersections = sphere.intersect(&ray);
