@@ -49,9 +49,11 @@ impl Sphere {
         let localized_ray = ray.transform(&inv_sphere_transform.unwrap());
 
         let sphere_to_ray = localized_ray.origin - self.origin;
-        let a: f64 = localized_ray.direction.dot_product(localized_ray.direction);
-        let b: f64 = 2.0 * localized_ray.direction.dot_product(sphere_to_ray);
-        let c: f64 = sphere_to_ray.dot_product(sphere_to_ray) - 1.0;
+        let a: f64 = localized_ray
+            .direction
+            .dot_product(&localized_ray.direction);
+        let b: f64 = 2.0 * localized_ray.direction.dot_product(&sphere_to_ray);
+        let c: f64 = sphere_to_ray.dot_product(&sphere_to_ray) - 1.0;
         let discriminant: f64 = b.powi(2) - 4.0 * a * c;
 
         if discriminant < 0.0 {

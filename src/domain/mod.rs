@@ -200,14 +200,14 @@ impl Vector {
     }
 
     // calculates the dot product
-    pub fn dot_product(&self, v: Vector) -> f64 {
+    pub fn dot_product(&self, v: &Vector) -> f64 {
         self.ray_tuple.x * v.ray_tuple.x
             + self.ray_tuple.y * v.ray_tuple.y
             + self.ray_tuple.z * v.ray_tuple.z
     }
 
     // calculates cross product
-    pub fn cross_product(&self, v: Vector) -> Vector {
+    pub fn cross_product(&self, v: &Vector) -> Vector {
         let rt1 = self.ray_tuple;
         let rt2 = v.ray_tuple;
         let x = rt1.y * rt2.z - rt1.z * rt2.y;
@@ -229,6 +229,11 @@ impl Vector {
     // accessor
     pub fn z(&self) -> f64 {
         self.ray_tuple.z
+    }
+
+    // Reflects vector around a given normal
+    pub fn reflect(self: &Vector, normal: &Vector) -> Vector {
+        self - &(&(normal * 2_f64) * self.dot_product(normal))
     }
 }
 

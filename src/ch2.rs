@@ -12,7 +12,7 @@ pub fn run() -> Result<(), Error> {
         gravity: Vector::new(0.0, -0.1, 0.0),
         wind: Vector::new(-0.01, 0.0, 0.0),
         projectile: Point::new(0.0, 1.0, 0.0),
-        projectile_velocity: Vector::new(1.0, 1.8, 0.0) * 5.25,
+        projectile_velocity: &Vector::new(1.0, 1.8, 0.0) * 5.25,
         count: 0.0,
     };
     let projectile_color = Color::new(1.0, 0.0, 0.0);

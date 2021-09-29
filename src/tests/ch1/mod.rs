@@ -5,7 +5,6 @@ mod tests {
 
     #[test]
     fn test1_and_2_build_and_validate_type_point() {
-
         let _x = 1.1;
         let _y = -2.2;
         let _z = 3.3;
@@ -24,7 +23,6 @@ mod tests {
 
     #[test]
     fn test1_and_2_build_and_validate_type_vector() {
-
         let _x = 1.1;
         let _y = -2.2;
         let _z = 3.3;
@@ -43,8 +41,7 @@ mod tests {
 
     #[test]
     fn test3_adding_two_tuples() {
-
-        let p = Point::new(3.0,-2.0,5.0);
+        let p = Point::new(3.0, -2.0, 5.0);
         let v = Vector::new(-2.0, 3.0, 1.0);
 
         // add point to vector
@@ -82,7 +79,7 @@ mod tests {
         let v1 = Vector::new(3.0, 2.0, 1.0);
         let v2 = Vector::new(5.0, 6.0, 7.0);
 
-        let r = v1 - v2;
+        let r = &v1 - &v2;
         let exp = Vector::new(-2.0, -4.0, -6.0);
         assert_eq!(r, exp);
     }
@@ -98,19 +95,18 @@ mod tests {
 
     #[test]
     fn test8_multiply_by_scale() {
-
         // scalar
         let v1 = Vector::new(1.0, -2.0, 3.0);
         let scalar = 3.5 as f64;
 
-        let r = v1 * scalar;
+        let r = &v1 * scalar;
         let exp = Vector::new(3.5, -7.0, 10.5);
 
         assert_eq!(r, exp);
 
         // fraction
         let fraction = 0.5 as f64;
-        let r2 = v1 * fraction;
+        let r2 = &v1 * fraction;
         let exp2 = Vector::new(0.5, -1.0, 1.5);
 
         assert_eq!(r2, exp2);
@@ -118,7 +114,6 @@ mod tests {
 
     #[test]
     fn test9_divide_by_scalar() {
-
         // scalar
         let v = Vector::new(1.0, -2.0, 3.0);
         let scalar = 2.0 as f64;
@@ -131,7 +126,6 @@ mod tests {
 
     #[test]
     fn test10_compute_magnitude_of_vector() {
-
         let v = Vector::new(1.0, 0.0, 0.0);
         let m = v.magnitude();
         let exp = 1.0;
@@ -180,7 +174,7 @@ mod tests {
     fn test12_dot_product() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(2.0, 3.0, 4.0);
-        let dot = v1.dot_product(v2);
+        let dot = v1.dot_product(&v2);
         let exp = 20.0;
         assert_eq!(dot, exp);
     }
@@ -190,11 +184,11 @@ mod tests {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(2.0, 3.0, 4.0);
 
-        let cross_product = v1.cross_product(v2);
+        let cross_product = v1.cross_product(&v2);
         let exp = Vector::new(-1.0, 2.0, -1.0);
         assert_eq!(cross_product, exp);
 
-        let cross_product = v2.cross_product(v1);
+        let cross_product = v2.cross_product(&v1);
         let exp = Vector::new(1.0, -2.0, 1.0);
         assert_eq!(cross_product, exp);
     }
