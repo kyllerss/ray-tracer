@@ -74,7 +74,7 @@ fn test4_reflecting_vector_at_45_deg() {
 
 #[test]
 fn test5_reflecting_vector_at_slanted_surface() {
-    let v = Vector::new(1.0, -1.0, 0.0);
+    let v = Vector::new(0.0, -1.0, 0.0);
     let n = Vector::new(2_f64.sqrt() / 2.0, 2_f64.sqrt() / 2.0, 0.0);
     let r = v.reflect(&n);
     let exp_r = Vector::new(1.0, 0.0, 0.0);
