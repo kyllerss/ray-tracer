@@ -1,4 +1,5 @@
 use crate::domain::intersection::Intersection;
+use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::ray::Ray;
 use crate::domain::{Point, RayTuple, Vector};
@@ -8,6 +9,7 @@ pub struct Sphere {
     pub origin: Point,
     //radius: f64,
     pub transformation: Matrix,
+    pub material: Material,
 }
 
 // Unit measure for shapes.
@@ -29,14 +31,23 @@ impl Sphere {
             origin: Sphere::ORIGIN,
             //radius: UNIT,
             transformation: crate::domain::matrix::IDENTITY.clone(),
+            material: Material::new(),
         }
     }
 
     // constructor w/ initial transformation matrix
     pub fn new(transformation: Matrix) -> Sphere {
         Sphere {
-            origin: Sphere::ORIGIN,
             transformation: transformation,
+            ..Sphere::new_unit()
+        }
+    }
+
+    // constructor w/ material argument
+    pub fn new_material(material: Material) -> Sphere {
+        Sphere {
+            material: material,
+            ..Sphere::new_unit()
         }
     }
 

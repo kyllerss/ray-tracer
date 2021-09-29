@@ -1,3 +1,6 @@
+use crate::domain::color::Color;
+use crate::domain::light::Light;
+use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::object::Sphere;
 use crate::domain::{Point, Vector};
@@ -80,4 +83,49 @@ fn test5_reflecting_vector_at_slanted_surface() {
     let exp_r = Vector::new(1.0, 0.0, 0.0);
 
     assert_eq!(r, exp_r);
+}
+
+#[test]
+fn test6_point_light_has_position_and_intensity() {
+    let i_exp = Color::new(1.0, 1.0, 1.0);
+    let p_exp = Point::new(0.0, 0.0, 0.0);
+    let light = Light::new(p_exp.clone(), i_exp.clone());
+    assert_eq!(light.position, p_exp);
+    assert_eq!(light.intensity, i_exp);
+}
+
+#[test]
+fn test7_default_material() {
+    let m = Material::new();
+    let color_exp = Color::new(1.0, 1.0, 1.0);
+    let ambient_exp = 0.1;
+    let diffuse_exp = 0.9;
+    let specular_exp = 0.9;
+    let shininess_exp = 200.0;
+    assert_eq!(m.color, color_exp);
+    assert_eq!(m.ambient, ambient_exp);
+    assert_eq!(m.diffuse, diffuse_exp);
+    assert_eq!(m.specular, specular_exp);
+    assert_eq!(m.shininess, shininess_exp);
+}
+
+#[test]
+fn test8_sphere_has_material() {
+    // default material
+    let s = Sphere::new_unit();
+    let m_exp = Material::new();
+
+    assert_eq!(s.material, m_exp);
+
+    // can be assigned material
+    let c = Color::new(0.5, 0.5, 0.5);
+    let m = Material::new_full(
+        c,
+        1.0,
+        Material::DEFAULT_DIFFUSE,
+        Material::DEFAULT_SPECULAR,
+        Material::DEFAULT_SHININESS,
+    );
+    let s = Sphere::new_material(m);
+    assert_eq!(s.material.ambient, 1.0);
 }
