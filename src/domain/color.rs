@@ -8,6 +8,12 @@ pub struct Color {
     pub blue: f32,
 }
 
+pub static BLACK: Color = Color {
+    red: 0.0,
+    green: 0.0,
+    blue: 0.0,
+};
+
 impl Color {
     // constructor
     pub fn new(red: f32, green: f32, blue: f32) -> Color {
@@ -17,7 +23,7 @@ impl Color {
 
 impl Default for Color {
     fn default() -> Color {
-        Color::new(0.0, 0.0, 0.0)
+        crate::domain::color::BLACK.clone()
     }
 }
 
@@ -29,9 +35,9 @@ impl PartialEq for Color {
     }
 }
 
-impl Add for Color {
+impl<'a> Add for &'a Color {
     type Output = Color;
-    fn add(self, rhs: Self) -> Self::Output {
+    fn add(self: &'a Color, rhs: &'a Color) -> Self::Output {
         let r = self.red + rhs.red;
         let g = self.green + rhs.green;
         let b = self.blue + rhs.blue;
@@ -39,9 +45,9 @@ impl Add for Color {
     }
 }
 
-impl Sub for Color {
+impl<'a> Sub for &'a Color {
     type Output = Color;
-    fn sub(self, rhs: Self) -> Self::Output {
+    fn sub(self: &'a Color, rhs: &'a Color) -> Self::Output {
         let r = self.red - rhs.red;
         let g = self.green - rhs.green;
         let b = self.blue - rhs.blue;
@@ -49,9 +55,9 @@ impl Sub for Color {
     }
 }
 
-impl Mul<Color> for Color {
+impl<'a> Mul<&'a Color> for &'a Color {
     type Output = Color;
-    fn mul(self, rhs: Color) -> Self::Output {
+    fn mul(self: &'a Color, rhs: &'a Color) -> Self::Output {
         let r = self.red * rhs.red;
         let g = self.green * rhs.green;
         let b = self.blue * rhs.blue;
@@ -59,9 +65,9 @@ impl Mul<Color> for Color {
     }
 }
 
-impl Mul<f32> for Color {
+impl<'a> Mul<f32> for &'a Color {
     type Output = Color;
-    fn mul(self, rhs: f32) -> Self::Output {
+    fn mul(self: &'a Color, rhs: f32) -> Self::Output {
         let r = self.red * rhs;
         let g = self.green * rhs;
         let b = self.blue * rhs;

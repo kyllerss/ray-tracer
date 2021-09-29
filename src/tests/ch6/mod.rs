@@ -129,3 +129,56 @@ fn test8_sphere_has_material() {
     let s = Sphere::new_material(m);
     assert_eq!(s.material.ambient, 1.0);
 }
+
+fn generate_test_harness_lighting(
+    eyev_y: f64,
+    eyev_z: f64,
+    lightpoint_y: f64,
+    lightpoint_z: f64,
+) -> Color {
+    let m = Material::new();
+    let position = Point::new(0.0, 0.0, 0.0);
+    let eye_v = Vector::new(0.0, eyev_y, eyev_z);
+    let normal_v = Vector::new(0.0, 0.0, -1.0);
+    let light = Light::new(
+        Point::new(0.0, lightpoint_y, lightpoint_z),
+        Color::new(1.0, 1.0, 1.0),
+    );
+    Light::lighting(&m, &light, &position, &eye_v, &normal_v)
+}
+
+#[test]
+fn test9_lighting_eye_between_light_and_surface() {
+    let result = generate_test_harness_lighting(0.0, -1.0, 0.0, -10.0);
+    let exp = Color::new(1.9, 1.9, 1.9);
+    assert_eq!(result, exp);
+}
+
+#[test]
+fn test10_lighting_eye_between_light_and_surface_offset_by_45() {
+    let result = generate_test_harness_lighting(2_f64.sqrt() / 2.0, 2_f64.sqrt() / 2.0, 0.0, -10.0);
+    let exp = Color::new(1.0, 1.0, 1.0);
+    assert_eq!(result, exp);
+}
+
+#[test]
+fn test11_lighting_eye_opposite_surface_light_offset_45() {
+    let result = generate_test_harness_lighting(0.0, -1.0, 10.0, -10.0);
+    let exp = Color::new(0.7364, 0.7364, 0.7364);
+    assert_eq!(result, exp);
+}
+
+#[test]
+fn test12_lighting_with_eye_in_path_of_reflection_vector() {
+    let result =
+        generate_test_harness_lighting(-2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0, 10.0, -10.0);
+    let exp = Color::new(1.6364, 1.6364, 1.6364);
+    assert_eq!(result, exp);
+}
+
+#[test]
+fn test13_lighting_with_light_behind_surface() {
+    let result = generate_test_harness_lighting(0.0, -1.0, 0.0, 10.0);
+    let exp = Color::new(0.1, 0.1, 0.1);
+    assert_eq!(result, exp);
+}
