@@ -14,6 +14,12 @@ pub static BLACK: Color = Color {
     blue: 0.0,
 };
 
+pub static WHITE: Color = Color {
+    red: 1.0,
+    green: 1.0,
+    blue: 1.0,
+};
+
 impl Color {
     // constructor
     pub fn new(red: f32, green: f32, blue: f32) -> Color {
