@@ -7,6 +7,7 @@ pub(crate) mod matrix;
 pub(crate) mod object;
 mod operations;
 pub(crate) mod ray;
+pub(crate) mod world;
 
 use num::{Float, NumCast};
 

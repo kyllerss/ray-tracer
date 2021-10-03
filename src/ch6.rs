@@ -2,7 +2,6 @@ use crate::domain::canvas::Canvas;
 use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
-use crate::domain::matrix::Matrix;
 use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
 use crate::domain::Point;
@@ -47,7 +46,7 @@ pub fn run() -> Result<(), Error> {
             let wall_pixel_vector = (&wall_point - &ray_origin).normalize();
 
             let ray = Ray::new(ray_origin, wall_pixel_vector);
-            let mut intersections = sphere.intersect(&ray);
+            let intersections = sphere.intersect(&ray);
 
             if !intersections.is_empty() {
                 let render_point = Point::new(x as f64, y as f64, wall_z);
