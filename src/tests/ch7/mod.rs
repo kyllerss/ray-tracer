@@ -1,10 +1,12 @@
 use crate::domain::color::Color;
+use crate::domain::intersection::{Intersection, Intersections};
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::object::Sphere;
+use crate::domain::ray::Ray;
 use crate::domain::world::World;
-use crate::domain::Point;
+use crate::domain::{Point, Vector};
 
 #[test]
 fn test1_world_can_be_constructed() {
@@ -66,4 +68,17 @@ fn test2_validate_default_world() {
     let t2 = Matrix::new_scaling(0.5, 0.5, 0.5);
     let s2_exp = Sphere::new(t2);
     assert!(w.objects.contains(&s2_exp));
+}
+
+#[test]
+fn test3_intersect_world_with_ray() {
+    let w = build_test_world();
+    let r = Ray::new(Point::new(0.0, 0.0, -0.5), Vector::new(0.0, 0.0, 1.0));
+    let xs: Intersections = w.intersect(r);
+
+    assert!(xs.len(), 4);
+    assert_eq!(xs.hit().unwrap().distance, 4.0);
+    assert_eq!(xs.hit().unwrap().distance, 4.5);
+    assert_eq!(xs.hit().unwrap().distance, 5.5);
+    assert_eq!(xs.hit().unwrap().distance, 6.0);
 }
