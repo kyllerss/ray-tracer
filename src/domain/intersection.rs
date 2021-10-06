@@ -74,6 +74,12 @@ impl<'a> Intersections<'a> {
         self.intersections.push(intersection);
     }
 
+    // adds all intersections into data structure
+    pub fn push_all(&mut self, ints: Vec<Intersection<'a>>) {
+        let mut b = BinaryHeap::from(ints);
+        self.intersections.append(&mut b);
+    }
+
     // returns number of intersections
     pub fn len(&self) -> usize {
         self.intersections.len()

@@ -1,4 +1,4 @@
-use crate::domain::intersection::{Intersection, Intersections};
+use crate::domain::intersection::Intersections;
 use crate::domain::light::Light;
 use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
@@ -24,6 +24,10 @@ impl World {
 
     // Returns all intersections for given ray in world's objects.
     pub fn intersect(&self, ray: Ray) -> Intersections {
-        let mut ints = self.objects.iter().for_each(Intersection::)
+        let mut r = Intersections::new();
+        self.objects
+            .iter()
+            .for_each(|s| r.push_all(s.intersect(&ray)));
+        r
     }
 }

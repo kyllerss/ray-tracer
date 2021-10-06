@@ -1,5 +1,5 @@
 use crate::domain::color::Color;
-use crate::domain::intersection::{Intersection, Intersections};
+use crate::domain::intersection::Intersections;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
@@ -74,9 +74,9 @@ fn test2_validate_default_world() {
 fn test3_intersect_world_with_ray() {
     let w = build_test_world();
     let r = Ray::new(Point::new(0.0, 0.0, -0.5), Vector::new(0.0, 0.0, 1.0));
-    let xs: Intersections = w.intersect(r);
+    let mut xs: Intersections = w.intersect(r);
 
-    assert!(xs.len(), 4);
+    assert_eq!(xs.len(), 4);
     assert_eq!(xs.hit().unwrap().distance, 4.0);
     assert_eq!(xs.hit().unwrap().distance, 4.5);
     assert_eq!(xs.hit().unwrap().distance, 5.5);
