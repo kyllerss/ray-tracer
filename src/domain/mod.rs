@@ -93,6 +93,15 @@ pub struct Vector {
 impl Point {
     const W: f64 = 1.0;
 
+    pub const ORIGIN: Point = Point {
+        ray_tuple: RayTuple {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+        },
+    };
+
     // constructor
     pub fn new(x: f64, y: f64, z: f64) -> Point {
         Point {

@@ -114,3 +114,29 @@ fn test5_prepare_computations_when_hit_outside_and_inside() {
     assert_eq!(comps.inside, true);
     assert_eq!(comps.normal_v, Vector::new(0.0, 0.0, -1.0));
 }
+
+#[test]
+fn test6_shading_an_intersection_inside_and_outside() {
+    // outside
+    let mut w = build_test_world();
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let shape: &Sphere = w.objects.first().unwrap();
+    let i = Intersection::new(4.0, shape);
+    let comps = Computations::prepare_computations(&i, &r);
+    let c: Color = w.shade_hit(&comps);
+    let c_exp = Color::new(0.38066, 0.47583, 0.2855);
+    assert_eq!(c, c_exp);
+
+    // inside
+    w.light_source = Some(Light::new(
+        Point::new(0.0, 0.25, 0.0),
+        crate::domain::color::WHITE.clone(),
+    ));
+    let r = Ray::new(Point::ORIGIN, Vector::new(0.0, 0.0, 1.0));
+    let shape = w.objects.get(1).unwrap();
+    let i = Intersection::new(0.5, shape);
+    let comps = Computations::prepare_computations(&i, &r);
+    let c = w.shade_hit(&comps);
+    let c_exp = Color::new(0.90498, 0.90498, 0.90498);
+    assert_eq!(c, c_exp);
+}

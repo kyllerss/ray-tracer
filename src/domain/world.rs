@@ -1,4 +1,5 @@
-use crate::domain::intersection::Intersections;
+use crate::domain::color::Color;
+use crate::domain::intersection::{Computations, Intersections};
 use crate::domain::light::Light;
 use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
@@ -29,5 +30,16 @@ impl World {
             .iter()
             .for_each(|s| r.push_all(s.intersect(&ray)));
         r
+    }
+
+    // Calculates shade hit for the given computations
+    pub fn shade_hit(&self, comp: &Computations) -> Color {
+        Light::lighting(
+            &comp.object.material,
+            self.light_source.as_ref().unwrap(),
+            &comp.point,
+            &comp.eye_v,
+            &comp.normal_v,
+        )
     }
 }
