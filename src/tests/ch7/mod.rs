@@ -1,11 +1,11 @@
 use crate::domain::color::Color;
-use crate::domain::intersection::{Intersection, Intersections};
+use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
-use crate::domain::world::{Computations, World};
+use crate::domain::world::World;
 use crate::domain::{Point, Vector};
 
 #[test]
@@ -84,7 +84,7 @@ fn test3_intersect_world_with_ray() {
 }
 
 #[test]
-fn test_4_precomputing_state_of_intersection() {
+fn test4_precomputing_state_of_intersection() {
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
     let shape = Sphere::new_unit();
     let i = Intersection::new(4.0, &shape);
@@ -93,5 +93,24 @@ fn test_4_precomputing_state_of_intersection() {
     assert_eq!(comps.object, i.object);
     assert_eq!(comps.point, Point::new(0.0, 0.0, -1.0));
     assert_eq!(comps.eye_v, Vector::new(0.0, 0.0, -1.0));
+    assert_eq!(comps.normal_v, Vector::new(0.0, 0.0, -1.0));
+}
+
+#[test]
+fn test5_prepare_computations_when_hit_outside_and_inside() {
+    // outside hit
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let shape = Sphere::new_unit();
+    let i = Intersection::new(4.0, &shape);
+    let comps = Computations::prepare_computations(&i, &r);
+    assert_eq!(comps.inside, false);
+
+    // inside hit
+    let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+    let i = Intersection::new(1.0, &shape);
+    let comps = Computations::prepare_computations(&i, &r);
+    assert_eq!(comps.point, Point::new(0.0, 0.0, 1.0));
+    assert_eq!(comps.eye_v, Vector::new(0.0, 0.0, -1.0));
+    assert_eq!(comps.inside, true);
     assert_eq!(comps.normal_v, Vector::new(0.0, 0.0, -1.0));
 }

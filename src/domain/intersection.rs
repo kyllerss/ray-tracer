@@ -1,4 +1,6 @@
 use crate::domain::object::Sphere;
+use crate::domain::ray::Ray;
+use crate::domain::{Point, Vector};
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
@@ -104,5 +106,52 @@ impl<'a> Intersections<'a> {
         }
 
         None
+    }
+}
+
+pub struct Computations<'a> {
+    pub distance: f64,
+    pub object: &'a Sphere,
+    pub point: Point,
+    pub eye_v: Vector,
+    pub normal_v: Vector,
+    pub inside: bool,
+}
+
+impl<'a> Computations<'a> {
+    // builder
+    pub fn new(
+        distance: f64,
+        object: &'a Sphere,
+        point: Point,
+        eye_v: Vector,
+        normal_v: Vector,
+        inside: bool,
+    ) -> Computations {
+        Computations {
+            distance,
+            object,
+            point,
+            eye_v,
+            normal_v,
+            inside,
+        }
+    }
+
+    // Utility method for pre-computing reusable, frequently-used computations
+    pub fn prepare_computations(i: &'a Intersection, r: &'a Ray) -> Computations<'a> {
+        let point = r.position(i.distance);
+        let eye_v = -r.direction;
+        let mut normal_v = i.object.normal_at(&point);
+
+        let inside;
+        if normal_v.dot_product(&eye_v) < 0.0 {
+            inside = true;
+            normal_v = -normal_v;
+        } else {
+            inside = false;
+        }
+
+        Computations::new(i.distance, i.object, point, eye_v, normal_v, inside)
     }
 }
