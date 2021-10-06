@@ -76,6 +76,9 @@ impl<'a> Intersections<'a> {
 
     // adds all intersections into data structure
     pub fn push_all(&mut self, ints: Vec<Intersection<'a>>) {
+        if ints.is_empty() {
+            return ();
+        }
         let mut b = BinaryHeap::from(ints);
         self.intersections.append(&mut b);
     }

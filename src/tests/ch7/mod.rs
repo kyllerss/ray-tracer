@@ -73,7 +73,7 @@ fn test2_validate_default_world() {
 #[test]
 fn test3_intersect_world_with_ray() {
     let w = build_test_world();
-    let r = Ray::new(Point::new(0.0, 0.0, -0.5), Vector::new(0.0, 0.0, 1.0));
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
     let mut xs: Intersections = w.intersect(r);
 
     assert_eq!(xs.len(), 4);
