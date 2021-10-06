@@ -53,8 +53,8 @@ pub fn run() -> Result<(), Error> {
 
                 let intersection = intersections.first().unwrap();
                 let object = intersection.object;
-                let point = ray.position(intersection.distance as f32);
-                let normal = object.normal_at(point);
+                let point = ray.position(intersection.distance);
+                let normal = object.normal_at(&point);
                 let eye = -ray.direction;
 
                 let intersection_color =
