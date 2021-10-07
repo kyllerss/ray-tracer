@@ -33,8 +33,8 @@ impl Light {
         let diffuse: Color;
         let specular: Color;
         if light_dot_normal < 0.0 {
-            diffuse = crate::domain::color::BLACK.clone();
-            specular = crate::domain::color::BLACK.clone();
+            diffuse = Color::BLACK;
+            specular = Color::BLACK;
         } else {
             // calculate diffuse
             diffuse = &effective_color * (material.diffuse as f32 * light_dot_normal as f32);
@@ -44,7 +44,7 @@ impl Light {
             let reflect_dot_eye = reflect_v.dot_product(eye_v);
 
             if reflect_dot_eye <= 0.0 {
-                specular = crate::domain::color::BLACK.clone();
+                specular = Color::BLACK;
             } else {
                 let factor = reflect_dot_eye.powf(material.shininess);
                 specular = &light.intensity * (material.specular as f32 * factor as f32);

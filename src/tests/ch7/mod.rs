@@ -74,7 +74,7 @@ fn test2_validate_default_world() {
 fn test3_intersect_world_with_ray() {
     let w = build_test_world();
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let mut xs: Intersections = w.intersect(r);
+    let mut xs: Intersections = w.intersect(&r);
 
     assert_eq!(xs.len(), 4);
     assert_eq!(xs.hit().unwrap().distance, 4.0);
@@ -128,15 +128,30 @@ fn test6_shading_an_intersection_inside_and_outside() {
     assert_eq!(c, c_exp);
 
     // inside
-    w.light_source = Some(Light::new(
-        Point::new(0.0, 0.25, 0.0),
-        crate::domain::color::WHITE.clone(),
-    ));
+    w.light_source = Some(Light::new(Point::new(0.0, 0.25, 0.0), Color::WHITE));
     let r = Ray::new(Point::ORIGIN, Vector::new(0.0, 0.0, 1.0));
     let shape = w.objects.get(1).unwrap();
     let i = Intersection::new(0.5, shape);
     let comps = Computations::prepare_computations(&i, &r);
     let c = w.shade_hit(&comps);
     let c_exp = Color::new(0.90498, 0.90498, 0.90498);
+    assert_eq!(c, c_exp);
+}
+
+#[test]
+fn test7_color_when_ray_misses() {
+    let w = build_test_world();
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0));
+    let c = w.color_at(&r);
+    let c_exp = Color::BLACK;
+    assert_eq!(c, c_exp);
+}
+
+#[test]
+fn test8_color_when_ray_hits() {
+    let w = build_test_world();
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let c = w.color_at(&r);
+    let c_exp = Color::new(0.38066, 0.47583, 0.2855);
     assert_eq!(c, c_exp);
 }

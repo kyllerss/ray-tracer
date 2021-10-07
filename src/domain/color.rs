@@ -8,19 +8,18 @@ pub struct Color {
     pub blue: f32,
 }
 
-pub static BLACK: Color = Color {
-    red: 0.0,
-    green: 0.0,
-    blue: 0.0,
-};
-
-pub static WHITE: Color = Color {
-    red: 1.0,
-    green: 1.0,
-    blue: 1.0,
-};
-
 impl Color {
+    pub const BLACK: Color = Color {
+        red: 0.0,
+        green: 0.0,
+        blue: 0.0,
+    };
+
+    pub const WHITE: Color = Color {
+        red: 1.0,
+        green: 1.0,
+        blue: 1.0,
+    };
     // constructor
     pub fn new(red: f32, green: f32, blue: f32) -> Color {
         Color { red, green, blue }
@@ -29,7 +28,7 @@ impl Color {
 
 impl Default for Color {
     fn default() -> Color {
-        crate::domain::color::BLACK.clone()
+        Color::BLACK
     }
 }
 

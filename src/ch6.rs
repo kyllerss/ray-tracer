@@ -23,7 +23,7 @@ pub fn run() -> Result<(), Error> {
     sphere.material = material;
 
     let light_position = Point::new(-10.0, 10.0, -10.0);
-    let light_color = crate::domain::color::WHITE.clone();
+    let light_color = Color::WHITE;
     let light = Light::new(light_position, light_color);
 
     let canvas_length: usize = 400;

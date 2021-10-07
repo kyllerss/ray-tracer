@@ -90,9 +90,9 @@ impl<'a> Intersections<'a> {
         self.intersections.len()
     }
 
-    // // returns hit from all intersections
-    // pub fn hit(&self) -> Option<&Intersection<'a>> {
-    //     self.intersections.peek()
+    // // determines if there is a hit
+    // pub fn is_empty(&self) -> bool {
+    //     self.len() == 0
     // }
 
     // pops minimal item from heap

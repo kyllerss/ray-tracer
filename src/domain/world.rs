@@ -24,12 +24,12 @@ impl World {
     }
 
     // Returns all intersections for given ray in world's objects.
-    pub fn intersect(&self, ray: Ray) -> Intersections {
-        let mut r = Intersections::new();
+    pub fn intersect(&self, ray: &Ray) -> Intersections {
+        let mut ints = Intersections::new();
         self.objects
             .iter()
-            .for_each(|s| r.push_all(s.intersect(&ray)));
-        r
+            .for_each(|s| ints.push_all(s.intersect(&ray)));
+        ints
     }
 
     // Calculates shade hit for the given computations
@@ -41,5 +41,22 @@ impl World {
             &comp.eye_v,
             &comp.normal_v,
         )
+    }
+
+    // calculates color at a given point
+    pub fn color_at(&self, r: &Ray) -> Color {
+        // find intersections
+        let mut ints = self.intersect(r);
+
+        let result: Color;
+
+        if let Some(intersection) = ints.hit() {
+            let comps = Computations::prepare_computations(&intersection, r);
+            result = self.shade_hit(&comps);
+        } else {
+            result = Color::BLACK;
+        }
+
+        result
     }
 }
