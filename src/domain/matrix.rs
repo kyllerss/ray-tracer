@@ -92,6 +92,21 @@ impl Matrix {
         Matrix::new(4, 4, contents)
     }
 
+    // view transformation
+    pub fn new_view_transformation(from: &Point, to: &Point, up: &Vector) -> Matrix {
+        let forward = (to - from).normalize();
+        let upn = up.normalize();
+        let left = forward.cross_product(&upn);
+        let true_up = left.cross_product(&forward);
+
+        let contents: Vec<f64> = vec![ left.x()    , left.y()    , left.z()    , 0.0,
+                                       true_up.x() , true_up.y() , true_up.z() , 0.0,
+                                       -forward.x(), -forward.y(), -forward.z(), 0.0,
+                                       0.0         , 0.0         , 0.0         , 1.0];
+        let orientation = Matrix::new(4, 4, contents);
+        &orientation * &Matrix::new_translation(-from.x(), -from.y(), -from.z())
+    }
+
     // transposes a matrix
     pub fn transpose(&mut self) -> &mut Self {
         'outer: for row in 0..self.height {

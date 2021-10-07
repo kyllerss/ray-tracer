@@ -166,3 +166,51 @@ fn test9_color_intersection_behind_ray() {
     let c_exp = w.objects[1].material.color;
     assert_eq!(c, c_exp);
 }
+
+#[test]
+fn test10_view_transformation_matrix_for_default_orientation() {
+    let from = Point::new(0.0, 0.0, 0.0);
+    let to = Point::new(0.0, 0.0, -1.0);
+    let up = Vector::new(0.0, 1.0, 0.0);
+    let t = Matrix::new_view_transformation(&from, &to, &up);
+    let t_exp = crate::domain::matrix::IDENTITY.clone();
+    assert_eq!(t, t_exp);
+}
+
+#[test]
+fn test11_view_transformation_matrix_positive_z_direction() {
+    let from = Point::new(0.0, 0.0, 0.0);
+    let to = Point::new(0.0, 0.0, 1.0);
+    let up = Vector::new(0.0, 1.0, 0.0);
+    let t = Matrix::new_view_transformation(&from, &to, &up);
+    let t_exp = Matrix::new_scaling(-1.0, 1.0, -1.0);
+    assert_eq!(t, t_exp);
+}
+
+#[test]
+fn test12_view_transformation_moves_world() {
+    let from = Point::new(0.0, 0.0, 8.0);
+    let to = Point::new(0.0, 0.0, 0.0);
+    let up = Vector::new(0.0, 1.0, 0.0);
+    let t = Matrix::new_view_transformation(&from, &to, &up);
+    let t_exp = Matrix::new_translation(0.0, 0.0, -8.0);
+    assert_eq!(t, t_exp);
+}
+
+#[test]
+#[rustfmt::skip::macros(vec)]
+fn test13_view_transformation_arbitrary() {
+    let from = Point::new(1.0, 3.0, 2.0);
+    let to = Point::new(4.0, -2.0, 8.0);
+    let up = Vector::new(1.0, 1.0, 0.0);
+    let t = Matrix::new_view_transformation(&from, &to, &up);
+    let t_exp = Matrix::new(
+        4,
+        4,
+        vec![-0.50709, 0.50709, 0.67612, -2.36643,
+             0.76772, 0.60609, 0.12122, -2.82843,
+             -0.35857, 0.59761, -0.71714, 0.0,
+             0.0, 0.0, 0.0, 1.0],
+    );
+    assert_eq!(t, t_exp);
+}
