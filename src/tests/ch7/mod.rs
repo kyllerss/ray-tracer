@@ -239,3 +239,28 @@ fn test15_pixel_size_for_canvas() {
     let c = Camera::new(125, 200, PI / 2.0);
     assert!(crate::domain::epsilon_eq(c.pixel_size, 0.01));
 }
+
+#[test]
+fn test16_constructing_ray_through_camera_canvas() {
+    // ray through center of canvas
+    let c = Camera::new(201, 101, PI / 2.0);
+    let r = c.ray_for_pixel(100, 50);
+    assert_eq!(r.origin, Point::ORIGIN);
+    assert_eq!(r.direction, Vector::new(0.0, 0.0, -1.0));
+
+    // ray through corner of canvas
+    let c = Camera::new(201, 101, PI / 2.0);
+    let r = c.ray_for_pixel(0, 0);
+    assert_eq!(r.origin, Point::new(0.0, 0.0, 0.0));
+    assert_eq!(r.direction, Vector::new(0.66519, 0.33259, -0.66851));
+
+    // ray when camera is transformed
+    let mut c = Camera::new(201, 101, PI / 2.0);
+    c.transform = &Matrix::new_rotation_y(PI / 4.0) * &Matrix::new_translation(0.0, -2.0, 5.0);
+    let r = c.ray_for_pixel(100, 50);
+    assert_eq!(r.origin, Point::new(0.0, 2.0, -5.0));
+    assert_eq!(
+        r.direction,
+        Vector::new(2_f64.sqrt() / 2.0, 0.0, -2_f64.sqrt() / 2.0)
+    );
+}
