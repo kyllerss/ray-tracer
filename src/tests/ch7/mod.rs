@@ -1,3 +1,4 @@
+use crate::domain::camera::Camera;
 use crate::domain::color::Color;
 use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::light::Light;
@@ -7,6 +8,7 @@ use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
+use std::f64::consts::PI;
 
 #[test]
 fn test1_world_can_be_constructed() {
@@ -213,4 +215,27 @@ fn test13_view_transformation_arbitrary() {
              0.0, 0.0, 0.0, 1.0],
     );
     assert_eq!(t, t_exp);
+}
+
+#[test]
+fn test14_construct_camera() {
+    let hsize = 160;
+    let vsize = 120;
+    let field_of_view = PI / 2.0;
+    let c = Camera::new(hsize, vsize, field_of_view);
+    assert_eq!(c.hsize, hsize);
+    assert_eq!(c.vsize, vsize);
+    assert_eq!(c.field_of_view, field_of_view);
+    assert_eq!(c.transform, crate::domain::matrix::IDENTITY.clone());
+}
+
+#[test]
+fn test15_pixel_size_for_canvas() {
+    // horizontal
+    let c = Camera::new(200, 125, PI / 2.0);
+    assert!(crate::domain::epsilon_eq(c.pixel_size, 0.01));
+
+    // vertical
+    let c = Camera::new(125, 200, PI / 2.0);
+    assert!(crate::domain::epsilon_eq(c.pixel_size, 0.01));
 }
