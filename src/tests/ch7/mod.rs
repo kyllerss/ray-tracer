@@ -264,3 +264,16 @@ fn test16_constructing_ray_through_camera_canvas() {
         Vector::new(2_f64.sqrt() / 2.0, 0.0, -2_f64.sqrt() / 2.0)
     );
 }
+
+#[test]
+fn test17_rendering_world_with_camera() {
+    let w = build_test_world();
+    let mut c = Camera::new(11, 11, PI / 2.0);
+    let from = Point::new(0.0, 0.0, -5.0);
+    let to = Point::ORIGIN;
+    let up = Vector::new(0.0, 1.0, 0.0);
+    c.transform = Matrix::new_view_transformation(&from, &to, &up);
+    let image = w.render(&c);
+    let color_exp = Color::new(0.38066, 0.47583, 0.2855);
+    assert_eq!(image[5][5], color_exp);
+}

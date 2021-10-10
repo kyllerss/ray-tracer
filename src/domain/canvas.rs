@@ -62,6 +62,11 @@ impl Canvas {
         //     }
         // }
     }
+
+    // returns pixel at given coordinates
+    pub fn pixel_at(&self, x: usize, y: usize) -> Color {
+        self[x][y]
+    }
 }
 
 impl Index<usize> for Canvas {

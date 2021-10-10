@@ -1,3 +1,5 @@
+use crate::domain::camera::Camera;
+use crate::domain::canvas::Canvas;
 use crate::domain::color::Color;
 use crate::domain::intersection::{Computations, Intersections};
 use crate::domain::light::Light;
@@ -58,5 +60,18 @@ impl World {
         }
 
         result
+    }
+
+    // renders world based on provided camera
+    pub fn render(&self, camera: &Camera) -> Canvas {
+        let mut canvas = Canvas::new(camera.hsize, camera.vsize, Color::BLACK);
+        for y in 0..camera.vsize {
+            for x in 0..camera.hsize {
+                let ray = camera.ray_for_pixel(x, y);
+                let color = self.color_at(&ray);
+                canvas[x][y] = color;
+            }
+        }
+        canvas
     }
 }
