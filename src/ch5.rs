@@ -44,7 +44,11 @@ pub fn run() -> Result<(), Error> {
             if !intersections.is_empty() {
                 // canvas[row][col] = Color::new(1.0, 0.0, 0.0);
                 let render_point = Point::new(x as f64, y as f64, wall_z);
-                canvas.render(render_point, Color::new(1.0, 0.0, 0.0));
+                canvas.render(
+                    render_point.x().round() as usize,
+                    render_point.y().round() as usize,
+                    Color::new(1.0, 0.0, 0.0),
+                );
             }
 
             // report progress

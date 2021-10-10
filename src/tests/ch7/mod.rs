@@ -273,7 +273,7 @@ fn test17_rendering_world_with_camera() {
     let to = Point::ORIGIN;
     let up = Vector::new(0.0, 1.0, 0.0);
     c.transform = Matrix::new_view_transformation(&from, &to, &up);
-    let image = w.render(&c);
+    let image = w.render(&c, &|itr, total_size| {});
     let color_exp = Color::new(0.38066, 0.47583, 0.2855);
     assert_eq!(image[5][5], color_exp);
 }

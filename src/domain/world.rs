@@ -63,13 +63,19 @@ impl World {
     }
 
     // renders world based on provided camera
-    pub fn render(&self, camera: &Camera) -> Canvas {
+    pub fn render(&self, camera: &Camera, logger: &dyn Fn(usize, usize) -> ()) -> Canvas {
+        let mut iteration = 0;
+        let total_size = camera.vsize * camera.hsize;
         let mut canvas = Canvas::new(camera.hsize, camera.vsize, Color::BLACK);
-        for y in 0..camera.vsize {
-            for x in 0..camera.hsize {
+        for y in 0..(camera.vsize - 1) {
+            for x in 0..(camera.hsize - 1) {
                 let ray = camera.ray_for_pixel(x, y);
                 let color = self.color_at(&ray);
-                canvas[x][y] = color;
+                canvas.render(x, y, color);
+
+                // log iteration
+                iteration += 1;
+                logger(iteration, total_size);
             }
         }
         canvas

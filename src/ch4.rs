@@ -27,7 +27,11 @@ pub fn run() -> Result<(), Error> {
         // Fades to black to help visualize order of render
         let color_comp = 1.0 - (hour as f32 * 1.0 / 12.0);
         let c = Color::new(color_comp, color_comp, color_comp);
-        canvas.render(hour_point, c);
+        canvas.render(
+            hour_point.x().round() as usize,
+            hour_point.y().round() as usize,
+            c,
+        );
     }
 
     canvas.invert_y();

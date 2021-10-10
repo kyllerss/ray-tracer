@@ -1,11 +1,9 @@
 use crate::domain::camera::Camera;
-use crate::domain::canvas::Canvas;
 use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::object::Sphere;
-use crate::domain::ray::Ray;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
 use std::f64::consts::PI;
@@ -26,7 +24,7 @@ pub fn run() -> Result<(), Error> {
 
     // left wall
     let mut left_wall = Sphere::new_unit();
-    left_wall.transformation = &(&(&Matrix::new_translation(0.0, 0.0, 0.5)
+    left_wall.transformation = &(&(&Matrix::new_translation(0.0, 0.0, 5.0)
         * &Matrix::new_rotation_y(-PI / 4.0))
         * &Matrix::new_rotation_x(PI / 2.0))
         * &Matrix::new_scaling(10.0, 0.01, 10.0);
@@ -34,7 +32,7 @@ pub fn run() -> Result<(), Error> {
 
     // right wall
     let mut right_wall = Sphere::new_unit();
-    right_wall.transformation = &(&(&Matrix::new_translation(0.0, 0.0, 0.5)
+    right_wall.transformation = &(&(&Matrix::new_translation(0.0, 0.0, 5.0)
         * &Matrix::new_rotation_y(PI / 4.0))
         * &Matrix::new_rotation_x(PI / 2.0))
         * &Matrix::new_scaling(10.0, 0.01, 10.0);
@@ -84,19 +82,30 @@ pub fn run() -> Result<(), Error> {
         .append(vec![floor, left_wall, right_wall, middle, left, right].as_mut());
 
     // camera
-    let mut camera = Camera::new(100, 50, PI / 3.0);
+    let scale = 8;
+    let camera_width = 100 * scale;
+    let camera_height = 50 * scale;
+    let mut camera = Camera::new(camera_width, camera_height, PI / 3.0);
     camera.transform = Matrix::new_view_transformation(
         &Point::new(0.0, 1.5, -5.0),
         &Point::new(0.0, 1.0, 0.0),
         &Vector::new(0.0, 1.0, 0.0),
     );
 
-    // canvas
-    let mut canvas = world.render(&camera);
+    println!("Progress...");
+    println!("|----------|");
+    print!(" ");
 
+    // canvas
+    let mut canvas = world.render(&camera, &|itr: usize, total_size: usize| {
+        if ((itr as f64 / total_size as f64) * 100.0) % 10.0 == 0.0 {
+            print!("#");
+            let _ = stdout().flush();
+        }
+    });
+
+    //canvas.invert_y();
     println!("{}", "");
     println!("Rendering to file...");
-
-    canvas.invert_y();
     crate::utils::write_imagefile("spheres_scene.ppm", "/tmp", &canvas)
 }

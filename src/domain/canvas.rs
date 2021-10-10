@@ -2,7 +2,6 @@
 use std::ops::{Index, IndexMut};
 
 use crate::domain::color::Color;
-use crate::domain::Point;
 
 #[derive(Clone, Debug)]
 pub struct Canvas {
@@ -25,9 +24,9 @@ impl Canvas {
     }
 
     // renders a given point with a given color applying all necessary coord translations
-    pub fn render(&mut self, point: Point, color: Color) {
-        let column = point.x().round() as usize;
-        let row = point.y().round() as usize;
+    pub fn render(&mut self, x: usize, y: usize, color: Color) {
+        let column = x;
+        let row = y;
 
         if column >= self.width || row >= self.height {
             return;

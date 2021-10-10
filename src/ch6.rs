@@ -59,7 +59,11 @@ pub fn run() -> Result<(), Error> {
 
                 let intersection_color =
                     Light::lighting(&object.material, &light, &point, &eye, &normal);
-                canvas.render(render_point, intersection_color);
+                canvas.render(
+                    render_point.x().round() as usize,
+                    render_point.y().round() as usize,
+                    intersection_color,
+                );
             }
 
             // report progress

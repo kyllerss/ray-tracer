@@ -22,7 +22,11 @@ pub fn run() -> Result<(), Error> {
     while tick.projectile.y() > 0.0 {
         crate::ch1::apply_tick(&mut tick);
         println!("x:{}, y:{}", tick.projectile.x(), tick.projectile.y());
-        c.render(tick.projectile, projectile_color);
+        c.render(
+            tick.projectile.x().round() as usize,
+            tick.projectile.y().round() as usize,
+            projectile_color,
+        );
         // projectile = projectile + direction;
         // c.render(projectile, projectile_color);
     }

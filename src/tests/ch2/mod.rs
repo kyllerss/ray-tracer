@@ -192,7 +192,11 @@ mod tests {
         let row = 0;
         let col = 2;
         let point = Point::new(col as f64, row as f64, 0.0);
-        c.render(point, color);
+        c.render(
+            point.x().round() as usize,
+            point.y().round() as usize,
+            color,
+        );
         assert_eq!(c[row][col], color);
 
         c.invert_y();
@@ -210,16 +214,16 @@ mod tests {
         let mut c = Canvas::new(width, height, Color::default());
         let color = Color::new(1.0, 0.0, 0.0);
 
-        c.render(Point::new(0.0, 0.0, 0.0), color);
-        c.render(Point::new(1.0, 1.0, 0.0), color);
-        c.render(Point::new(2.0, 2.0, 0.0), color);
-        c.render(Point::new(3.0, 3.0, 0.0), color);
-        c.render(Point::new(4.0, 4.0, 0.0), color);
-        c.render(Point::new(5.0, 5.0, 0.0), color);
-        c.render(Point::new(6.0, 6.0, 0.0), color);
-        c.render(Point::new(7.0, 7.0, 0.0), color);
-        c.render(Point::new(8.0, 8.0, 0.0), color);
-        c.render(Point::new(9.0, 9.0, 0.0), color);
+        c.render(0, 0, color);
+        c.render(1, 1, color);
+        c.render(2, 2, color);
+        c.render(3, 3, color);
+        c.render(4, 4, color);
+        c.render(5, 5, color);
+        c.render(6, 6, color);
+        c.render(7, 7, color);
+        c.render(8, 8, color);
+        c.render(9, 9, color);
 
         let result = print_grid(&c, color);
         let exp = indoc! {"
