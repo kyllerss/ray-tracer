@@ -1,4 +1,5 @@
 use crate::domain::intersection::{Computations, Intersection, Intersections};
+use crate::domain::matrix::Matrix;
 use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
@@ -136,4 +137,14 @@ fn ch7_test5_prepare_computations_when_hit_outside_and_inside() {
     assert_eq!(comps.eye_v, Vector::new(0.0, 0.0, -1.0));
     assert_eq!(comps.inside, true);
     assert_eq!(comps.normal_v, Vector::new(0.0, 0.0, -1.0));
+}
+
+#[test]
+fn ch8_test7_hit_should_offset_point() {
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let shape = Sphere::new(Matrix::new_translation(0.0, 0.0, 1.0));
+    let i = Intersection::new(5.0, &shape);
+    let comps = Computations::prepare_computations(&i, &r);
+    assert!(comps.over_point.z() < -crate::domain::EPSILON / 2.0);
+    assert!(comps.point.z() > comps.over_point.z());
 }

@@ -166,3 +166,19 @@ fn ch8_test5_no_shadow_when_object_behind_point() {
     let r = w.is_shadowed(&p);
     assert_eq!(r, false);
 }
+
+#[test]
+fn ch8_test6_shade_hit_is_given_intersection_in_shadow() {
+    let mut w = World::new();
+    w.light_source = Some(Light::new(Point::new(0.0, 0.0, -10.0), Color::WHITE));
+    let s1 = Sphere::new_unit();
+    w.objects.push(s1);
+    let s2 = Sphere::new(Matrix::new_translation(0.0, 0.0, 10.0));
+    w.objects.push(s2.clone());
+    let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
+    let i = Intersection::new(4.0, &s2);
+    let comps = Computations::prepare_computations(&i, &r);
+    let r = w.shade_hit(&comps);
+    let r_exp = Color::new(0.1, 0.1, 0.1);
+    assert_eq!(r, r_exp);
+}

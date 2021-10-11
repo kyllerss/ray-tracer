@@ -37,13 +37,15 @@ impl World {
 
     // Calculates shade hit for the given computations
     pub fn shade_hit(&self, comp: &Computations) -> Color {
+        let in_shadow = self.is_shadowed(&comp.over_point);
+
         Light::lighting(
             &comp.object.material,
             self.light_source.as_ref().unwrap(),
-            &comp.point,
+            &comp.over_point,
             &comp.eye_v,
             &comp.normal_v,
-            false,
+            in_shadow,
         )
     }
 
