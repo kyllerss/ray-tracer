@@ -134,3 +134,35 @@ fn ch7_test9_color_intersection_behind_ray() {
     let c_exp = w.objects[1].material.color;
     assert_eq!(c, c_exp);
 }
+
+#[test]
+fn ch8_test2_no_shadow_when_nothing_collinear_with_point_and_light() {
+    let w = build_test_world();
+    let p = Point::new(0.0, 10.0, 0.0);
+    let r = w.is_shadowed(&p);
+    assert_eq!(r, false);
+}
+
+#[test]
+fn ch8_test3_shadow_when_object_between_point_and_light() {
+    let w = build_test_world();
+    let p = Point::new(10.0, -10.0, 10.0);
+    let r = w.is_shadowed(&p);
+    assert_eq!(r, true);
+}
+
+#[test]
+fn ch8_test4_no_shadow_when_object_behind_light() {
+    let w = build_test_world();
+    let p = Point::new(-20.0, 20.0, -20.0);
+    let r = w.is_shadowed(&p);
+    assert_eq!(r, false);
+}
+
+#[test]
+fn ch8_test5_no_shadow_when_object_behind_point() {
+    let w = build_test_world();
+    let p = Point::new(-2.0, 2.0, -2.0);
+    let r = w.is_shadowed(&p);
+    assert_eq!(r, false);
+}

@@ -5,6 +5,7 @@ use crate::domain::intersection::{Computations, Intersections};
 use crate::domain::light::Light;
 use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
+use crate::domain::Point;
 
 pub struct World {
     pub objects: Vec<Sphere>,
@@ -80,5 +81,21 @@ impl World {
             }
         }
         canvas
+    }
+
+    // determines if point is shadowed
+    pub fn is_shadowed(&self, p: &Point) -> bool {
+        let v = &self.light_source.unwrap().position - p;
+        let distance = v.magnitude();
+        let direction = v.normalize();
+
+        let r = Ray::new(p.clone(), direction);
+        let mut intersections = self.intersect(&r);
+        let h = intersections.hit();
+        if h.is_some() && h.unwrap().distance < distance {
+            true
+        } else {
+            false
+        }
     }
 }

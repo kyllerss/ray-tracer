@@ -2,7 +2,7 @@ use crate::domain::color::Color;
 use crate::domain::material::Material;
 use crate::domain::{Point, Vector};
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 pub struct Light {
     pub position: Point,
     pub intensity: Color,
