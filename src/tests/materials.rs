@@ -32,7 +32,7 @@ fn generate_test_harness_lighting(
         Point::new(0.0, lightpoint_y, lightpoint_z),
         Color::new(1.0, 1.0, 1.0),
     );
-    Light::lighting(&m, &light, &position, &eye_v, &normal_v)
+    Light::lighting(&m, &light, &position, &eye_v, &normal_v, false)
 }
 
 #[test]
@@ -69,4 +69,17 @@ fn ch6_test13_lighting_with_light_behind_surface() {
     let result = generate_test_harness_lighting(0.0, -1.0, 0.0, 10.0);
     let exp = Color::new(0.1, 0.1, 0.1);
     assert_eq!(result, exp);
+}
+
+#[test]
+fn ch8_test1_lighting_with_surface_in_shadow() {
+    let m = Material::new();
+    let position = Point::ORIGIN;
+    let eye_v = Vector::new(0.0, 0.0, -1.0);
+    let normal_v = Vector::new(0.0, 0.0, -1.0);
+    let light = Light::new(Point::new(0.0, 0.0, -10.0), Color::WHITE);
+    let in_shadow = true;
+    let result = Light::lighting(&m, &light, &position, &eye_v, &normal_v, in_shadow);
+    let result_exp = Color::new(0.1, 0.1, 0.1);
+    assert_eq!(result, result_exp);
 }

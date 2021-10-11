@@ -24,6 +24,7 @@ impl Light {
         point: &Point,
         eye_v: &Vector,
         normal_v: &Vector,
+        in_shadow: bool,
     ) -> Color {
         let effective_color = &material.color * &light.intensity;
         let light_v = (&light.position - point).normalize();
@@ -52,6 +53,10 @@ impl Light {
         }
 
         // return color calculation
-        &(&ambient + &diffuse) + &specular
+        if in_shadow {
+            ambient
+        } else {
+            &(&ambient + &diffuse) + &specular
+        }
     }
 }

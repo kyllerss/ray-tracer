@@ -42,6 +42,7 @@ impl World {
             &comp.point,
             &comp.eye_v,
             &comp.normal_v,
+            false,
         )
     }
 

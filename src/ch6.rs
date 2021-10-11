@@ -58,7 +58,7 @@ pub fn run() -> Result<(), Error> {
                 let eye = -ray.direction;
 
                 let intersection_color =
-                    Light::lighting(&object.material, &light, &point, &eye, &normal);
+                    Light::lighting(&object.material, &light, &point, &eye, &normal, false);
                 canvas.render(
                     render_point.x().round() as usize,
                     render_point.y().round() as usize,
