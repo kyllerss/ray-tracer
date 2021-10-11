@@ -1,8 +1,12 @@
 #[cfg(test)]
-mod ch1;
-mod ch2;
-mod ch3;
-mod ch4;
-mod ch5;
-mod ch6;
-mod ch7;
+mod camera;
+mod canvas;
+mod intersections;
+mod lights;
+mod materials;
+mod matrices;
+mod rays;
+mod spheres;
+mod transformations;
+mod tuples;
+mod world;

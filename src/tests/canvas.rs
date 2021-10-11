@@ -9,48 +9,7 @@ mod tests {
     use std::fmt::Write;
 
     #[test]
-    fn test1_build_color() {
-        let c = Color::new(-0.5, 0.4, 1.7);
-        assert_eq!(c.red, -0.5);
-        assert_eq!(c.green, 0.4);
-        assert_eq!(c.blue, 1.7);
-    }
-
-    #[test]
-    fn test2_and_3_color_manipulation() {
-        // adding colors
-        let c1 = Color::new(0.9, 0.6, 0.75);
-        let c2 = Color::new(0.7, 0.1, 0.25);
-        let r = &c1 + &c2;
-        let exp = Color::new(1.6, 0.7, 1.0);
-        assert_eq!(r, exp);
-
-        // subtracting colors
-        let c1 = Color::new(0.9, 0.6, 0.75);
-        let c2 = Color::new(0.7, 0.1, 0.25);
-        let r = &c1 - &c2;
-        let exp = Color::new(0.2, 0.5, 0.5);
-        assert_eq!(r, exp);
-
-        // multiplying by scalar
-        let c = Color::new(0.2, 0.3, 0.4);
-        let r = &c * 2.0;
-        let exp = Color::new(0.4, 0.6, 0.8);
-        assert_eq!(r, exp);
-    }
-
-    #[test]
-    fn test3_multiplying_colors() {
-        let c1 = Color::new(1.0, 0.2, 0.4);
-        let c2 = Color::new(0.9, 1.0, 0.1);
-
-        let r = &c1 * &c2;
-        let exp = Color::new(0.9, 0.2, 0.04);
-        assert_eq!(r, exp);
-    }
-
-    #[test]
-    fn test4_build_canvas() {
+    fn ch2_test4_build_canvas() {
         let width: usize = 10;
         let height: usize = 20;
         let black = Color::new(0.0, 0.0, 0.0);
@@ -81,7 +40,7 @@ mod tests {
     }
 
     #[test]
-    fn test5_write_pixel() {
+    fn ch2_test5_write_pixel() {
         let width: usize = 10;
         let height: usize = 20;
         let black = Color::new(0.0, 0.0, 0.0);
@@ -109,7 +68,7 @@ mod tests {
     }
 
     #[test]
-    fn test6_construct_ppm_header() {
+    fn ch2_test6_construct_ppm_header() {
         let c = Canvas::new(5, 3, Color::default());
 
         let writer = ImageWriter::new(Format::Ppm3, &c);
@@ -126,7 +85,7 @@ mod tests {
     }
 
     #[test]
-    fn test7_construct_ppm_pixel_data() {
+    fn ch2_test7_construct_ppm_pixel_data() {
         let mut c = Canvas::new(5, 3, Color::default());
         let p1 = Color::new(1.5, 0.0, 0.0);
         let p2 = Color::new(0.0, 0.5, 0.0);
@@ -159,7 +118,7 @@ mod tests {
     }
 
     #[test]
-    fn test8_no_lines_exceed_70_chars() {
+    fn ch2_test8_no_lines_exceed_70_chars() {
         let default_color = Color::new(1.0, 0.8, 0.6);
         let c = Canvas::new(10, 2, default_color);
         let writer = ImageWriter::new(Format::Ppm3, &c);
@@ -176,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn test9_ppm_terminated_by_new_line_character() {
+    fn ch2_test9_ppm_terminated_by_new_line_character() {
         let c = Canvas::new(10, 2, Color::default());
         let writer = ImageWriter::new(Format::Ppm3, &c);
         let ppm = writer.to_string();
@@ -186,7 +145,7 @@ mod tests {
     }
 
     #[test]
-    fn test_pit_1_invert_y_coord() {
+    fn ch2_test_pit_1_invert_y_coord() {
         let mut c = Canvas::new(3, 3, Color::default());
         let color = Color::new(1.0, 0.0, 0.0);
         let row = 0;
@@ -208,7 +167,7 @@ mod tests {
 
     #[test]
     // [BUG] Canvases that are wider than taller don't render pixels consistently.
-    fn test_pit_1_width_longer_than_height_rendering_bug() {
+    fn ch2_test_pit_1_width_longer_than_height_rendering_bug() {
         let width: usize = 10;
         let height: usize = 5;
         let mut c = Canvas::new(width, height, Color::default());

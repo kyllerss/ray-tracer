@@ -5,7 +5,7 @@ mod tests {
     use crate::domain::{Point, Vector};
 
     #[test]
-    fn test1_construct_and_inspect_4x4_matrix() {
+    fn ch3_test1_construct_and_inspect_4x4_matrix() {
         let m = matrix![1.0,  2.0,  3.0,  4.0;
                                5.5,  6.5,  7.5,  8.5;
                                9.0,  10.0, 11.0, 12.0;
@@ -20,7 +20,7 @@ mod tests {
     }
 
     #[test]
-    fn test2_different_dimensions_support() {
+    fn ch3_test2_different_dimensions_support() {
         // 2x2
         let m = matrix![-3.0,  5.0;
                                 1.0, -2.0];
@@ -39,7 +39,7 @@ mod tests {
     }
 
     #[test]
-    fn test3_matrix_equality() {
+    fn ch3_test3_matrix_equality() {
         let a = matrix![1.0, 2.0, 3.0, 4.0;
                         5.0, 6.0, 7.0, 8.0;
                         9.0, 8.0, 7.0, 6.0;
@@ -60,7 +60,7 @@ mod tests {
     }
 
     #[test]
-    fn test4_multiplying_two_matrices() {
+    fn ch3_test4_multiplying_two_matrices() {
         let a = &matrix![1.0, 2.0, 3.0, 4.0;
                         5.0, 6.0, 7.0, 8.0;
                         9.0, 8.0, 7.0, 6.0;
@@ -79,7 +79,7 @@ mod tests {
     }
 
     #[test]
-    fn test5_multiplying_matrix_by_tuple() {
+    fn ch3_test5_multiplying_matrix_by_tuple() {
         let a: &Matrix = &matrix![1.0, 2.0, 3.0, 4.0;
                         2.0, 4.0, 4.0, 2.0;
                         8.0, 6.0, 4.0, 1.0;
@@ -98,7 +98,7 @@ mod tests {
     }
 
     #[test]
-    fn test6_multiply_by_identify_matrix() {
+    fn ch3_test6_multiply_by_identify_matrix() {
         let a: &Matrix = &matrix![0.0, 1.0, 2.0, 4.0;
                                   1.0, 2.0, 4.0, 8.0;
                                   2.0, 4.0, 8.0, 16.0;
@@ -108,7 +108,7 @@ mod tests {
     }
 
     #[test]
-    fn test7_transposing_matrix() {
+    fn ch3_test7_transposing_matrix() {
         let mut a: Matrix = matrix![0.0, 9.0, 3.0, 0.0;
                                     9.0, 8.0, 0.0, 8.0;
                                     1.0, 8.0, 5.0, 3.0;
@@ -123,14 +123,14 @@ mod tests {
     }
 
     #[test]
-    fn test8_transposing_identity_matrix() {
+    fn ch3_test8_transposing_identity_matrix() {
         let mut identity_clone = crate::domain::matrix::IDENTITY.clone();
         identity_clone.transpose();
         assert_eq!(identity_clone, *crate::domain::matrix::IDENTITY);
     }
 
     #[test]
-    fn test9_determinant_of_2x2() {
+    fn ch3_test9_determinant_of_2x2() {
         let m = matrix![1.0, 5.0;
                         -3.0, 2.0];
         let r: f64 = m.determinant();
@@ -140,7 +140,7 @@ mod tests {
     }
 
     #[test]
-    fn test10_calculate_submatrices() {
+    fn ch3_test10_calculate_submatrices() {
         // 3x3 matrix
         let m = matrix![1.0, 5.0, 0.0;
                         -3.0, 2.0, 7.0;
@@ -163,7 +163,7 @@ mod tests {
     }
 
     #[test]
-    fn test11_calculate_minor_of_3x3_matrix() {
+    fn ch3_test11_calculate_minor_of_3x3_matrix() {
         let m = matrix![3.0, 5.0, 0.0;
                         2.0, -1.0, -7.0;
                         6.0, -1.0, 5.0];
@@ -173,7 +173,7 @@ mod tests {
     }
 
     #[test]
-    fn test12_calculate_cofactor_of_3x3_matrix() {
+    fn ch3_test12_calculate_cofactor_of_3x3_matrix() {
         let m = matrix![3.0, 5.0, 0.0;
                         2.0, -1.0, -7.0;
                         6.0, -1.0, 5.0];
@@ -187,7 +187,7 @@ mod tests {
     }
 
     #[test]
-    fn test13_calculate_determinant_3x3_and_4x4_matrices() {
+    fn ch3_test13_calculate_determinant_3x3_and_4x4_matrices() {
         // 3x3 test
         let m = matrix![1.0, 2.0, 6.0;
                         -5.0, 8.0, -4.0;
@@ -207,7 +207,7 @@ mod tests {
     }
 
     #[test]
-    fn test14_invertability_of_matrices() {
+    fn ch3_test14_invertability_of_matrices() {
         // invertible
         let m = matrix![6.0, 4.0, 4.0, 4.0;
                         5.0, 5.0, 7.0, 6.0;
@@ -224,7 +224,7 @@ mod tests {
     }
 
     #[test]
-    fn test15_calculate_inverse_matrix() {
+    fn ch3_test15_calculate_inverse_matrix() {
         let m = matrix![-5.0, 2.0, 6.0, -8.0;
                                 1.0, -5.0, 1.0, 8.0;
                                 7.0, 7.0, -6.0, -7.0;
@@ -238,7 +238,7 @@ mod tests {
     }
 
     #[test]
-    fn test16_exercise_inverse_matrix_further() {
+    fn ch3_test16_exercise_inverse_matrix_further() {
         let m = matrix![8.0, -5.0, 9.0, 2.0;
                         7.0, 5.0, 6.0, 1.0;
                         -6.0, 0.0, 9.0, 6.0;
@@ -263,7 +263,7 @@ mod tests {
     }
 
     #[test]
-    fn test17_multiply_product_by_inverse() {
+    fn ch3_test17_multiply_product_by_inverse() {
         let a = matrix![3.0, -9.0, 7.0, 3.0;
                         3.0, -8.0, 2.0, -9.0;
                         -4.0, 4.0, 4.0, 1.0;

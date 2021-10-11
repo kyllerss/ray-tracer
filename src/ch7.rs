@@ -97,7 +97,7 @@ pub fn run() -> Result<(), Error> {
     print!(" ");
 
     // canvas
-    let mut canvas = world.render(&camera, &|itr: usize, total_size: usize| {
+    let canvas = world.render(&camera, &|itr: usize, total_size: usize| {
         if ((itr as f64 / total_size as f64) * 100.0) % 10.0 == 0.0 {
             print!("#");
             let _ = stdout().flush();
