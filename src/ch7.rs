@@ -82,7 +82,7 @@ pub fn run() -> Result<(), Error> {
         .append(vec![floor, left_wall, right_wall, middle, left, right].as_mut());
 
     // camera
-    let scale = 8;
+    let scale = 16;
     let camera_width = 100 * scale;
     let camera_height = 50 * scale;
     let mut camera = Camera::new(camera_width, camera_height, PI / 3.0);
