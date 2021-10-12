@@ -6,6 +6,8 @@ use crate::domain::light::Light;
 use crate::domain::object::Sphere;
 use crate::domain::ray::Ray;
 use crate::domain::Point;
+use rayon::prelude::*;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub struct World {
     pub objects: Vec<Sphere>,
@@ -68,20 +70,44 @@ impl World {
 
     // renders world based on provided camera
     pub fn render(&self, camera: &Camera, logger: &dyn Fn(usize, usize) -> ()) -> Canvas {
-        let mut iteration = 0;
         let total_size = camera.vsize * camera.hsize;
-        let mut canvas = Canvas::new(camera.hsize, camera.vsize, Color::BLACK);
-        for y in 0..(camera.vsize - 1) {
-            for x in 0..(camera.hsize - 1) {
-                let ray = camera.ray_for_pixel(x, y);
-                let color = self.color_at(&ray);
-                canvas.render(x, y, color);
+        //let mut results: Vec<(usize, usize, Color)> = Vec::with_capacity(total_size);
 
-                // log iteration
-                iteration += 1;
-                logger(iteration, total_size);
-            }
-        }
+        // track iterations for logging
+        let itr_counter = AtomicUsize::new(0);
+
+        // compute pixels
+        let mut results = (0..camera.vsize)
+            .into_par_iter()
+            .enumerate()
+            .flat_map(|(i, y)| {
+                let mut r: Vec<(usize, usize, Color)> = Vec::with_capacity(camera.hsize);
+                for x in 0..camera.hsize {
+                    let ray = camera.ray_for_pixel(x, y);
+                    let color = self.color_at(&ray);
+                    r.push((x, y, color));
+                }
+
+                // log increment
+                let size = itr_counter.fetch_add(camera.hsize, Ordering::Relaxed);
+                //logger(size + camera.hsize, total_size);
+                println!(
+                    "{}/{} ({}%)",
+                    size + camera.hsize,
+                    total_size,
+                    ((size as f32 + camera.hsize as f32) / total_size as f32) * 100_f32
+                );
+
+                // return value
+                r
+            })
+            .collect::<Vec<(usize, usize, Color)>>();
+
+        // apply computed values to canvas
+        let mut canvas = Canvas::new(camera.hsize, camera.vsize, Color::BLACK);
+        results.drain(..).for_each(|(x, y, color)| {
+            canvas.render(x, y, color);
+        });
         canvas
     }
 
