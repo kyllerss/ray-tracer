@@ -68,12 +68,18 @@ fn ch5_test10_intersect_sets_object_on_intersection() {
 #[test]
 fn ch5_test13_sphere_has_default_and_updatable_transformation() {
     let mut s = Sphere::new_unit();
-    assert_eq!(s.transformation, crate::domain::matrix::IDENTITY.clone());
+    assert_eq!(
+        s.shape.transformation,
+        crate::domain::matrix::IDENTITY.clone()
+    );
 
     let m = Matrix::new_translation(2.0, 3.0, 4.0);
-    s.transformation = m.clone();
-    assert_ne!(s.transformation, crate::domain::matrix::IDENTITY.clone());
-    assert_eq!(m, s.transformation);
+    s.shape.transformation = m.clone();
+    assert_ne!(
+        s.shape.transformation,
+        crate::domain::matrix::IDENTITY.clone()
+    );
+    assert_eq!(m, s.shape.transformation);
 }
 
 #[test]
@@ -161,7 +167,7 @@ fn ch6_test8_sphere_has_material() {
     let s = Sphere::new_unit();
     let m_exp = Material::new();
 
-    assert_eq!(s.material, m_exp);
+    assert_eq!(s.shape.material, m_exp);
 
     // can be assigned material
     let c = Color::new(0.5, 0.5, 0.5);
@@ -173,5 +179,5 @@ fn ch6_test8_sphere_has_material() {
         Material::DEFAULT_SHININESS,
     );
     let s = Sphere::new_material(m);
-    assert_eq!(s.material.ambient, 1.0);
+    assert_eq!(s.shape.material.ambient, 1.0);
 }

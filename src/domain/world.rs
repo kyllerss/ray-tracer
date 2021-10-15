@@ -42,7 +42,7 @@ impl World {
         let in_shadow = self.is_shadowed(&comp.over_point);
 
         Light::lighting(
-            &comp.object.material,
+            &comp.object.shape.material,
             self.light_source.as_ref().unwrap(),
             &comp.over_point,
             &comp.eye_v,
@@ -69,7 +69,7 @@ impl World {
     }
 
     // renders world based on provided camera
-    pub fn render(&self, camera: &Camera, logger: &dyn Fn(usize, usize) -> ()) -> Canvas {
+    pub fn render(&self, camera: &Camera, _logger: &dyn Fn(usize, usize) -> ()) -> Canvas {
         let total_size = camera.vsize * camera.hsize;
         //let mut results: Vec<(usize, usize, Color)> = Vec::with_capacity(total_size);
 
@@ -80,7 +80,7 @@ impl World {
         let mut results = (0..camera.vsize)
             .into_par_iter()
             .enumerate()
-            .flat_map(|(i, y)| {
+            .flat_map(|(_i, y)| {
                 let mut r: Vec<(usize, usize, Color)> = Vec::with_capacity(camera.hsize);
                 for x in 0..camera.hsize {
                     let ray = camera.ray_for_pixel(x, y);

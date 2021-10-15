@@ -20,7 +20,7 @@ pub fn run() -> Result<(), Error> {
     let mut sphere = Sphere::new_unit();
     let mut material = Material::new();
     material.color = Color::new(1.0, 0.2, 1.0);
-    sphere.material = material;
+    sphere.shape.material = material;
 
     let light_position = Point::new(-10.0, 10.0, -10.0);
     let light_color = Color::WHITE;
@@ -58,7 +58,7 @@ pub fn run() -> Result<(), Error> {
                 let eye = -ray.direction;
 
                 let intersection_color =
-                    Light::lighting(&object.material, &light, &point, &eye, &normal, false);
+                    Light::lighting(&object.shape.material, &light, &point, &eye, &normal, false);
                 canvas.render(
                     render_point.x().round() as usize,
                     render_point.y().round() as usize,

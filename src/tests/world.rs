@@ -127,11 +127,11 @@ fn ch7_test8_color_when_ray_hits() {
 #[test]
 fn ch7_test9_color_intersection_behind_ray() {
     let mut w = build_test_world();
-    w.objects[0].material.ambient = 1.0;
-    w.objects[1].material.ambient = 1.0;
+    w.objects[0].shape.material.ambient = 1.0;
+    w.objects[1].shape.material.ambient = 1.0;
     let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
     let c = w.color_at(&r);
-    let c_exp = w.objects[1].material.color;
+    let c_exp = w.objects[1].shape.material.color;
     assert_eq!(c, c_exp);
 }
 
