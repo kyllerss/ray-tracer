@@ -3,14 +3,16 @@ use crate::domain::canvas::Canvas;
 use crate::domain::color::Color;
 use crate::domain::intersection::{Computations, Intersections};
 use crate::domain::light::Light;
-use crate::domain::object::Sphere;
+use crate::domain::object::{Renderable, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::Point;
 use rayon::prelude::*;
+use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::Arc;
 
 pub struct World {
-    pub objects: Vec<Sphere>,
+    pub objects: Vec<Arc<dyn Renderable + Sync + Send>>,
     pub light_source: Option<Light>,
 }
 
@@ -24,7 +26,7 @@ impl World {
 
     // adds object to world
     pub fn add_object(&mut self, obj: Sphere) -> &Self {
-        self.objects.push(obj);
+        self.objects.push(Arc::new(obj));
         self
     }
 
@@ -33,7 +35,7 @@ impl World {
         let mut ints = Intersections::new();
         self.objects
             .iter()
-            .for_each(|s| ints.push_all(s.intersect(&ray)));
+            .for_each(|s| ints.append(s.intersect(&ray)));
         ints
     }
 
@@ -42,7 +44,7 @@ impl World {
         let in_shadow = self.is_shadowed(&comp.over_point);
 
         Light::lighting(
-            &comp.object.shape.material,
+            &comp.object.shape().material,
             self.light_source.as_ref().unwrap(),
             &comp.over_point,
             &comp.eye_v,

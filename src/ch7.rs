@@ -8,6 +8,7 @@ use crate::domain::world::World;
 use crate::domain::{Point, Vector};
 use std::f64::consts::PI;
 use std::io::{stdout, Error, Write};
+use std::sync::Arc;
 
 pub fn run() -> Result<(), Error> {
     println!("Running ch7...");
@@ -77,9 +78,14 @@ pub fn run() -> Result<(), Error> {
     let light_source = Light::new(Point::new(-10.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));
     let mut world = World::new();
     world.light_source = Some(light_source);
-    world
-        .objects
-        .append(vec![floor, left_wall, right_wall, middle, left, right].as_mut());
+    world.objects.append(&mut vec![
+        Arc::new(floor),
+        Arc::new(left_wall),
+        Arc::new(right_wall),
+        Arc::new(middle),
+        Arc::new(left),
+        Arc::new(right),
+    ]);
 
     // camera
     let scale = 32;

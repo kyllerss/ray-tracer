@@ -1,18 +1,23 @@
-use crate::domain::object::Sphere;
+use crate::domain::object::Renderable;
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
+// To avoid lifetimes stuff, used Box to encapsulate dyn Renderable
+// then moved it over to Rc<>. That didn't work w/ rayon parallelization
+// so transfered it to Arc<>, but both Arc and Rc were polluting the general
+// API as I was adding it everywhere I needed a simple reference (is that best practice?)
+
 #[derive(Debug)]
 pub struct Intersection<'a> {
-    pub object: &'a Sphere,
+    pub object: &'a dyn Renderable,
     pub distance: f64,
 }
 
 impl<'a> Intersection<'a> {
     // constructor
-    pub fn new(distance: f64, object: &'a Sphere) -> Intersection {
+    pub fn new(distance: f64, object: &'a dyn Renderable) -> Intersection {
         Intersection { object, distance }
     }
 }
@@ -72,16 +77,17 @@ impl<'a> Intersections<'a> {
     }
 
     // Takes ownership of intersection
-    pub fn push(&mut self, intersection: Intersection<'a>) {
+    pub fn push(&mut self, intersection: Intersection<'a>) -> &Self {
         self.intersections.push(intersection);
+        &self
     }
 
     // adds all intersections into data structure
-    pub fn push_all(&mut self, ints: Vec<Intersection<'a>>) {
+    pub fn append(&mut self, ints: Intersections<'a>) {
         if ints.is_empty() {
             return ();
         }
-        let mut b = BinaryHeap::from(ints);
+        let mut b = ints.intersections;
         self.intersections.append(&mut b);
     }
 
@@ -90,28 +96,39 @@ impl<'a> Intersections<'a> {
         self.intersections.len()
     }
 
-    // // determines if there is a hit
-    // pub fn is_empty(&self) -> bool {
-    //     self.len() == 0
-    // }
+    // determines if there is a hit
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 
-    // pops minimal item from heap
-    pub fn hit(&mut self) -> Option<Intersection> {
+    fn inner_hit(&mut self, validate: bool) -> Option<Intersection> {
         while let Some(intersection) = self.intersections.pop() {
-            let valid = !intersection.distance.is_infinite() && !intersection.distance.is_nan();
-            if !valid || intersection.distance < 0.0 {
-                continue;
-            };
+            if validate {
+                let valid = !intersection.distance.is_infinite() && !intersection.distance.is_nan();
+                if !valid || intersection.distance < 0.0 {
+                    continue;
+                };
+            }
             return Some(intersection);
         }
 
         None
     }
+
+    // returns first item (regardless of sign (negative/positive)
+    pub fn hit_unchecked(&mut self) -> Option<Intersection> {
+        self.inner_hit(false)
+    }
+
+    // pops minimal item from heap
+    pub fn hit(&mut self) -> Option<Intersection> {
+        self.inner_hit(true)
+    }
 }
 
 pub struct Computations<'a> {
     pub distance: f64,
-    pub object: &'a Sphere,
+    pub object: &'a dyn Renderable,
     pub point: Point,
     pub eye_v: Vector,
     pub normal_v: Vector,
@@ -123,7 +140,7 @@ impl<'a> Computations<'a> {
     // builder
     pub fn new(
         distance: f64,
-        object: &'a Sphere,
+        object: &'a dyn Renderable,
         point: Point,
         eye_v: Vector,
         normal_v: Vector,
@@ -162,3 +179,56 @@ impl<'a> Computations<'a> {
         )
     }
 }
+// pub struct Computations<'a, T: Renderable> {
+//     pub distance: f64,
+//     pub object: &'a T,
+//     pub point: Point,
+//     pub eye_v: Vector,
+//     pub normal_v: Vector,
+//     pub inside: bool,
+//     pub over_point: Point,
+// }
+//
+// impl<'a, T: Renderable> Computations<'a, T> {
+//     // builder
+//     pub fn new(
+//         distance: f64,
+//         object: &'a T,
+//         point: Point,
+//         eye_v: Vector,
+//         normal_v: Vector,
+//         inside: bool,
+//         over_point: Point,
+//     ) -> Computations<T> {
+//         Computations {
+//             distance,
+//             object,
+//             point,
+//             eye_v,
+//             normal_v,
+//             inside,
+//             over_point,
+//         }
+//     }
+//
+//     // Utility method for pre-computing reusable, frequently-used computations
+//     pub fn prepare_computations(i: &'a Intersection, r: &'a Ray) -> Computations<'a, T> {
+//         let point = r.position(i.distance);
+//         let eye_v = -r.direction;
+//         let mut normal_v = i.object.normal_at(&point);
+//
+//         let inside;
+//         if normal_v.dot_product(&eye_v) < 0.0 {
+//             inside = true;
+//             normal_v = -normal_v;
+//         } else {
+//             inside = false;
+//         }
+//
+//         let over_point = &point + &(&normal_v * crate::domain::EPSILON);
+//
+//         Computations::new(
+//             i.distance, i.object, point, eye_v, normal_v, inside, over_point,
+//         )
+//     }
+// }

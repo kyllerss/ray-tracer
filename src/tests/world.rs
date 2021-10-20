@@ -3,10 +3,11 @@ use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
-use crate::domain::object::Sphere;
+use crate::domain::object::{Renderable, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
+use std::sync::Arc;
 
 #[test]
 fn ch7_test1_world_can_be_constructed() {
@@ -62,7 +63,7 @@ fn ch7_test2_validate_default_world() {
         0.2,
         Material::DEFAULT_SHININESS,
     );
-    let s1_exp = Sphere::new_material(m1);
+    let s1_exp: Arc<Renderable + Send + Sync> = Arc::new(Sphere::new_material(m1));
     assert!(w.objects.contains(&s1_exp));
 
     let t2 = Matrix::new_scaling(0.5, 0.5, 0.5);
