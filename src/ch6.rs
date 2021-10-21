@@ -2,7 +2,7 @@ use crate::domain::canvas::Canvas;
 use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
-use crate::domain::object::Sphere;
+use crate::domain::object::Object;
 use crate::domain::ray::Ray;
 use crate::domain::Point;
 use std::io::{stdout, Error, Write};
@@ -17,10 +17,10 @@ pub fn run() -> Result<(), Error> {
     let ray_origin = Point::new(0.0, 0.0, -5.0);
 
     // sphere object
-    let mut sphere = Sphere::new_unit();
+    let mut sphere = Object::new_sphere_unit();
     let mut material = Material::new();
     material.color = Color::new(1.0, 0.2, 1.0);
-    sphere.shape.material = material;
+    sphere.shape_mut().material = material;
 
     let light_position = Point::new(-10.0, 10.0, -10.0);
     let light_color = Color::WHITE;
@@ -46,19 +46,25 @@ pub fn run() -> Result<(), Error> {
             let wall_pixel_vector = (&wall_point - &ray_origin).normalize();
 
             let ray = Ray::new(ray_origin, wall_pixel_vector);
-            let intersections = sphere.intersect(&ray);
+            let mut intersections = sphere.intersect(&ray);
 
             if !intersections.is_empty() {
                 let render_point = Point::new(x as f64, y as f64, wall_z);
 
-                let intersection = intersections.first().unwrap();
+                let intersection = intersections.hit_unchecked().unwrap();
                 let object = intersection.object;
                 let point = ray.position(intersection.distance);
                 let normal = object.normal_at(&point);
                 let eye = -ray.direction;
 
-                let intersection_color =
-                    Light::lighting(&object.shape.material, &light, &point, &eye, &normal, false);
+                let intersection_color = Light::lighting(
+                    &object.shape().material,
+                    &light,
+                    &point,
+                    &eye,
+                    &normal,
+                    false,
+                );
                 canvas.render(
                     render_point.x().round() as usize,
                     render_point.y().round() as usize,

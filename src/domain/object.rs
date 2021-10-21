@@ -3,9 +3,7 @@ use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::ray::Ray;
 use crate::domain::{Point, RayTuple, Vector};
-use std::any::Any;
-use std::fmt::{Debug, Formatter};
-use std::sync::Arc;
+use std::fmt::Debug;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Shape {
@@ -32,7 +30,7 @@ impl Object {
         };
         let mut result = Intersections::new();
         ints.iter().for_each(|int| {
-            let _ = result.push(Intersection::new(*int, self));
+            result.push(Intersection::new(*int, self));
         });
         result
     }
@@ -145,13 +143,6 @@ impl Sphere {
             },
             ..Sphere::new_unit()
         }
-    }
-    fn shape(&self) -> &Shape {
-        &self.shape
-    }
-
-    fn shape_mut(&mut self) -> &mut Shape {
-        &mut self.shape
     }
 
     // Finds intersections of ray against sphere instance

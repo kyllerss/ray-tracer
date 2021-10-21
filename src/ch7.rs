@@ -3,7 +3,7 @@ use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
-use crate::domain::object::Sphere;
+use crate::domain::object::Object;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
 use std::f64::consts::PI;
@@ -13,8 +13,8 @@ pub fn run() -> Result<(), Error> {
     println!("Running ch7...");
 
     // floor
-    let mut floor = Sphere::new(Matrix::new_scaling(10.0, 0.01, 10.0));
-    floor.shape.material = Material::new_full(
+    let mut floor = Object::new_sphere_with_matrix(Matrix::new_scaling(10.0, 0.01, 10.0));
+    floor.shape_mut().material = Material::new_full(
         Color::new(1.0, 0.9, 0.9),
         Material::DEFAULT_AMBIENT,
         Material::DEFAULT_DIFFUSE,
@@ -23,25 +23,25 @@ pub fn run() -> Result<(), Error> {
     );
 
     // left wall
-    let mut left_wall = Sphere::new_unit();
-    left_wall.shape.transformation = &(&(&Matrix::new_translation(0.0, 0.0, 5.0)
+    let mut left_wall = Object::new_sphere_unit();
+    left_wall.shape_mut().transformation = &(&(&Matrix::new_translation(0.0, 0.0, 5.0)
         * &Matrix::new_rotation_y(-PI / 4.0))
         * &Matrix::new_rotation_x(PI / 2.0))
         * &Matrix::new_scaling(10.0, 0.01, 10.0);
-    left_wall.shape.material = floor.shape.material.clone();
+    left_wall.shape_mut().material = floor.shape().material.clone();
 
     // right wall
-    let mut right_wall = Sphere::new_unit();
-    right_wall.shape.transformation = &(&(&Matrix::new_translation(0.0, 0.0, 5.0)
+    let mut right_wall = Object::new_sphere_unit();
+    right_wall.shape_mut().transformation = &(&(&Matrix::new_translation(0.0, 0.0, 5.0)
         * &Matrix::new_rotation_y(PI / 4.0))
         * &Matrix::new_rotation_x(PI / 2.0))
         * &Matrix::new_scaling(10.0, 0.01, 10.0);
-    right_wall.shape.material = floor.shape.material.clone();
+    right_wall.shape_mut().material = floor.shape().material.clone();
 
     // middle sphere
-    let mut middle = Sphere::new_unit();
-    middle.shape.transformation = Matrix::new_translation(-0.5, 1.0, 0.5);
-    middle.shape.material = Material::new_full(
+    let mut middle = Object::new_sphere_unit();
+    middle.shape_mut().transformation = Matrix::new_translation(-0.5, 1.0, 0.5);
+    middle.shape_mut().material = Material::new_full(
         Color::new(0.1, 1.0, 0.5),
         Material::DEFAULT_AMBIENT,
         0.7,
@@ -50,10 +50,10 @@ pub fn run() -> Result<(), Error> {
     );
 
     // right sphere
-    let mut right = Sphere::new_unit();
-    right.shape.transformation =
+    let mut right = Object::new_sphere_unit();
+    right.shape_mut().transformation =
         &Matrix::new_translation(1.5, 0.5, -0.5) * &Matrix::new_scaling(0.5, 0.5, 0.5);
-    right.shape.material = Material::new_full(
+    right.shape_mut().material = Material::new_full(
         Color::new(0.5, 1.0, 0.1),
         Material::DEFAULT_AMBIENT,
         0.7,
@@ -62,10 +62,10 @@ pub fn run() -> Result<(), Error> {
     );
 
     // left sphere
-    let mut left = Sphere::new_unit();
-    left.shape.transformation =
+    let mut left = Object::new_sphere_unit();
+    left.shape_mut().transformation =
         &Matrix::new_translation(-1.5, 0.33, -0.75) * &Matrix::new_scaling(0.33, 0.33, 0.33);
-    left.shape.material = Material::new_full(
+    left.shape_mut().material = Material::new_full(
         Color::new(1.0, 0.8, 0.1),
         Material::DEFAULT_AMBIENT,
         0.7,
