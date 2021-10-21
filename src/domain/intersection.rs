@@ -1,4 +1,4 @@
-use crate::domain::object::Sphere;
+use crate::domain::object::Object;
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
 use std::cmp::Ordering;
@@ -6,13 +6,13 @@ use std::collections::BinaryHeap;
 
 #[derive(Debug)]
 pub struct Intersection<'a> {
-    pub object: &'a Sphere,
+    pub object: &'a Object,
     pub distance: f64,
 }
 
 impl<'a> Intersection<'a> {
     // constructor
-    pub fn new(distance: f64, object: &'a Sphere) -> Intersection {
+    pub fn new(distance: f64, object: &'a Object) -> Intersection {
         Intersection { object, distance }
     }
 }
@@ -72,16 +72,17 @@ impl<'a> Intersections<'a> {
     }
 
     // Takes ownership of intersection
-    pub fn push(&mut self, intersection: Intersection<'a>) {
+    pub fn push(&mut self, intersection: Intersection<'a>) -> &Self {
         self.intersections.push(intersection);
+        &self
     }
 
     // adds all intersections into data structure
-    pub fn push_all(&mut self, ints: Vec<Intersection<'a>>) {
+    pub fn append(&mut self, ints: Intersections<'a>) {
         if ints.is_empty() {
             return ();
         }
-        let mut b = BinaryHeap::from(ints);
+        let mut b = ints.intersections;
         self.intersections.append(&mut b);
     }
 
@@ -90,28 +91,39 @@ impl<'a> Intersections<'a> {
         self.intersections.len()
     }
 
-    // // determines if there is a hit
-    // pub fn is_empty(&self) -> bool {
-    //     self.len() == 0
-    // }
+    // determines if there is a hit
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 
-    // pops minimal item from heap
-    pub fn hit(&mut self) -> Option<Intersection> {
+    fn inner_hit(&mut self, validate: bool) -> Option<Intersection> {
         while let Some(intersection) = self.intersections.pop() {
-            let valid = !intersection.distance.is_infinite() && !intersection.distance.is_nan();
-            if !valid || intersection.distance < 0.0 {
-                continue;
-            };
+            if validate {
+                let valid = !intersection.distance.is_infinite() && !intersection.distance.is_nan();
+                if !valid || intersection.distance < 0.0 {
+                    continue;
+                };
+            }
             return Some(intersection);
         }
 
         None
     }
+
+    // returns first item (regardless of sign (negative/positive)
+    pub fn hit_unchecked(&mut self) -> Option<Intersection> {
+        self.inner_hit(false)
+    }
+
+    // pops minimal item from heap
+    pub fn hit(&mut self) -> Option<Intersection> {
+        self.inner_hit(true)
+    }
 }
 
 pub struct Computations<'a> {
     pub distance: f64,
-    pub object: &'a Sphere,
+    pub object: &'a Object,
     pub point: Point,
     pub eye_v: Vector,
     pub normal_v: Vector,
@@ -123,7 +135,7 @@ impl<'a> Computations<'a> {
     // builder
     pub fn new(
         distance: f64,
-        object: &'a Sphere,
+        object: &'a Object,
         point: Point,
         eye_v: Vector,
         normal_v: Vector,
