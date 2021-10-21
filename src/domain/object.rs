@@ -20,7 +20,7 @@ pub struct Sphere {
     //radius: f64,
 }
 
-pub trait Renderable {
+pub trait Renderable: Send + Sync {
     fn local_intersect(&self, ray: &Ray) -> Intersections;
     fn local_normal_at(&self, point: &Point) -> Vector;
     fn shape(&self) -> &Shape;
@@ -182,8 +182,8 @@ impl Renderable for Sphere {
             let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
             let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-            let mut ints = Intersections::new();
-            ints.push(Intersection::new(t1, self))
+            let mut ints = Intersections::new()
+                .push(Intersection::new(t1, self))
                 .push(Intersection::new(t2, self));
             ints
         }

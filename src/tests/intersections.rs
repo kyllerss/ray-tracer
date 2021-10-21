@@ -1,16 +1,17 @@
 use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::matrix::Matrix;
-use crate::domain::object::Sphere;
+use crate::domain::object::{Renderable, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
+use std::ops::Deref;
 
 #[test]
 fn ch5_test8_intersection_object_encapsulates_t_and_obj() {
     let distance = 3.5;
-    let sphere = Sphere::new_unit();
-    let intersection = Intersection::new(distance, &sphere);
+    let sphere: Box<dyn Renderable> = Box::new(Sphere::new_unit());
+    let intersection = Intersection::new(distance, sphere.deref());
     assert_eq!(intersection.distance, distance);
-    assert_eq!(intersection.object, &sphere);
+    assert_eq!(intersection.object, sphere.deref());
 }
 
 #[test]

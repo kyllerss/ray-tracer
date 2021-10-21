@@ -77,13 +77,13 @@ impl<'a> Intersections<'a> {
     }
 
     // Takes ownership of intersection
-    pub fn push(&mut self, intersection: Intersection<'a>) -> &Self {
+    pub fn push(mut self, intersection: Intersection<'a>) -> Self {
         self.intersections.push(intersection);
-        &self
+        self
     }
 
     // adds all intersections into data structure
-    pub fn append(&mut self, ints: Intersections<'a>) {
+    pub fn append(&mut self, mut ints: Intersections<'a>) {
         if ints.is_empty() {
             return ();
         }

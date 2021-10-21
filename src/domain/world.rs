@@ -11,13 +11,13 @@ use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
-pub struct World {
-    pub objects: Vec<Arc<dyn Renderable + Sync + Send>>,
+pub struct World<'a> {
+    pub objects: Vec<Arc<dyn Renderable + 'a>>,
     pub light_source: Option<Light>,
 }
 
-impl World {
-    pub fn new() -> World {
+impl<'a> World<'a> {
+    pub fn new() -> World<'a> {
         World {
             objects: Vec::new(),
             light_source: Option::None,
