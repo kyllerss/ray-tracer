@@ -19,14 +19,21 @@ pub struct Sphere {
 }
 
 #[derive(PartialEq, Debug, Clone)]
+pub struct Null {
+    pub shape: Shape,
+}
+
+#[derive(PartialEq, Debug, Clone)]
 pub enum Object {
     Sphere(Sphere),
+    Null(Null), // throw-away test implementation
 }
 
 impl Object {
     fn local_intersect(&self, ray: &Ray) -> Intersections {
         let ints = match self {
             Object::Sphere(sphere) => sphere.local_intersect(ray),
+            Object::Null(null) => null.local_intersect(ray),
         };
         let mut result = Intersections::new();
         ints.iter().for_each(|int| {
@@ -38,16 +45,19 @@ impl Object {
     fn local_normal_at(&self, point: &Point) -> Vector {
         match self {
             Object::Sphere(sphere) => sphere.local_normal_at(point),
+            Object::Null(null) => null.local_normal_at(point),
         }
     }
     pub fn shape(&self) -> &Shape {
         match self {
             Object::Sphere(sphere) => &sphere.shape,
+            Object::Null(null) => &null.shape,
         }
     }
     pub fn shape_mut(&mut self) -> &mut Shape {
         match self {
             Object::Sphere(sphere) => &mut sphere.shape,
+            Object::Null(null) => &mut null.shape,
         }
     }
 
@@ -84,6 +94,11 @@ impl Object {
     pub fn new_sphere_with_material(material: Material) -> Object {
         Object::Sphere(Sphere::new_material(material))
     }
+
+    // test item with minimal implementation
+    pub fn new_null() -> Object {
+        Object::Null(Null::new())
+    }
 }
 
 // Unit measure for shapes.
@@ -101,6 +116,21 @@ impl Shape {
             transformation,
             material,
         }
+    }
+}
+
+impl Null {
+    pub fn new() -> Null {
+        Null {
+            shape: Shape::new_unit(),
+        }
+    }
+    pub(crate) fn local_intersect(&self, _p0: &Ray) -> Vec<f64> {
+        vec![]
+    }
+
+    pub(crate) fn local_normal_at(&self, _p0: &Point) -> Vector {
+        Vector::new(0.0, 0.0, 0.0)
     }
 }
 
