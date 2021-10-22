@@ -1,6 +1,7 @@
 use crate::domain::matrix::Matrix;
 use crate::domain::{Point, Vector};
 
+#[derive(PartialEq, Debug, Clone)]
 pub struct Ray {
     pub origin: Point,
     pub direction: Vector,
