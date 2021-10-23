@@ -6,7 +6,8 @@ pub(crate) mod light;
 pub(crate) mod material;
 pub(crate) mod matrix;
 pub(crate) mod object;
-mod operations;
+pub(crate) mod operations;
+pub(crate) mod pattern;
 pub(crate) mod ray;
 pub(crate) mod world;
 

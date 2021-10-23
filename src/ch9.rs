@@ -13,14 +13,17 @@ pub fn run() -> Result<(), Error> {
     println!("Running ch9...");
 
     // floor
-    let mut floor = Object::new_plane(); // Matrix::new_scaling(10.0, 0.01, 10.0)
-                                         // floor.shape_mut().material = Material::new_full(
-                                         //     Color::new(1.0, 0.9, 0.9),
-                                         //     Material::DEFAULT_AMBIENT,
-                                         //     Material::DEFAULT_DIFFUSE,
-                                         //     0.0,
-                                         //     Material::DEFAULT_SHININESS,
-                                         // );
+    //let mut t = &Matrix::new_rotation_z(PI / 2.0) * &Matrix::new_translation(0.0, 0.0, 3.0);
+    let t = Matrix::new_rotation_z(PI / 3.0);
+    let floor = Object::new_plane_with_transformation_and_material(t, Material::new());
+    // Matrix::new_scaling(10.0, 0.01, 10.0)
+    // floor.shape_mut().material = Material::new_full(
+    //     Color::new(1.0, 0.9, 0.9),
+    //     Material::DEFAULT_AMBIENT,
+    //     Material::DEFAULT_DIFFUSE,
+    //     0.0,
+    //     Material::DEFAULT_SHININESS,
+    // );
 
     // middle sphere
     let mut middle = Object::new_sphere_unit();
@@ -66,7 +69,7 @@ pub fn run() -> Result<(), Error> {
         .append(vec![floor, middle, left, right].as_mut());
 
     // camera
-    let scale = 32;
+    let scale = 2;
     let camera_width = 100 * scale;
     let camera_height = 50 * scale;
     let mut camera = Camera::new(camera_width, camera_height, PI / 3.0);

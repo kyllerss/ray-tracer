@@ -111,8 +111,12 @@ impl Object {
         Object::Null(Null::new())
     }
 
-    pub fn new_plane() -> Object {
-        Object::Plane(Plane::new())
+    // pub fn new_plane() -> Object {
+    //     Object::Plane(Plane::new())
+    // }
+
+    pub fn new_plane_with_transformation_and_material(t: Matrix, m: Material) -> Object {
+        Object::Plane(Plane::new_with_transformation_and_material(t, m))
     }
 }
 
@@ -163,6 +167,16 @@ impl Plane {
             shape: Shape::new_unit(),
         }
     }
+
+    pub fn new_with_transformation_and_material(
+        transformation: Matrix,
+        material: Material,
+    ) -> Plane {
+        Plane {
+            shape: Shape::new(transformation, material),
+        }
+    }
+
     pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
         let result;
         if ray.direction.y().abs() < crate::domain::EPSILON {
