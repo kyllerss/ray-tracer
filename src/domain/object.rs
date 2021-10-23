@@ -25,9 +25,15 @@ pub struct Null {
 }
 
 #[derive(PartialEq, Debug, Clone)]
+pub struct Plane {
+    pub shape: Shape,
+}
+
+#[derive(PartialEq, Debug, Clone)]
 pub enum Object {
     Sphere(Sphere),
     Null(Null), // throw-away test implementation
+    Plane(Plane),
 }
 
 impl Object {
@@ -35,6 +41,7 @@ impl Object {
         let ints = match self {
             Object::Sphere(sphere) => sphere.local_intersect(ray),
             Object::Null(null) => null.local_intersect(ray),
+            Object::Plane(plane) => plane.local_intersect(ray),
         };
         let mut result = Intersections::new();
         ints.iter().for_each(|int| {
@@ -47,18 +54,21 @@ impl Object {
         match self {
             Object::Sphere(sphere) => sphere.local_normal_at(point),
             Object::Null(null) => null.local_normal_at(point),
+            Object::Plane(plane) => plane.local_normal_at(point),
         }
     }
     pub fn shape(&self) -> &Shape {
         match self {
             Object::Sphere(sphere) => &sphere.shape,
             Object::Null(null) => &null.shape,
+            Object::Plane(plane) => &plane.shape,
         }
     }
     pub fn shape_mut(&mut self) -> &mut Shape {
         match self {
             Object::Sphere(sphere) => &mut sphere.shape,
             Object::Null(null) => &mut null.shape,
+            Object::Plane(plane) => &mut plane.shape,
         }
     }
 
@@ -100,6 +110,10 @@ impl Object {
     pub fn new_null() -> Object {
         Object::Null(Null::new())
     }
+
+    pub fn new_plane() -> Object {
+        Object::Plane(Plane::new())
+    }
 }
 
 // Unit measure for shapes.
@@ -140,6 +154,28 @@ impl Null {
 
     pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {
         Vector::new(point.x(), point.y(), point.z())
+    }
+}
+
+impl Plane {
+    pub fn new() -> Plane {
+        Plane {
+            shape: Shape::new_unit(),
+        }
+    }
+    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+        let result;
+        if ray.direction.y().abs() < crate::domain::EPSILON {
+            result = Vec::new()
+        } else {
+            let t = -ray.origin.y() / ray.direction.y();
+            result = vec![t];
+        }
+        result
+    }
+
+    pub(crate) fn local_normal_at(&self, _point: &Point) -> Vector {
+        Vector::new(0.0, 1.0, 0.0)
     }
 }
 
