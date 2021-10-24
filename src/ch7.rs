@@ -20,6 +20,7 @@ pub fn run() -> Result<(), Error> {
         Material::DEFAULT_DIFFUSE,
         0.0,
         Material::DEFAULT_SHININESS,
+        Option::None,
     );
 
     // left wall
@@ -47,6 +48,7 @@ pub fn run() -> Result<(), Error> {
         0.7,
         0.3,
         Material::DEFAULT_SHININESS,
+        Option::None,
     );
 
     // right sphere
@@ -59,6 +61,7 @@ pub fn run() -> Result<(), Error> {
         0.7,
         0.3,
         Material::DEFAULT_SHININESS,
+        Option::None,
     );
 
     // left sphere
@@ -71,6 +74,7 @@ pub fn run() -> Result<(), Error> {
         0.7,
         0.3,
         Material::DEFAULT_SHININESS,
+        Option::None,
     );
 
     // world

@@ -1,6 +1,7 @@
 use crate::domain::color::Color;
 use crate::domain::Point;
 
+#[derive(PartialEq, Debug, Clone)]
 pub enum Pattern {
     STRIPED { a: Color, b: Color },
 }

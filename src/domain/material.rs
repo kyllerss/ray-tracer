@@ -1,4 +1,5 @@
 use crate::domain::color::Color;
+use crate::domain::pattern::Pattern;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Material {
@@ -7,6 +8,7 @@ pub struct Material {
     pub diffuse: f64,
     pub specular: f64,
     pub shininess: f64,
+    pub pattern: Option<Pattern>,
 }
 
 impl Material {
@@ -18,11 +20,12 @@ impl Material {
     // constructor
     pub fn new() -> Material {
         Material {
-            color: Color::new(1.0, 1.0, 1.0),
+            color: Color::WHITE,
             ambient: Material::DEFAULT_AMBIENT,
             diffuse: Material::DEFAULT_DIFFUSE,
             specular: Material::DEFAULT_SPECULAR,
             shininess: Material::DEFAULT_SHININESS,
+            pattern: None,
         }
     }
 
@@ -33,6 +36,7 @@ impl Material {
         diffuse: f64,
         specular: f64,
         shininess: f64,
+        pattern: Option<Pattern>,
     ) -> Material {
         Material {
             color,
@@ -40,6 +44,7 @@ impl Material {
             diffuse,
             specular,
             shininess,
+            pattern,
         }
     }
 }

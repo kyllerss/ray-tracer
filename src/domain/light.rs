@@ -26,7 +26,12 @@ impl Light {
         normal_v: &Vector,
         in_shadow: bool,
     ) -> Color {
-        let effective_color = &material.color * &light.intensity;
+        let color = match &material.pattern {
+            Some(pattern) => pattern.color_at(point),
+            None => &material.color,
+        };
+
+        let effective_color = color * &light.intensity;
         let light_v = (&light.position - point).normalize();
         let ambient = &effective_color * material.ambient as f32;
         let light_dot_normal = light_v.dot_product(normal_v);

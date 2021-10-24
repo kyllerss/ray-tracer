@@ -177,6 +177,7 @@ fn ch6_test8_sphere_has_material() {
         Material::DEFAULT_DIFFUSE,
         Material::DEFAULT_SPECULAR,
         Material::DEFAULT_SHININESS,
+        Option::None,
     );
     let s = Object::new_sphere_with_material(m);
     assert_eq!(s.shape().material.ambient, 1.0);

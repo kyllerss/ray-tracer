@@ -27,6 +27,7 @@ pub fn build_test_world() -> World {
         0.7,
         0.2,
         Material::DEFAULT_SHININESS,
+        Option::None,
     );
     let s1 = Object::new_sphere_with_material(m1);
 
@@ -61,6 +62,7 @@ fn ch7_test2_validate_default_world() {
         0.7,
         0.2,
         Material::DEFAULT_SHININESS,
+        Option::None,
     );
     let s1_exp = Object::new_sphere_with_material(m1);
     assert!(w.objects.contains(&s1_exp));
