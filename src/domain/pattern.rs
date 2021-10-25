@@ -27,34 +27,30 @@ impl Pattern {
         }
     }
 
+    // TODO Turn this into a trait method to obviate pattern matching
+    pub fn transformation(&self) -> &Matrix {
+        match self {
+            Pattern::STRIPED { transformation, .. } => transformation,
+        }
+    }
+
     // calculates color for the given pattern at the given point
-    pub fn color_at<'a>(&'a self, object: &'a Object, point: &'a Point) -> &'a Color {
+    pub fn color_at(&self, object: &Object, world_point: &Point) -> &Color {
+        // convert pattern to object and pattern orientations
+        let object_point = &object.shape().transformation.inverse().unwrap() * world_point;
+        let pattern_point = &self.transformation().inverse().unwrap() * &object_point;
+
         match &self {
-            Pattern::STRIPED {
-                a,
-                b,
-                transformation,
-            } => color_at_striped(a, b, object, point, transformation),
+            Pattern::STRIPED { a, b, .. } => color_at_striped(a, b, &pattern_point),
         }
     }
 }
 
 // striped colors alternating across x axis
-fn color_at_striped<'a>(
-    a: &'a Color,
-    b: &'a Color,
-    object: &'a Object,
-    world_point: &'a Point,
-    transformation: &'a Matrix,
-) -> &'a Color {
-    let object_point = &object.shape().transformation.inverse().unwrap() * world_point;
-    let pattern_point = &transformation.inverse().unwrap() * &object_point;
-
-    let result;
-    if pattern_point.x().floor() % 2.0 == 0.0 {
-        result = a;
+fn color_at_striped<'a, 'b>(a: &'a Color, b: &'a Color, point: &'b Point) -> &'a Color {
+    if point.x().floor() % 2.0 == 0.0 {
+        a
     } else {
-        result = b;
+        b
     }
-    result
 }

@@ -37,6 +37,7 @@ pub enum Object {
 }
 
 impl Object {
+    // TODO Define trait that returns these, so that the match is not necessary.
     fn local_intersect(&self, ray: &Ray) -> Intersections {
         let ints = match self {
             Object::Sphere(sphere) => sphere.local_intersect(ray),
@@ -50,6 +51,7 @@ impl Object {
         result
     }
 
+    // TODO Define trait that returns these, so that the match is not necessary.
     fn local_normal_at(&self, point: &Point) -> Vector {
         match self {
             Object::Sphere(sphere) => sphere.local_normal_at(point),
@@ -57,6 +59,8 @@ impl Object {
             Object::Plane(plane) => plane.local_normal_at(point),
         }
     }
+
+    // TODO Define trait that returns these, so that the match is not necessary.
     pub fn shape(&self) -> &Shape {
         match self {
             Object::Sphere(sphere) => &sphere.shape,
@@ -64,6 +68,8 @@ impl Object {
             Object::Plane(plane) => &plane.shape,
         }
     }
+
+    // TODO Define trait that returns these, so that the match is not necessary.
     pub fn shape_mut(&mut self) -> &mut Shape {
         match self {
             Object::Sphere(sphere) => &mut sphere.shape,
