@@ -8,6 +8,7 @@ use crate::domain::ray::Ray;
 use crate::domain::Point;
 use rayon::prelude::*;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::Arc;
 
 pub struct World {
     pub objects: Vec<Object>,
@@ -70,7 +71,12 @@ impl World {
     }
 
     // renders world based on provided camera
-    pub fn render(&self, camera: &Camera, _logger: &dyn Fn(usize, usize) -> ()) -> Canvas {
+    // _logger fix for multi-threading comes from: https://users.rust-lang.org/t/how-to-send-function-closure-to-another-thread/43549
+    pub fn render(
+        &self,
+        camera: &Camera,
+        _logger: Arc<dyn Fn(usize, usize) -> () + Send + Sync>,
+    ) -> Canvas {
         let total_size = camera.vsize * camera.hsize;
         //let mut results: Vec<(usize, usize, Color)> = Vec::with_capacity(total_size);
 
@@ -81,7 +87,7 @@ impl World {
         let mut results = (0..camera.vsize)
             .into_par_iter()
             .enumerate()
-            .flat_map(|(_i, y)| {
+            .flat_map(move |(_i, y)| {
                 let mut r: Vec<(usize, usize, Color)> = Vec::with_capacity(camera.hsize);
                 for x in 0..camera.hsize {
                     let ray = camera.ray_for_pixel(x, y);
@@ -91,13 +97,8 @@ impl World {
 
                 // log increment
                 let size = itr_counter.fetch_add(camera.hsize, Ordering::Relaxed);
-                //logger(size + camera.hsize, total_size);
-                println!(
-                    "{}/{} ({}%)",
-                    size + camera.hsize,
-                    total_size,
-                    ((size as f32 + camera.hsize as f32) / total_size as f32) * 100_f32
-                );
+                let logger = Arc::clone(&_logger);
+                logger(size + camera.hsize, total_size);
 
                 // return value
                 r

@@ -9,6 +9,7 @@ use crate::domain::world::World;
 use crate::domain::{Point, Vector};
 use std::f64::consts::PI;
 use std::io::{stdout, Error, Write};
+use std::sync::Arc;
 
 pub fn run() -> Result<(), Error> {
     println!("Running ch10...");
@@ -107,12 +108,15 @@ pub fn run() -> Result<(), Error> {
     print!(" ");
 
     // canvas
-    let canvas = world.render(&camera, &|itr: usize, total_size: usize| {
-        if ((itr as f64 / total_size as f64) * 100.0) % 10.0 == 0.0 {
-            print!("#");
-            let _ = stdout().flush();
-        }
-    });
+    let canvas = world.render(
+        &camera,
+        Arc::new(move |itr: usize, total_size: usize| {
+            if ((itr as f64 / total_size as f64) * 100.0) % 10.0 == 0.0 {
+                print!("#");
+                let _ = stdout().flush();
+            }
+        }),
+    );
 
     //canvas.invert_y();
     println!("{}", "");

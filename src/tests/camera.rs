@@ -4,6 +4,7 @@ use crate::domain::matrix::Matrix;
 use crate::domain::{Point, Vector};
 use crate::tests::world::build_test_world;
 use std::f64::consts::PI;
+use std::sync::Arc;
 
 #[test]
 fn ch7_test14_construct_camera() {
@@ -61,7 +62,7 @@ fn ch7_test17_rendering_world_with_camera() {
     let to = Point::ORIGIN;
     let up = Vector::new(0.0, 1.0, 0.0);
     c.transform = Matrix::new_view_transformation(&from, &to, &up);
-    let image = w.render(&c, &|_itr, _total_size| {});
+    let image = w.render(&c, Arc::new(move |_itr, _total_size| {}));
     let color_exp = Color::new(0.38066, 0.47583, 0.2855);
     assert_eq!(image[5][5], color_exp);
 }
