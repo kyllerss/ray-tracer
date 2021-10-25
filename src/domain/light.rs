@@ -1,5 +1,6 @@
 use crate::domain::color::Color;
 use crate::domain::material::Material;
+use crate::domain::object::Object;
 use crate::domain::{Point, Vector};
 
 #[derive(PartialEq, Debug, Copy, Clone)]
@@ -20,6 +21,7 @@ impl Light {
     // TODO Should move this over to Sphere. Perhaps turn this into a traight that Sphere and others implement.
     pub fn lighting(
         material: &Material,
+        object: &Object,
         light: &Light,
         point: &Point,
         eye_v: &Vector,
@@ -27,7 +29,7 @@ impl Light {
         in_shadow: bool,
     ) -> Color {
         let color = match &material.pattern {
-            Some(pattern) => pattern.color_at(point),
+            Some(pattern) => pattern.color_at(object, point),
             None => &material.color,
         };
 

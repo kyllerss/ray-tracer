@@ -43,6 +43,7 @@ impl World {
 
         Light::lighting(
             &comp.object.shape().material,
+            &comp.object,
             self.light_source.as_ref().unwrap(),
             &comp.over_point,
             &comp.eye_v,

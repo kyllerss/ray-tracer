@@ -1,6 +1,7 @@
 use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
+use crate::domain::object::Object;
 use crate::domain::{Point, Vector};
 
 #[test]
@@ -25,6 +26,7 @@ fn generate_test_harness_lighting(
     lightpoint_z: f64,
 ) -> Color {
     let m = Material::new();
+    let object = Object::new_sphere_unit();
     let position = Point::new(0.0, 0.0, 0.0);
     let eye_v = Vector::new(0.0, eyev_y, eyev_z);
     let normal_v = Vector::new(0.0, 0.0, -1.0);
@@ -32,7 +34,7 @@ fn generate_test_harness_lighting(
         Point::new(0.0, lightpoint_y, lightpoint_z),
         Color::new(1.0, 1.0, 1.0),
     );
-    Light::lighting(&m, &light, &position, &eye_v, &normal_v, false)
+    Light::lighting(&m, &object, &light, &position, &eye_v, &normal_v, false)
 }
 
 #[test]
@@ -74,12 +76,13 @@ fn ch6_test13_lighting_with_light_behind_surface() {
 #[test]
 fn ch8_test1_lighting_with_surface_in_shadow() {
     let m = Material::new();
+    let object = &Object::new_sphere_unit();
     let position = Point::ORIGIN;
     let eye_v = Vector::new(0.0, 0.0, -1.0);
     let normal_v = Vector::new(0.0, 0.0, -1.0);
     let light = Light::new(Point::new(0.0, 0.0, -10.0), Color::WHITE);
     let in_shadow = true;
-    let result = Light::lighting(&m, &light, &position, &eye_v, &normal_v, in_shadow);
+    let result = Light::lighting(&m, &object, &light, &position, &eye_v, &normal_v, in_shadow);
     let result_exp = Color::new(0.1, 0.1, 0.1);
     assert_eq!(result, result_exp);
 }

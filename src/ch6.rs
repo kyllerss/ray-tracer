@@ -59,6 +59,7 @@ pub fn run() -> Result<(), Error> {
 
                 let intersection_color = Light::lighting(
                     &object.shape().material,
+                    &object,
                     &light,
                     &point,
                     &eye,
