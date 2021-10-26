@@ -21,11 +21,10 @@ fn ch9_test1_default_transformation_and_assigning_on_shapes() {
 #[test]
 fn ch9_test2_default_material_and_assign_on_shapes() {
     let s = Object::new_null();
-    assert_eq!(s.shape().material, Material::new());
+    assert_eq!(s.shape().material, Material::default());
 
     let mut s = Object::new_null();
-    let mut m = Material::new();
-    m.ambient = 1.0;
+    let m = Material::new().ambient(1.0).build();
     s.shape_mut().material = m.clone();
     assert_eq!(s.shape().material, m);
 }

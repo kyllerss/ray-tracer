@@ -21,14 +21,7 @@ pub fn build_test_world() -> World {
     let light = Light::new(light_point, intensity);
 
     let mc = Color::new(0.8, 1.0, 0.6);
-    let m1 = Material::new_full(
-        mc,
-        Material::DEFAULT_AMBIENT,
-        0.7,
-        0.2,
-        Material::DEFAULT_SHININESS,
-        Option::None,
-    );
+    let m1 = Material::new().color(mc).diffuse(0.7).specular(0.2).build();
     let s1 = Object::new_sphere_with_material(m1);
 
     let t2 = Matrix::new_scaling(0.5, 0.5, 0.5);
@@ -56,14 +49,7 @@ fn ch7_test2_validate_default_world() {
     );
 
     let mc = Color::new(0.8, 1.0, 0.6);
-    let m1 = Material::new_full(
-        mc,
-        Material::DEFAULT_AMBIENT,
-        0.7,
-        0.2,
-        Material::DEFAULT_SHININESS,
-        Option::None,
-    );
+    let m1 = Material::new().color(mc).diffuse(0.7).specular(0.2).build();
     let s1_exp = Object::new_sphere_with_material(m1);
     assert!(w.objects.contains(&s1_exp));
 

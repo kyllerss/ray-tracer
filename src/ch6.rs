@@ -18,8 +18,7 @@ pub fn run() -> Result<(), Error> {
 
     // sphere object
     let mut sphere = Object::new_sphere_unit();
-    let mut material = Material::new();
-    material.color = Color::new(1.0, 0.2, 1.0);
+    let material = Material::new().color(Color::new(1.0, 0.2, 1.0)).build();
     sphere.shape_mut().material = material;
 
     let light_position = Point::new(-10.0, 10.0, -10.0);

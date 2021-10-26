@@ -132,7 +132,7 @@ impl Object {
 impl Shape {
     // default constructor
     pub fn new_unit() -> Shape {
-        Shape::new(crate::domain::matrix::IDENTITY.clone(), Material::new())
+        Shape::new(crate::domain::matrix::IDENTITY.clone(), Material::default())
     }
 
     // parameter constructor

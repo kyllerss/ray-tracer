@@ -165,20 +165,13 @@ fn ch6_test3_computing_normal_of_modified_sphere() {
 fn ch6_test8_sphere_has_material() {
     // default material
     let s = Object::new_sphere_unit();
-    let m_exp = Material::new();
+    let m_exp = Material::default();
 
     assert_eq!(s.shape().material, m_exp);
 
     // can be assigned material
     let c = Color::new(0.5, 0.5, 0.5);
-    let m = Material::new_full(
-        c,
-        1.0,
-        Material::DEFAULT_DIFFUSE,
-        Material::DEFAULT_SPECULAR,
-        Material::DEFAULT_SHININESS,
-        Option::None,
-    );
+    let m = Material::new().color(c).ambient(1.0).build();
     let s = Object::new_sphere_with_material(m);
     assert_eq!(s.shape().material.ambient, 1.0);
 }

@@ -11,14 +11,8 @@ pub struct Material {
     pub pattern: Option<Pattern>,
 }
 
-impl Material {
-    pub const DEFAULT_AMBIENT: f64 = 0.1;
-    pub const DEFAULT_DIFFUSE: f64 = 0.9;
-    pub const DEFAULT_SPECULAR: f64 = 0.9;
-    pub const DEFAULT_SHININESS: f64 = 200.0;
-
-    // constructor
-    pub fn new() -> Material {
+impl Default for Material {
+    fn default() -> Self {
         Material {
             color: Color::WHITE,
             ambient: Material::DEFAULT_AMBIENT,
@@ -28,23 +22,76 @@ impl Material {
             pattern: None,
         }
     }
+}
 
-    // full constructor
-    pub fn new_full(
-        color: Color,
-        ambient: f64,
-        diffuse: f64,
-        specular: f64,
-        shininess: f64,
-        pattern: Option<Pattern>,
-    ) -> Material {
-        Material {
-            color,
-            ambient,
-            diffuse,
-            specular,
-            shininess,
-            pattern,
+pub struct MaterialBuilder {
+    color: Option<Color>,
+    ambient: Option<f64>,
+    diffuse: Option<f64>,
+    specular: Option<f64>,
+    shininess: Option<f64>,
+    pattern: Option<Pattern>,
+}
+
+impl Material {
+    pub const DEFAULT_AMBIENT: f64 = 0.1;
+    pub const DEFAULT_DIFFUSE: f64 = 0.9;
+    pub const DEFAULT_SPECULAR: f64 = 0.9;
+    pub const DEFAULT_SHININESS: f64 = 200.0;
+
+    // builder
+    pub fn new() -> MaterialBuilder {
+        MaterialBuilder {
+            color: Option::None,
+            ambient: Option::None,
+            diffuse: Option::None,
+            specular: Option::None,
+            shininess: Option::None,
+            pattern: Option::None,
         }
+    }
+}
+
+impl MaterialBuilder {
+    // finalizes built instance
+    pub fn build(&mut self) -> Material {
+        Material {
+            color: self.color.unwrap_or(Color::WHITE),
+            ambient: self.ambient.unwrap_or(Material::DEFAULT_AMBIENT),
+            diffuse: self.diffuse.unwrap_or(Material::DEFAULT_DIFFUSE),
+            specular: self.specular.unwrap_or(Material::DEFAULT_SPECULAR),
+            shininess: self.shininess.unwrap_or(Material::DEFAULT_SHININESS),
+            pattern: self.pattern.clone(),
+        }
+    }
+
+    pub fn color(&mut self, color: Color) -> &mut MaterialBuilder {
+        self.color = Some(color);
+        self
+    }
+
+    pub fn ambient(&mut self, ambient: f64) -> &mut MaterialBuilder {
+        self.ambient = Some(ambient);
+        self
+    }
+
+    pub fn diffuse(&mut self, diffuse: f64) -> &mut MaterialBuilder {
+        self.diffuse = Some(diffuse);
+        self
+    }
+
+    pub fn specular(&mut self, specular: f64) -> &mut MaterialBuilder {
+        self.specular = Some(specular);
+        self
+    }
+
+    pub fn shininess(&mut self, shininess: f64) -> &mut MaterialBuilder {
+        self.shininess = Some(shininess);
+        self
+    }
+
+    pub fn pattern(&mut self, pattern: Pattern) -> &mut MaterialBuilder {
+        self.pattern = Some(pattern);
+        self
     }
 }

@@ -5,8 +5,13 @@ use crate::domain::object::Object;
 use crate::domain::{Point, Vector};
 
 #[test]
+fn ch0_force_unused_methods_to_be_used() {
+    let _m = Material::new().shininess(1.0).build();
+}
+
+#[test]
 fn ch6_test7_default_material() {
-    let m = Material::new();
+    let m = Material::default();
     let color_exp = Color::new(1.0, 1.0, 1.0);
     let ambient_exp = 0.1;
     let diffuse_exp = 0.9;
@@ -25,7 +30,7 @@ fn generate_test_harness_lighting(
     lightpoint_y: f64,
     lightpoint_z: f64,
 ) -> Color {
-    let m = Material::new();
+    let m = Material::default();
     let object = Object::new_sphere_unit();
     let position = Point::new(0.0, 0.0, 0.0);
     let eye_v = Vector::new(0.0, eyev_y, eyev_z);
@@ -75,7 +80,7 @@ fn ch6_test13_lighting_with_light_behind_surface() {
 
 #[test]
 fn ch8_test1_lighting_with_surface_in_shadow() {
-    let m = Material::new();
+    let m = Material::default();
     let object = &Object::new_sphere_unit();
     let position = Point::ORIGIN;
     let eye_v = Vector::new(0.0, 0.0, -1.0);

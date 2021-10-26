@@ -14,75 +14,61 @@ use std::sync::Arc;
 pub fn run() -> Result<(), Error> {
     println!("Running ch10...");
 
-    let floor_pattern = Option::Some(Pattern::new_striped(
-        Color::new(1.0, 0.0, 0.0),
-        Color::new(0.0, 0.0, 1.0),
-    ));
+    let floor_pattern = Pattern::new_striped(Color::new(1.0, 0.0, 0.0), Color::new(0.0, 0.0, 1.0));
 
     // floor
     let t = crate::domain::matrix::IDENTITY.clone(); //Matrix::new_rotation_z(PI / 3.0);
-    let mut floor = Object::new_plane_with_transformation_and_material(t, Material::new());
-    floor.shape_mut().material = Material::new_full(
-        Color::new(1.0, 0.9, 0.9),
-        Material::DEFAULT_AMBIENT,
-        Material::DEFAULT_DIFFUSE,
-        0.0,
-        Material::DEFAULT_SHININESS,
-        floor_pattern.clone(),
-    );
+    let mut floor = Object::new_plane_with_transformation_and_material(t, Material::default());
+    floor.shape_mut().material = Material::new()
+        .color(Color::new(1.0, 0.9, 0.9))
+        .specular(0.0)
+        .pattern(floor_pattern)
+        .build();
 
     // middle sphere
-    let middle_pattern = Option::Some(Pattern::new_striped_with_transformation(
+    let middle_pattern = Pattern::new_striped_with_transformation(
         Color::new(0.2, 0.8, 0.2),
         Color::new(0.8, 0.2, 0.8),
         &Matrix::new_rotation_x(PI / 4.0) * &Matrix::new_rotation_z(PI / 4.0),
-    ));
+    );
     let mut middle = Object::new_sphere_unit();
     middle.shape_mut().transformation = Matrix::new_translation(-0.5, 1.0, 0.5);
-    middle.shape_mut().material = Material::new_full(
-        Color::new(0.1, 1.0, 0.5),
-        Material::DEFAULT_AMBIENT,
-        0.7,
-        0.3,
-        Material::DEFAULT_SHININESS,
-        middle_pattern.clone(),
-    );
+    middle.shape_mut().material = Material::new()
+        .color(Color::new(0.1, 1.0, 0.5))
+        .diffuse(0.7)
+        .specular(0.3)
+        .pattern(middle_pattern.clone())
+        .build();
 
     // right sphere
-    let right_pattern = Option::Some(Pattern::new_striped_with_transformation(
+    let right_pattern = Pattern::new_striped_with_transformation(
         Color::new(0.33, 0.66, 0.33),
         Color::new(0.66, 0.33, 0.66),
         Matrix::new_rotation_y(PI / 2.0),
-    ));
+    );
     let mut right = Object::new_sphere_unit();
     right.shape_mut().transformation =
         &Matrix::new_translation(2.0, 0.5, -0.5) * &Matrix::new_scaling(0.5, 0.5, 0.5);
-    right.shape_mut().material = Material::new_full(
-        Color::new(0.5, 1.0, 0.1),
-        Material::DEFAULT_AMBIENT,
-        0.7,
-        0.3,
-        Material::DEFAULT_SHININESS,
-        right_pattern.clone(),
-    );
+    right.shape_mut().material = Material::new()
+        .diffuse(0.7)
+        .specular(0.3)
+        .pattern(right_pattern.clone())
+        .build();
 
     // left sphere
-    let left_pattern = Option::Some(Pattern::new_striped_with_transformation(
+    let left_pattern = Pattern::new_striped_with_transformation(
         Color::new(0.33, 0.66, 0.33),
         Color::new(0.66, 0.33, 0.66),
         crate::domain::matrix::IDENTITY.clone(),
-    ));
+    );
     let mut left = Object::new_sphere_unit();
     left.shape_mut().transformation =
         &Matrix::new_translation(-2.0, 0.33, -0.75) * &Matrix::new_scaling(0.33, 0.33, 0.33);
-    left.shape_mut().material = Material::new_full(
-        Color::new(1.0, 0.8, 0.1),
-        Material::DEFAULT_AMBIENT,
-        0.7,
-        0.3,
-        Material::DEFAULT_SHININESS,
-        left_pattern.clone(),
-    );
+    left.shape_mut().material = Material::new()
+        .diffuse(0.7)
+        .specular(0.3)
+        .pattern(left_pattern.clone())
+        .build();
 
     // world
     let light_source = Light::new(Point::new(-10.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));

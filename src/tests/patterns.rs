@@ -74,14 +74,12 @@ fn ch10_test2_stripe_pattern_constant_in_y_z_and_alternating_in_x() {
 
 #[test]
 fn ch10_test3_lighting_with_pattern_applied() {
-    let m = Material::new_full(
-        Color::WHITE,
-        1.0,
-        0.0,
-        0.0,
-        Material::DEFAULT_SHININESS,
-        Some(Pattern::new_striped(Color::WHITE, Color::BLACK)),
-    );
+    let m = Material::new()
+        .ambient(1.0)
+        .diffuse(0.0)
+        .specular(0.0)
+        .pattern(Pattern::new_striped(Color::WHITE, Color::BLACK))
+        .build();
     let object = &Object::new_sphere_unit();
     let eye_v = Vector::new(0.0, 0.0, -1.0);
     let normal_v = Vector::new(0.0, 0.0, -1.0);
