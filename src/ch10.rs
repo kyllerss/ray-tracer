@@ -3,7 +3,7 @@ use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
-use crate::domain::object::Object;
+use crate::domain::object::{Object, Plane, Sphere};
 use crate::domain::pattern::Pattern;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
@@ -18,7 +18,7 @@ pub fn run() -> Result<(), Error> {
 
     // floor
     let t = crate::domain::matrix::IDENTITY.clone(); //Matrix::new_rotation_z(PI / 3.0);
-    let mut floor = Object::new_plane_with_transformation_and_material(t, Material::default());
+    let mut floor: Object = Plane::new().transformation(t).build().into();
     floor.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
         .specular(0.0)
@@ -31,7 +31,7 @@ pub fn run() -> Result<(), Error> {
         Color::new(0.8, 0.2, 0.8),
         &Matrix::new_rotation_x(PI / 4.0) * &Matrix::new_rotation_z(PI / 4.0),
     );
-    let mut middle = Object::new_sphere_unit();
+    let mut middle: Object = Sphere::new().build().into();
     middle.shape_mut().transformation = Matrix::new_translation(-0.5, 1.0, 0.5);
     middle.shape_mut().material = Material::new()
         .color(Color::new(0.1, 1.0, 0.5))
@@ -46,7 +46,7 @@ pub fn run() -> Result<(), Error> {
         Color::new(0.66, 0.33, 0.66),
         Matrix::new_rotation_y(PI / 2.0),
     );
-    let mut right = Object::new_sphere_unit();
+    let mut right: Object = Sphere::new().build().into();
     right.shape_mut().transformation =
         &Matrix::new_translation(2.0, 0.5, -0.5) * &Matrix::new_scaling(0.5, 0.5, 0.5);
     right.shape_mut().material = Material::new()
@@ -61,7 +61,7 @@ pub fn run() -> Result<(), Error> {
         Color::new(0.66, 0.33, 0.66),
         crate::domain::matrix::IDENTITY.clone(),
     );
-    let mut left = Object::new_sphere_unit();
+    let mut left: Object = Sphere::new().build().into();
     left.shape_mut().transformation =
         &Matrix::new_translation(-2.0, 0.33, -0.75) * &Matrix::new_scaling(0.33, 0.33, 0.33);
     left.shape_mut().material = Material::new()

@@ -36,6 +36,24 @@ pub enum Object {
     Plane(Plane),
 }
 
+impl From<Sphere> for Object {
+    fn from(v: Sphere) -> Self {
+        Object::Sphere(v)
+    }
+}
+
+impl From<Plane> for Object {
+    fn from(v: Plane) -> Self {
+        Object::Plane(v)
+    }
+}
+
+impl From<Null> for Object {
+    fn from(v: Null) -> Self {
+        Object::Null(v)
+    }
+}
+
 impl Object {
     // TODO Define trait that returns these, so that the match is not necessary.
     fn local_intersect(&self, ray: &Ray) -> Intersections {
@@ -100,55 +118,107 @@ impl Object {
     }
 
     // builders/constructors
-    pub fn new_sphere_unit() -> Object {
-        Object::Sphere(Sphere::new_unit())
-    }
-
-    pub fn new_sphere_with_matrix(matrix: Matrix) -> Object {
-        Object::Sphere(Sphere::new(matrix))
-    }
-
-    pub fn new_sphere_with_material(material: Material) -> Object {
-        Object::Sphere(Sphere::new_material(material))
-    }
-
-    // test item with minimal implementation
-    pub fn new_null() -> Object {
-        Object::Null(Null::new())
-    }
-
-    // pub fn new_plane() -> Object {
-    //     Object::Plane(Plane::new())
+    // pub fn new_sphere_unit() -> Object {
+    //     Object::Sphere(Sphere::new_unit())
     // }
-
-    pub fn new_plane_with_transformation_and_material(t: Matrix, m: Material) -> Object {
-        Object::Plane(Plane::new_with_transformation_and_material(t, m))
-    }
+    //
+    // pub fn new_sphere_with_matrix(matrix: Matrix) -> Object {
+    //     Object::Sphere(Sphere::new(matrix))
+    // }
+    //
+    // pub fn new_sphere_with_material(material: Material) -> Object {
+    //     Object::Sphere(Sphere::new_material(material))
+    // }
+    //
+    // // test item with minimal implementation
+    // pub fn new_null() -> Object {
+    //     Object::Null(Null::new())
+    // }
+    //
+    // // pub fn new_plane() -> Object {
+    // //     Object::Plane(Plane::new())
+    // // }
+    //
+    // pub fn new_plane_with_transformation_and_material(t: Matrix, m: Material) -> Object {
+    //     Object::Plane(Plane::new_with_transformation_and_material(t, m))
+    // }
 }
 
-// Unit measure for shapes.
-//const UNIT: f64 = 1.0;
-
-impl Shape {
-    // default constructor
-    pub fn new_unit() -> Shape {
-        Shape::new(crate::domain::matrix::IDENTITY.clone(), Material::default())
-    }
-
-    // parameter constructor
-    pub fn new(transformation: Matrix, material: Material) -> Shape {
+impl Default for Shape {
+    fn default() -> Self {
         Shape {
-            transformation,
-            material,
+            transformation: crate::domain::matrix::IDENTITY.clone(),
+            material: Material::default(),
         }
     }
 }
 
-impl Null {
-    pub fn new() -> Null {
+impl Shape {
+    // default constructor
+    pub fn new_unit() -> Shape {
+        Shape::default()
+    }
+
+    pub fn new() -> ShapeBuilder {
+        ShapeBuilder {
+            transformation: Option::None,
+            material: Option::None,
+        }
+    }
+}
+
+pub struct ShapeBuilder {
+    transformation: Option<Matrix>,
+    material: Option<Material>,
+}
+
+impl ShapeBuilder {
+    pub fn transformation(&mut self, transformation: Matrix) -> &mut ShapeBuilder {
+        self.transformation = Option::Some(transformation);
+        self
+    }
+
+    pub fn material(&mut self, material: Material) -> &mut ShapeBuilder {
+        self.material = Option::Some(material);
+        self
+    }
+
+    pub fn build(&self) -> Shape {
+        Shape {
+            transformation: self
+                .transformation
+                .clone()
+                .unwrap_or(crate::domain::matrix::IDENTITY.clone()),
+            material: self.material.clone().unwrap_or(Material::default()),
+        }
+    }
+}
+
+pub struct NullBuilder {
+    shape_builder: ShapeBuilder,
+}
+
+impl NullBuilder {
+    pub fn transformation(&mut self, transformation: Matrix) -> &mut NullBuilder {
+        self.shape_builder.transformation(transformation);
+        self
+    }
+
+    pub fn material(&mut self, material: Material) -> &mut NullBuilder {
+        self.shape_builder.material(material);
+        self
+    }
+
+    pub fn build(&self) -> Null {
         Null {
-            shape: Shape::new_unit(),
-            //saved_ray: Option::None,
+            shape: self.shape_builder.build(),
+        }
+    }
+}
+impl Null {
+    pub fn new() -> NullBuilder {
+        NullBuilder {
+            shape_builder: Shape::new(),
         }
     }
     pub(crate) fn local_intersect(&self, _ray: &Ray) -> Vec<f64> {
@@ -167,19 +237,32 @@ impl Null {
     }
 }
 
-impl Plane {
-    pub fn new() -> Plane {
-        Plane {
-            shape: Shape::new_unit(),
-        }
+pub struct PlaneBuilder {
+    shape_builder: ShapeBuilder,
+}
+
+impl PlaneBuilder {
+    pub fn transformation(&mut self, transformation: Matrix) -> &mut PlaneBuilder {
+        self.shape_builder.transformation(transformation);
+        self
     }
 
-    pub fn new_with_transformation_and_material(
-        transformation: Matrix,
-        material: Material,
-    ) -> Plane {
+    pub fn material(&mut self, material: Material) -> &mut PlaneBuilder {
+        self.shape_builder.material(material);
+        self
+    }
+
+    pub fn build(&self) -> Plane {
         Plane {
-            shape: Shape::new(transformation, material),
+            shape: self.shape_builder.build(),
+        }
+    }
+}
+
+impl Plane {
+    pub fn new() -> PlaneBuilder {
+        PlaneBuilder {
+            shape_builder: Shape::new(),
         }
     }
 
@@ -199,6 +282,35 @@ impl Plane {
     }
 }
 
+pub struct SphereBuilder {
+    shape_builder: ShapeBuilder,
+    origin: Option<Point>,
+}
+
+impl SphereBuilder {
+    pub fn transformation(&mut self, transformation: Matrix) -> &mut SphereBuilder {
+        self.shape_builder.transformation(transformation);
+        self
+    }
+
+    pub fn material(&mut self, material: Material) -> &mut SphereBuilder {
+        self.shape_builder.material(material);
+        self
+    }
+
+    pub fn origin(&mut self, origin: Point) -> &mut SphereBuilder {
+        self.origin = Option::Some(origin);
+        self
+    }
+
+    pub fn build(&self) -> Sphere {
+        Sphere {
+            shape: self.shape_builder.build(),
+            origin: self.origin.unwrap_or(Point::ORIGIN),
+        }
+    }
+}
+
 impl Sphere {
     const ORIGIN: Point = Point {
         ray_tuple: RayTuple {
@@ -210,33 +322,11 @@ impl Sphere {
     };
 
     // constructor w/ no transformation matrix (identify matrix default)
-    fn new_unit() -> Sphere {
-        Sphere {
-            origin: Sphere::ORIGIN,
+    pub fn new() -> SphereBuilder {
+        SphereBuilder {
+            origin: Option::Some(Point::ORIGIN),
             //radius: UNIT,
-            shape: Shape::new_unit(),
-        }
-    }
-
-    // constructor w/ initial transformation matrix
-    fn new(transformation: Matrix) -> Sphere {
-        Sphere {
-            shape: Shape {
-                transformation,
-                ..Shape::new_unit()
-            },
-            ..Sphere::new_unit()
-        }
-    }
-
-    // constructor w/ material argument
-    fn new_material(material: Material) -> Sphere {
-        Sphere {
-            shape: Shape {
-                material,
-                ..Shape::new_unit()
-            },
-            ..Sphere::new_unit()
+            shape_builder: Shape::new(),
         }
     }
 

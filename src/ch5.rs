@@ -1,7 +1,7 @@
 use crate::domain::canvas::Canvas;
 use crate::domain::color::Color;
 use crate::domain::matrix::Matrix;
-use crate::domain::object::Object;
+use crate::domain::object::{Object, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::Point;
 use std::io::{stdout, Error, Write};
@@ -17,7 +17,10 @@ pub fn run() -> Result<(), Error> {
 
     // sphere object
     let in_front_of_wall_translation = Matrix::new_translation(0.0, 0.0, 0.0);
-    let sphere = Object::new_sphere_with_matrix(in_front_of_wall_translation);
+    let sphere: Object = Sphere::new()
+        .transformation(in_front_of_wall_translation)
+        .build()
+        .into();
 
     let canvas_length: usize = 400;
     let mut canvas = Canvas::new(canvas_length, canvas_length, Color::default());

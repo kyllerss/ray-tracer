@@ -2,7 +2,7 @@ use crate::domain::canvas::Canvas;
 use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
-use crate::domain::object::Object;
+use crate::domain::object::{Object, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::Point;
 use std::io::{stdout, Error, Write};
@@ -17,7 +17,7 @@ pub fn run() -> Result<(), Error> {
     let ray_origin = Point::new(0.0, 0.0, -5.0);
 
     // sphere object
-    let mut sphere = Object::new_sphere_unit();
+    let mut sphere: Object = Sphere::new().build().into();
     let material = Material::new().color(Color::new(1.0, 0.2, 1.0)).build();
     sphere.shape_mut().material = material;
 

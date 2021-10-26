@@ -3,7 +3,7 @@ use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
-use crate::domain::object::Object;
+use crate::domain::object::{Object, Plane, Sphere};
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
 use std::f64::consts::PI;
@@ -16,7 +16,7 @@ pub fn run() -> Result<(), Error> {
     // floor
     //let mut t = &Matrix::new_rotation_z(PI / 2.0) * &Matrix::new_translation(0.0, 0.0, 3.0);
     let t = Matrix::new_rotation_z(PI / 3.0);
-    let floor = Object::new_plane_with_transformation_and_material(t, Material::default());
+    let floor: Object = Plane::new().transformation(t).build().into();
     // Matrix::new_scaling(10.0, 0.01, 10.0)
     // floor.shape_mut().material = Material::new_full(
     //     Color::new(1.0, 0.9, 0.9),
@@ -27,33 +27,47 @@ pub fn run() -> Result<(), Error> {
     // );
 
     // middle sphere
-    let mut middle = Object::new_sphere_unit();
-    middle.shape_mut().transformation = Matrix::new_translation(-0.5, 1.0, 0.5);
-    middle.shape_mut().material = Material::new()
-        .color(Color::new(0.1, 1.0, 0.5))
-        .diffuse(0.7)
-        .specular(0.3)
-        .build();
+    let middle: Object = Sphere::new()
+        .transformation(Matrix::new_translation(-0.5, 1.0, 0.5))
+        .material(
+            Material::new()
+                .color(Color::new(0.1, 1.0, 0.5))
+                .diffuse(0.7)
+                .specular(0.3)
+                .build(),
+        )
+        .build()
+        .into();
 
     // right sphere
-    let mut right = Object::new_sphere_unit();
-    right.shape_mut().transformation =
-        &Matrix::new_translation(1.5, 0.5, -0.5) * &Matrix::new_scaling(0.5, 0.5, 0.5);
-    right.shape_mut().material = Material::new()
-        .color(Color::new(0.5, 1.0, 0.1))
-        .diffuse(0.7)
-        .specular(0.3)
-        .build();
+    let right: Object = Sphere::new()
+        .transformation(
+            &Matrix::new_translation(1.5, 0.5, -0.5) * &Matrix::new_scaling(0.5, 0.5, 0.5),
+        )
+        .material(
+            Material::new()
+                .color(Color::new(0.5, 1.0, 0.1))
+                .diffuse(0.7)
+                .specular(0.3)
+                .build(),
+        )
+        .build()
+        .into();
 
     // left sphere
-    let mut left = Object::new_sphere_unit();
-    left.shape_mut().transformation =
-        &Matrix::new_translation(-1.5, 0.33, -0.75) * &Matrix::new_scaling(0.33, 0.33, 0.33);
-    left.shape_mut().material = Material::new()
-        .color(Color::new(1.0, 0.8, 0.1))
-        .diffuse(0.7)
-        .specular(0.3)
-        .build();
+    let left: Object = Sphere::new()
+        .transformation(
+            &Matrix::new_translation(-1.5, 0.33, -0.75) * &Matrix::new_scaling(0.33, 0.33, 0.33),
+        )
+        .material(
+            Material::new()
+                .color(Color::new(1.0, 0.8, 0.1))
+                .diffuse(0.7)
+                .specular(0.3)
+                .build(),
+        )
+        .build()
+        .into();
 
     // world
     let light_source = Light::new(Point::new(-10.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));

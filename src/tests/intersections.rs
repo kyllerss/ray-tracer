@@ -1,13 +1,13 @@
 use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::matrix::Matrix;
-use crate::domain::object::Object;
+use crate::domain::object::{Object, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
 
 #[test]
 fn ch5_test8_intersection_object_encapsulates_t_and_obj() {
     let distance = 3.5;
-    let sphere = Object::new_sphere_unit();
+    let sphere: Object = Sphere::new().build().into();
     let intersection = Intersection::new(distance, &sphere);
     assert_eq!(intersection.distance, distance);
     assert_eq!(intersection.object, &sphere);
@@ -15,7 +15,7 @@ fn ch5_test8_intersection_object_encapsulates_t_and_obj() {
 
 #[test]
 fn ch5_test9_aggregating_intersections() {
-    let s = Object::new_sphere_unit();
+    let s: Object = Sphere::new().build().into();
     let i1 = Intersection::new(1.0, &s);
     let i2 = Intersection::new(2.0, &s);
     let mut xs = Intersections::new();
@@ -30,7 +30,7 @@ fn ch5_test9_aggregating_intersections() {
 #[test]
 fn ch5_test11_hit_tests() {
     // all intersections positive
-    let s = Object::new_sphere_unit();
+    let s: Object = Sphere::new().build().into();
     let i1 = Intersection::new(1.0, &s);
     let i2 = Intersection::new(2.0, &s);
     let mut xs = Intersections::new();
@@ -110,7 +110,7 @@ fn ch5_test11_hit_tests() {
 #[test]
 fn ch7_test4_precomputing_state_of_intersection() {
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let shape = Object::new_sphere_unit();
+    let shape: Object = Sphere::new().build().into();
     let i = Intersection::new(4.0, &shape);
     let comps = Computations::prepare_computations(&i, &r);
     assert_eq!(comps.distance, i.distance);
@@ -124,7 +124,7 @@ fn ch7_test4_precomputing_state_of_intersection() {
 fn ch7_test5_prepare_computations_when_hit_outside_and_inside() {
     // outside hit
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let shape = Object::new_sphere_unit();
+    let shape: Object = Sphere::new().build().into();
     let i = Intersection::new(4.0, &shape);
     let comps = Computations::prepare_computations(&i, &r);
     assert_eq!(comps.inside, false);
@@ -142,7 +142,10 @@ fn ch7_test5_prepare_computations_when_hit_outside_and_inside() {
 #[test]
 fn ch8_test7_hit_should_offset_point() {
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let shape = Object::new_sphere_with_matrix(Matrix::new_translation(0.0, 0.0, 1.0));
+    let shape: Object = Sphere::new()
+        .transformation(Matrix::new_translation(0.0, 0.0, 1.0))
+        .build()
+        .into();
     let i = Intersection::new(5.0, &shape);
     let comps = Computations::prepare_computations(&i, &r);
     assert!(comps.over_point.z() < -crate::domain::EPSILON / 2.0);

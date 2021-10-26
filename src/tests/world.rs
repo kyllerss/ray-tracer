@@ -3,7 +3,7 @@ use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
-use crate::domain::object::Object;
+use crate::domain::object::{Object, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
@@ -22,10 +22,10 @@ pub fn build_test_world() -> World {
 
     let mc = Color::new(0.8, 1.0, 0.6);
     let m1 = Material::new().color(mc).diffuse(0.7).specular(0.2).build();
-    let s1 = Object::new_sphere_with_material(m1);
+    let s1: Object = Sphere::new().material(m1).build().into();
 
     let t2 = Matrix::new_scaling(0.5, 0.5, 0.5);
-    let s2 = Object::new_sphere_with_matrix(t2);
+    let s2: Object = Sphere::new().transformation(t2).build().into();
 
     let mut w = World::new();
     w.light_source = Some(light);
@@ -50,11 +50,11 @@ fn ch7_test2_validate_default_world() {
 
     let mc = Color::new(0.8, 1.0, 0.6);
     let m1 = Material::new().color(mc).diffuse(0.7).specular(0.2).build();
-    let s1_exp = Object::new_sphere_with_material(m1);
+    let s1_exp: Object = Sphere::new().material(m1).build().into();
     assert!(w.objects.contains(&s1_exp));
 
     let t2 = Matrix::new_scaling(0.5, 0.5, 0.5);
-    let s2_exp = Object::new_sphere_with_matrix(t2);
+    let s2_exp: Object = Sphere::new().transformation(t2).build().into();
     assert!(w.objects.contains(&s2_exp));
 }
 
@@ -159,9 +159,12 @@ fn ch8_test5_no_shadow_when_object_behind_point() {
 fn ch8_test6_shade_hit_is_given_intersection_in_shadow() {
     let mut w = World::new();
     w.light_source = Some(Light::new(Point::new(0.0, 0.0, -10.0), Color::WHITE));
-    let s1 = Object::new_sphere_unit();
+    let s1: Object = Sphere::new().build().into();
     w.objects.push(s1);
-    let s2 = Object::new_sphere_with_matrix(Matrix::new_translation(0.0, 0.0, 10.0));
+    let s2: Object = Sphere::new()
+        .transformation(Matrix::new_translation(0.0, 0.0, 10.0))
+        .build()
+        .into();
     w.objects.push(s2.clone());
     let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
     let i = Intersection::new(4.0, &s2);

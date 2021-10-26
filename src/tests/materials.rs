@@ -1,7 +1,7 @@
 use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::Material;
-use crate::domain::object::Object;
+use crate::domain::object::{Object, Sphere};
 use crate::domain::{Point, Vector};
 
 #[test]
@@ -31,7 +31,7 @@ fn generate_test_harness_lighting(
     lightpoint_z: f64,
 ) -> Color {
     let m = Material::default();
-    let object = Object::new_sphere_unit();
+    let object: Object = Sphere::new().build().into();
     let position = Point::new(0.0, 0.0, 0.0);
     let eye_v = Vector::new(0.0, eyev_y, eyev_z);
     let normal_v = Vector::new(0.0, 0.0, -1.0);
@@ -81,7 +81,7 @@ fn ch6_test13_lighting_with_light_behind_surface() {
 #[test]
 fn ch8_test1_lighting_with_surface_in_shadow() {
     let m = Material::default();
-    let object = &Object::new_sphere_unit();
+    let object: Object = Sphere::new().build().into();
     let position = Point::ORIGIN;
     let eye_v = Vector::new(0.0, 0.0, -1.0);
     let normal_v = Vector::new(0.0, 0.0, -1.0);
