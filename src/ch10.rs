@@ -14,7 +14,11 @@ use std::sync::Arc;
 pub fn run() -> Result<(), Error> {
     println!("Running ch10...");
 
-    let floor_pattern = Pattern::new_striped(Color::new(1.0, 0.0, 0.0), Color::new(0.0, 0.0, 1.0));
+    let floor_pattern = Pattern::new_striped(
+        Color::new(1.0, 0.0, 0.0),
+        Color::new(0.0, 0.0, 1.0),
+        crate::domain::matrix::IDENTITY.clone(),
+    );
 
     // floor
     let t = crate::domain::matrix::IDENTITY.clone(); //Matrix::new_rotation_z(PI / 3.0);
@@ -26,10 +30,11 @@ pub fn run() -> Result<(), Error> {
         .build();
 
     // middle sphere
-    let middle_pattern = Pattern::new_striped_with_transformation(
+    // &Matrix::new_rotation_x(PI / 4.0) * &Matrix::new_rotation_z(PI / 4.0),
+    let middle_pattern = Pattern::new_gradient(
         Color::new(0.2, 0.8, 0.2),
         Color::new(0.8, 0.2, 0.8),
-        &Matrix::new_rotation_x(PI / 4.0) * &Matrix::new_rotation_z(PI / 4.0),
+        crate::domain::matrix::IDENTITY.clone(),
     );
     let mut middle: Object = Sphere::new().build().into();
     middle.shape_mut().transformation = Matrix::new_translation(-0.5, 1.0, 0.5);
@@ -41,7 +46,7 @@ pub fn run() -> Result<(), Error> {
         .build();
 
     // right sphere
-    let right_pattern = Pattern::new_striped_with_transformation(
+    let right_pattern = Pattern::new_striped(
         Color::new(0.33, 0.66, 0.33),
         Color::new(0.66, 0.33, 0.66),
         Matrix::new_rotation_y(PI / 2.0),
@@ -56,7 +61,7 @@ pub fn run() -> Result<(), Error> {
         .build();
 
     // left sphere
-    let left_pattern = Pattern::new_striped_with_transformation(
+    let left_pattern = Pattern::new_striped(
         Color::new(0.33, 0.66, 0.33),
         Color::new(0.66, 0.33, 0.66),
         crate::domain::matrix::IDENTITY.clone(),
@@ -79,7 +84,7 @@ pub fn run() -> Result<(), Error> {
         .append(vec![floor, middle, left, right].as_mut());
 
     // camera
-    let scale = 32;
+    let scale = 4;
     let camera_width = 100 * scale;
     let camera_height = 50 * scale;
     let mut camera = Camera::new(camera_width, camera_height, PI / 3.0);

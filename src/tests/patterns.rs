@@ -8,67 +8,78 @@ use crate::domain::{Point, Vector};
 
 #[test]
 fn ch10_test1_creating_stripe_pattern() {
-    let Pattern::STRIPED { a, b, .. } = Pattern::new_striped(Color::WHITE, Color::BLACK);
-    assert_eq!(a, Color::WHITE);
-    assert_eq!(b, Color::BLACK);
+    if let Pattern::STRIPED { a, b, .. } = Pattern::new_striped(
+        Color::WHITE,
+        Color::BLACK,
+        crate::domain::matrix::IDENTITY.clone(),
+    ) {
+        assert_eq!(a, Color::WHITE);
+        assert_eq!(b, Color::BLACK);
+    } else {
+        panic!("Unexpected result!");
+    }
 }
 
 #[test]
 fn ch10_test2_stripe_pattern_constant_in_y_z_and_alternating_in_x() {
-    let pattern = Pattern::new_striped(Color::WHITE, Color::BLACK);
+    let pattern = Pattern::new_striped(
+        Color::WHITE,
+        Color::BLACK,
+        crate::domain::matrix::IDENTITY.clone(),
+    );
 
     // y
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(0.0, 0.0, 0.0)),
-        &Color::WHITE
+        Color::WHITE
     );
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(0.0, 1.0, 0.0)),
-        &Color::WHITE
+        Color::WHITE
     );
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(0.0, 2.0, 0.0)),
-        &Color::WHITE
+        Color::WHITE
     );
 
     // z
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(0.0, 0.0, 0.0)),
-        &Color::WHITE
+        Color::WHITE
     );
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(0.0, 0.0, 1.0)),
-        &Color::WHITE
+        Color::WHITE
     );
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(0.0, 0.0, 2.0)),
-        &Color::WHITE
+        Color::WHITE
     );
 
     // x
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(0.0, 0.0, 0.0)),
-        &Color::WHITE
+        Color::WHITE
     );
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(0.9, 0.0, 0.0)),
-        &Color::WHITE
+        Color::WHITE
     );
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(1.0, 0.0, 0.0)),
-        &Color::BLACK
+        Color::BLACK
     );
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(-0.1, 0.0, 0.0)),
-        &Color::BLACK
+        Color::BLACK
     );
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(-1.0, 0.0, 0.0)),
-        &Color::BLACK
+        Color::BLACK
     );
     assert_eq!(
         pattern.color_at(&Sphere::new().build().into(), &Point::new(-1.1, 0.0, 0.0)),
-        &Color::WHITE
+        Color::WHITE
     );
 }
 
@@ -78,7 +89,11 @@ fn ch10_test3_lighting_with_pattern_applied() {
         .ambient(1.0)
         .diffuse(0.0)
         .specular(0.0)
-        .pattern(Pattern::new_striped(Color::WHITE, Color::BLACK))
+        .pattern(Pattern::new_striped(
+            Color::WHITE,
+            Color::BLACK,
+            crate::domain::matrix::IDENTITY.clone(),
+        ))
         .build();
     let object = &Sphere::new().build().into();
     let eye_v = Vector::new(0.0, 0.0, -1.0);
@@ -114,33 +129,58 @@ fn ch10_test4_stripes_with_object_and_pattern_transformations() {
         .transformation(Matrix::new_scaling(2.0, 2.0, 2.0))
         .build()
         .into();
-    let pattern = Pattern::new_striped(Color::WHITE, Color::BLACK);
+    let pattern = Pattern::new_striped(
+        Color::WHITE,
+        Color::BLACK,
+        crate::domain::matrix::IDENTITY.clone(),
+    );
     let point = Point::new(1.5, 0.0, 0.0);
     let c = pattern.color_at(&object, &point);
-    assert_eq!(*c, Color::WHITE);
+    assert_eq!(c, Color::WHITE);
 
     // stripes with a pattern transformation
     let object = Sphere::new().build().into();
-    let pattern = Pattern::new_striped_with_transformation(
+    let pattern = Pattern::new_striped(
         Color::WHITE,
         Color::BLACK,
         Matrix::new_scaling(2.0, 2.0, 2.0),
     );
     let point = Point::new(1.5, 0.0, 0.0);
     let c = pattern.color_at(&object, &point);
-    assert_eq!(*c, Color::WHITE);
+    assert_eq!(c, Color::WHITE);
 
     // stripes with both object and pattern transformations
     let object = Sphere::new()
         .transformation(Matrix::new_scaling(2.0, 2.0, 2.0))
         .build()
         .into();
-    let pattern = Pattern::new_striped_with_transformation(
+    let pattern = Pattern::new_striped(
         Color::WHITE,
         Color::BLACK,
         Matrix::new_translation(0.5, 0.0, 0.0),
     );
     let point = Point::new(2.5, 0.0, 0.0);
     let c = pattern.color_at(&object, &point);
-    assert_eq!(*c, Color::WHITE);
+    assert_eq!(c, Color::WHITE);
+}
+
+// Skipping ch10_test5 as superfluous.
+
+#[test]
+fn ch10_test6_gradient_linearly_interpolates_between_colors() {
+    let pattern = Pattern::new_gradient(
+        Color::WHITE,
+        Color::BLACK,
+        crate::domain::matrix::IDENTITY.clone(),
+    );
+    let object = Sphere::new().build().into();
+    let c1 = pattern.color_at(&object, &Point::new(0.0, 0.0, 0.0));
+    let c2 = pattern.color_at(&object, &Point::new(0.25, 0.0, 0.0));
+    let c3 = pattern.color_at(&object, &Point::new(0.5, 0.0, 0.0));
+    let c4 = pattern.color_at(&object, &Point::new(0.75, 0.0, 0.0));
+
+    assert_eq!(c1, Color::new(1.0, 1.0, 1.0));
+    assert_eq!(c2, Color::new(0.75, 0.75, 0.75));
+    assert_eq!(c3, Color::new(0.5, 0.5, 0.5));
+    assert_eq!(c4, Color::new(0.25, 0.25, 0.25));
 }
