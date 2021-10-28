@@ -15,6 +15,16 @@ pub enum Pattern {
         b: Color,
         transformation: Matrix,
     },
+    RINGED {
+        a: Color,
+        b: Color,
+        transformation: Matrix,
+    },
+    CHECKERED {
+        a: Color,
+        b: Color,
+        transformation: Matrix,
+    },
 }
 
 // pub struct TwoColorBuilder {
@@ -81,11 +91,29 @@ impl Pattern {
         }
     }
 
+    pub fn new_ringed(a: Color, b: Color, transformation: Matrix) -> Pattern {
+        Pattern::RINGED {
+            a,
+            b,
+            transformation,
+        }
+    }
+
+    pub fn new_checkered(a: Color, b: Color, transformation: Matrix) -> Pattern {
+        Pattern::CHECKERED {
+            a,
+            b,
+            transformation,
+        }
+    }
+
     // TODO Turn this into a trait method to obviate pattern matching
     pub fn transformation(&self) -> &Matrix {
         match self {
             Pattern::STRIPED { transformation, .. } => transformation,
             Pattern::GRADIENT { transformation, .. } => transformation,
+            Pattern::RINGED { transformation, .. } => transformation,
+            Pattern::CHECKERED { transformation, .. } => transformation,
         }
     }
 
@@ -98,6 +126,8 @@ impl Pattern {
         match &self {
             Pattern::STRIPED { a, b, .. } => color_at_striped(a, b, &pattern_point),
             Pattern::GRADIENT { a, b, .. } => color_at_gradient(a, b, &pattern_point),
+            Pattern::RINGED { a, b, .. } => color_at_ringed(a, b, &pattern_point),
+            Pattern::CHECKERED { a, b, .. } => color_at_checkered(a, b, &pattern_point),
         }
     }
 }
@@ -116,4 +146,24 @@ fn color_at_gradient<'a, 'b>(a: &'a Color, b: &'a Color, point: &'b Point) -> Co
     let distance = b - a;
     let fraction = point.x() as f32 - point.x().floor() as f32;
     a + &(&distance * fraction)
+}
+
+// ringed colors across x axis
+fn color_at_ringed<'a, 'b>(a: &'a Color, b: &'a Color, point: &'b Point) -> Color {
+    let first = (point.x().powi(2) + point.z().powi(2)).sqrt().floor() % 2.0 == 0.0;
+    if first {
+        a.clone()
+    } else {
+        b.clone()
+    }
+}
+
+// ringed colors across x axis
+fn color_at_checkered<'a, 'b>(a: &'a Color, b: &'a Color, point: &'b Point) -> Color {
+    let first = (point.x().floor() + point.y().floor() + point.z().floor()) % 2.0 == 0.0;
+    if first {
+        a.clone()
+    } else {
+        b.clone()
+    }
 }

@@ -184,3 +184,59 @@ fn ch10_test6_gradient_linearly_interpolates_between_colors() {
     assert_eq!(c3, Color::new(0.5, 0.5, 0.5));
     assert_eq!(c4, Color::new(0.25, 0.25, 0.25));
 }
+
+#[test]
+fn ch10_test7_ring_pattern() {
+    let pattern = Pattern::new_ringed(
+        Color::WHITE,
+        Color::BLACK,
+        crate::domain::matrix::IDENTITY.clone(),
+    );
+    let obj = Sphere::new().build().into();
+    let c1 = pattern.color_at(&obj, &Point::new(0.0, 0.0, 0.0));
+    let c2 = pattern.color_at(&obj, &Point::new(1.0, 0.0, 0.0));
+    let c3 = pattern.color_at(&obj, &Point::new(0.0, 0.0, 1.0));
+    let c4 = pattern.color_at(&obj, &Point::new(0.708, 0.0, 0.708));
+
+    assert_eq!(c1, Color::WHITE);
+    assert_eq!(c2, Color::BLACK);
+    assert_eq!(c3, Color::BLACK);
+    assert_eq!(c4, Color::BLACK);
+}
+
+#[test]
+fn ch10_test8_checkered_pattern() {
+    let pattern = Pattern::new_checkered(
+        Color::WHITE,
+        Color::BLACK,
+        crate::domain::matrix::IDENTITY.clone(),
+    );
+    let obj = Sphere::new().build().into();
+
+    // repeats in x
+    let c1 = pattern.color_at(&obj, &Point::new(0.0, 0.0, 0.0));
+    let c2 = pattern.color_at(&obj, &Point::new(0.99, 0.0, 0.0));
+    let c3 = pattern.color_at(&obj, &Point::new(1.01, 0.0, 0.0));
+
+    assert_eq!(c1, Color::WHITE);
+    assert_eq!(c2, Color::WHITE);
+    assert_eq!(c3, Color::BLACK);
+
+    // repeats in y
+    let c1 = pattern.color_at(&obj, &Point::new(0.0, 0.0, 0.0));
+    let c2 = pattern.color_at(&obj, &Point::new(0.0, 0.99, 0.0));
+    let c3 = pattern.color_at(&obj, &Point::new(0.0, 1.01, 0.0));
+
+    assert_eq!(c1, Color::WHITE);
+    assert_eq!(c2, Color::WHITE);
+    assert_eq!(c3, Color::BLACK);
+
+    // repeats in z
+    let c1 = pattern.color_at(&obj, &Point::new(0.0, 0.0, 0.0));
+    let c2 = pattern.color_at(&obj, &Point::new(0.0, 0.0, 0.99));
+    let c3 = pattern.color_at(&obj, &Point::new(0.0, 0.0, 1.01));
+
+    assert_eq!(c1, Color::WHITE);
+    assert_eq!(c2, Color::WHITE);
+    assert_eq!(c3, Color::BLACK);
+}
