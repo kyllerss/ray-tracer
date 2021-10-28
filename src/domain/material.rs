@@ -9,6 +9,7 @@ pub struct Material {
     pub specular: f64,
     pub shininess: f64,
     pub pattern: Option<Pattern>,
+    pub reflective: f64,
 }
 
 impl Default for Material {
@@ -20,6 +21,7 @@ impl Default for Material {
             specular: Material::DEFAULT_SPECULAR,
             shininess: Material::DEFAULT_SHININESS,
             pattern: None,
+            reflective: Material::DEFAULT_REFLECTIVE,
         }
     }
 }
@@ -31,6 +33,7 @@ pub struct MaterialBuilder {
     specular: Option<f64>,
     shininess: Option<f64>,
     pattern: Option<Pattern>,
+    reflective: Option<f64>,
 }
 
 impl Material {
@@ -38,6 +41,7 @@ impl Material {
     pub const DEFAULT_DIFFUSE: f64 = 0.9;
     pub const DEFAULT_SPECULAR: f64 = 0.9;
     pub const DEFAULT_SHININESS: f64 = 200.0;
+    pub const DEFAULT_REFLECTIVE: f64 = 0.0;
 
     // builder
     pub fn new() -> MaterialBuilder {
@@ -48,6 +52,7 @@ impl Material {
             specular: Option::None,
             shininess: Option::None,
             pattern: Option::None,
+            reflective: Option::None,
         }
     }
 }
@@ -62,6 +67,7 @@ impl MaterialBuilder {
             specular: self.specular.unwrap_or(Material::DEFAULT_SPECULAR),
             shininess: self.shininess.unwrap_or(Material::DEFAULT_SHININESS),
             pattern: self.pattern.clone(),
+            reflective: self.reflective.unwrap_or(Material::DEFAULT_REFLECTIVE),
         }
     }
 
@@ -92,6 +98,11 @@ impl MaterialBuilder {
 
     pub fn pattern(&mut self, pattern: Pattern) -> &mut MaterialBuilder {
         self.pattern = Some(pattern);
+        self
+    }
+
+    pub fn reflective(&mut self, reflective: f64) -> &mut MaterialBuilder {
+        self.reflective = Some(reflective);
         self
     }
 }

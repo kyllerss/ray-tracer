@@ -1,6 +1,6 @@
 use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::matrix::Matrix;
-use crate::domain::object::{Object, Sphere};
+use crate::domain::object::{Object, Plane, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
 
@@ -150,4 +150,19 @@ fn ch8_test7_hit_should_offset_point() {
     let comps = Computations::prepare_computations(&i, &r);
     assert!(comps.over_point.z() < -crate::domain::EPSILON / 2.0);
     assert!(comps.point.z() > comps.over_point.z());
+}
+
+#[test]
+fn ch11_test2_precomputing_reflection_vector() {
+    let shape: Object = Plane::new().build().into();
+    let r = Ray::new(
+        Point::new(0.0, 1.0, -1.0),
+        Vector::new(0.0, -2_f64.sqrt() / 2_f64, 2_f64.sqrt() / 2_f64),
+    );
+    let i = Intersection::new(2_f64.sqrt(), &shape);
+    let comps = Computations::prepare_computations(&i, &r);
+    assert_eq!(
+        comps.reflect_v,
+        Vector::new(0.0, 2_f64.sqrt() / 2_f64, 2_f64.sqrt() / 2_f64)
+    );
 }

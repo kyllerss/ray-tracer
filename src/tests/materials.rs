@@ -91,3 +91,9 @@ fn ch8_test1_lighting_with_surface_in_shadow() {
     let result_exp = Color::new(0.1, 0.1, 0.1);
     assert_eq!(result, result_exp);
 }
+
+#[test]
+fn ch11_test1_reflectivity_for_default_material() {
+    let m = Material::new().build();
+    assert_eq!(m.reflective, 0.0);
+}

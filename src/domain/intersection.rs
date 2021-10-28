@@ -128,6 +128,7 @@ pub struct Computations<'a> {
     pub normal_v: Vector,
     pub inside: bool,
     pub over_point: Point,
+    pub reflect_v: Vector,
 }
 
 impl<'a> Computations<'a> {
@@ -140,6 +141,7 @@ impl<'a> Computations<'a> {
         normal_v: Vector,
         inside: bool,
         over_point: Point,
+        reflect_v: Vector,
     ) -> Computations {
         Computations {
             distance,
@@ -149,6 +151,7 @@ impl<'a> Computations<'a> {
             normal_v,
             inside,
             over_point,
+            reflect_v,
         }
     }
 
@@ -168,8 +171,10 @@ impl<'a> Computations<'a> {
 
         let over_point = &point + &(&normal_v * crate::domain::EPSILON);
 
+        let reflect_v = r.direction.reflect(&normal_v);
+
         Computations::new(
-            i.distance, i.object, point, eye_v, normal_v, inside, over_point,
+            i.distance, i.object, point, eye_v, normal_v, inside, over_point, reflect_v,
         )
     }
 }
