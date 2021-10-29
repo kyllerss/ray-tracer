@@ -39,7 +39,7 @@ impl World {
     }
 
     // Calculates shade hit for the given computations
-    pub fn shade_hit(&self, comp: &Computations) -> Color {
+    pub fn shade_hit(&self, comp: &Computations, iteration: usize) -> Color {
         let in_shadow = self.is_shadowed(&comp.over_point);
 
         let surface = Light::lighting(
@@ -52,12 +52,12 @@ impl World {
             in_shadow,
         );
 
-        let reflected = self.reflected_color(comp);
+        let reflected = self.reflected_color(comp, iteration);
         &surface + &reflected
     }
 
     // calculates color at a given point
-    pub fn color_at(&self, r: &Ray) -> Color {
+    pub fn color_at(&self, r: &Ray, iteration: usize) -> Color {
         // find intersections
         let mut ints = self.intersect(r);
 
@@ -65,7 +65,7 @@ impl World {
 
         if let Some(intersection) = ints.hit() {
             let comps = Computations::prepare_computations(&intersection, r);
-            result = self.shade_hit(&comps);
+            result = self.shade_hit(&comps, iteration);
         } else {
             result = Color::BLACK;
         }
@@ -86,6 +86,8 @@ impl World {
         // track iterations for logging
         let itr_counter = AtomicUsize::new(0);
 
+        let iteration_max = 10;
+
         // compute pixels
         let mut results = (0..camera.vsize)
             .into_par_iter()
@@ -94,7 +96,7 @@ impl World {
                 let mut r: Vec<(usize, usize, Color)> = Vec::with_capacity(camera.hsize);
                 for x in 0..camera.hsize {
                     let ray = camera.ray_for_pixel(x, y);
-                    let color = self.color_at(&ray);
+                    let color = self.color_at(&ray, iteration_max);
                     r.push((x, y, color));
                 }
 
@@ -133,12 +135,12 @@ impl World {
     }
 
     // performs reflection calculations
-    pub fn reflected_color(&self, comps: &Computations) -> Color {
-        if comps.object.shape().material.reflective == 0.0 {
+    pub fn reflected_color(&self, comps: &Computations, iteration: usize) -> Color {
+        if iteration == 0 || comps.object.shape().material.reflective == 0.0 {
             Color::BLACK
         } else {
             let reflect_ray = Ray::new(comps.over_point.clone(), comps.reflect_v.clone());
-            let color = self.color_at(&reflect_ray);
+            let color = self.color_at(&reflect_ray, iteration - 1);
             &color * comps.object.shape().material.reflective as f32
         }
     }

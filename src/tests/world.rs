@@ -79,7 +79,7 @@ fn ch7_test6_shading_an_intersection_inside_and_outside() {
     let shape = w.objects.first().unwrap();
     let i = Intersection::new(4.0, shape);
     let comps = Computations::prepare_computations(&i, &r);
-    let c: Color = w.shade_hit(&comps);
+    let c: Color = w.shade_hit(&comps, 1);
     let c_exp = Color::new(0.38066, 0.47583, 0.2855);
     assert_eq!(c, c_exp);
 
@@ -89,7 +89,7 @@ fn ch7_test6_shading_an_intersection_inside_and_outside() {
     let shape = w.objects.get(1).unwrap();
     let i = Intersection::new(0.5, shape);
     let comps = Computations::prepare_computations(&i, &r);
-    let c = w.shade_hit(&comps);
+    let c = w.shade_hit(&comps, 1);
     let c_exp = Color::new(0.90498, 0.90498, 0.90498);
     assert_eq!(c, c_exp);
 }
@@ -98,7 +98,7 @@ fn ch7_test6_shading_an_intersection_inside_and_outside() {
 fn ch7_test7_color_when_ray_misses() {
     let w = build_test_world();
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0));
-    let c = w.color_at(&r);
+    let c = w.color_at(&r, 1);
     let c_exp = Color::BLACK;
     assert_eq!(c, c_exp);
 }
@@ -107,7 +107,7 @@ fn ch7_test7_color_when_ray_misses() {
 fn ch7_test8_color_when_ray_hits() {
     let w = build_test_world();
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let c = w.color_at(&r);
+    let c = w.color_at(&r, 1);
     let c_exp = Color::new(0.38066, 0.47583, 0.2855);
     assert_eq!(c, c_exp);
 }
@@ -118,7 +118,7 @@ fn ch7_test9_color_intersection_behind_ray() {
     w.objects[0].shape_mut().material.ambient = 1.0;
     w.objects[1].shape_mut().material.ambient = 1.0;
     let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
-    let c = w.color_at(&r);
+    let c = w.color_at(&r, 1);
     let c_exp = w.objects[1].shape().material.color;
     assert_eq!(c, c_exp);
 }
@@ -169,7 +169,7 @@ fn ch8_test6_shade_hit_is_given_intersection_in_shadow() {
     let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
     let i = Intersection::new(4.0, &s2);
     let comps = Computations::prepare_computations(&i, &r);
-    let r = w.shade_hit(&comps);
+    let r = w.shade_hit(&comps, 1);
     let r_exp = Color::new(0.1, 0.1, 0.1);
     assert_eq!(r, r_exp);
 }
@@ -189,7 +189,7 @@ fn ch11_test3_reflected_color_for_nonreflective_material() {
     };
     let i = Intersection::new(1.0, shape);
     let comps = Computations::prepare_computations(&i, &r);
-    let color = w.reflected_color(&comps);
+    let color = w.reflected_color(&comps, 1);
     assert_eq!(color, Color::BLACK);
 }
 
@@ -208,7 +208,7 @@ fn ch11_test4_reflected_color_for_reflected_material() {
     );
     let i = Intersection::new(2_f64.sqrt(), &shape);
     let comps = Computations::prepare_computations(&i, &r);
-    let color = w.reflected_color(&comps);
+    let color = w.reflected_color(&comps, 1);
     assert_eq!(color, Color::new(0.19032, 0.2379, 0.14274));
 }
 
@@ -227,6 +227,49 @@ fn ch11_test5_shade_hit_with_reflective_material() {
     );
     let i = Intersection::new(2_f64.sqrt(), &shape);
     let comps = Computations::prepare_computations(&i, &r);
-    let color = w.shade_hit(&comps);
+    let color = w.shade_hit(&comps, 1);
     assert_eq!(color, Color::new(0.87677, 0.92436, 0.82918));
+}
+
+#[test]
+fn ch11_test6_color_at_with_mutually_reflective_surfaces() {
+    let mut w = World::new();
+    w.light_source = Option::Some(Light::new(Point::ORIGIN, Color::WHITE));
+
+    let lower = Plane::new()
+        .material(Material::new().reflective(1.0).build())
+        .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
+        .build()
+        .into();
+    w.add_object(lower);
+
+    let upper = Plane::new()
+        .material(Material::new().reflective(1.0).build())
+        .transformation(Matrix::new_translation(0.0, 1.0, 0.0))
+        .build()
+        .into();
+    w.add_object(upper);
+
+    let r = Ray::new(Point::ORIGIN, Vector::new(0.0, 1.0, 0.0));
+    let _ = w.color_at(&r, 1); // should terminate successfully
+    assert!(true);
+}
+
+#[test]
+fn ch11_test7_reflected_color_for_reflected_material() {
+    let mut w = build_test_world();
+    let shape: Object = Plane::new()
+        .material(Material::new().reflective(0.5).build())
+        .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
+        .build()
+        .into();
+    w.add_object(shape.clone());
+    let r = Ray::new(
+        Point::new(0.0, 0.0, -3.0),
+        Vector::new(0.0, -2_f64.sqrt() / 2.0, 2_f64.sqrt() / 2.0),
+    );
+    let i = Intersection::new(2_f64.sqrt(), &shape);
+    let comps = Computations::prepare_computations(&i, &r);
+    let color = w.reflected_color(&comps, 0);
+    assert_eq!(color, Color::BLACK);
 }
