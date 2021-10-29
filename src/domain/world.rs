@@ -42,7 +42,7 @@ impl World {
     pub fn shade_hit(&self, comp: &Computations) -> Color {
         let in_shadow = self.is_shadowed(&comp.over_point);
 
-        Light::lighting(
+        let surface = Light::lighting(
             &comp.object.shape().material,
             &comp.object,
             self.light_source.as_ref().unwrap(),
@@ -50,7 +50,10 @@ impl World {
             &comp.eye_v,
             &comp.normal_v,
             in_shadow,
-        )
+        );
+
+        let reflected = self.reflected_color(comp);
+        &surface + &reflected
     }
 
     // calculates color at a given point
