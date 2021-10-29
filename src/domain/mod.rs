@@ -13,7 +13,7 @@ pub(crate) mod world;
 
 use num::{Float, NumCast};
 
-pub const EPSILON: f64 = 0.00001;
+pub const EPSILON: f64 = 0.0001;
 pub fn epsilon_eq<F>(a: F, b: F) -> bool
 where
     F: Float + NumCast,

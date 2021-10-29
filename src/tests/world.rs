@@ -3,7 +3,7 @@ use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
-use crate::domain::object::{Object, Sphere};
+use crate::domain::object::{Object, Plane, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
@@ -172,4 +172,42 @@ fn ch8_test6_shade_hit_is_given_intersection_in_shadow() {
     let r = w.shade_hit(&comps);
     let r_exp = Color::new(0.1, 0.1, 0.1);
     assert_eq!(r, r_exp);
+}
+
+#[test]
+fn ch11_test3_reflected_color_for_nonreflective_material() {
+    let mut w = build_test_world();
+    let r = Ray::new(Point::ORIGIN, Vector::new(0.0, 0.0, 1.0));
+
+    // https://stackoverflow.com/questions/69771391/mutable-borrow-followed-by-immutable-borrow-cannot-borrow-as-immutable-because?noredirect=1#comment123330186_69771391
+    let shape = {
+        let shape = w.objects.get_mut(1).unwrap();
+        shape.shape_mut().material.ambient = 1.0;
+
+        let immutable = w.objects.get(1).unwrap();
+        immutable
+    };
+    let i = Intersection::new(1.0, shape);
+    let comps = Computations::prepare_computations(&i, &r);
+    let color = w.reflected_color(&comps);
+    assert_eq!(color, Color::BLACK);
+}
+
+#[test]
+fn ch11_test4_reflected_color_for_reflected_material() {
+    let mut w = build_test_world();
+    let shape: Object = Plane::new()
+        .material(Material::new().reflective(0.5).build())
+        .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
+        .build()
+        .into();
+    w.add_object(shape.clone());
+    let r = Ray::new(
+        Point::new(0.0, 0.0, -3.0),
+        Vector::new(0.0, -2_f64.sqrt() / 2.0, 2_f64.sqrt() / 2.0),
+    );
+    let i = Intersection::new(2_f64.sqrt(), &shape);
+    let comps = Computations::prepare_computations(&i, &r);
+    let color = w.reflected_color(&comps);
+    assert_eq!(color, Color::new(0.19032, 0.2379, 0.14274));
 }

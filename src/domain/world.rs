@@ -128,4 +128,15 @@ impl World {
             false
         }
     }
+
+    // performs reflection calculations
+    pub fn reflected_color(&self, comps: &Computations) -> Color {
+        if comps.object.shape().material.reflective == 0.0 {
+            Color::BLACK
+        } else {
+            let reflect_ray = Ray::new(comps.over_point.clone(), comps.reflect_v.clone());
+            let color = self.color_at(&reflect_ray);
+            &color * comps.object.shape().material.reflective as f32
+        }
+    }
 }
