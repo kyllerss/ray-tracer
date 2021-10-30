@@ -5,6 +5,7 @@ pub mod domain;
 #[macro_use]
 mod macros;
 mod ch10;
+mod ch11;
 mod ch5;
 mod ch6;
 mod ch7;
@@ -77,6 +78,10 @@ fn main() -> Result<(), Error> {
         10 => {
             println!("Chapter 10..");
             ch10::run()
+        }
+        11 => {
+            println!("Chapter 11..");
+            ch11::run()
         }
         _ => {
             panic!("Unsupported chapter {}!", chapter);
