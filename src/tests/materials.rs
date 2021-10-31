@@ -1,12 +1,18 @@
 use crate::domain::color::Color;
 use crate::domain::light::Light;
-use crate::domain::material::Material;
+use crate::domain::material::{Material, Substance};
 use crate::domain::object::{Object, Sphere};
 use crate::domain::{Point, Vector};
 
 #[test]
 fn ch0_force_unused_methods_to_be_used() {
-    let _m = Material::new().shininess(1.0).build();
+    let _ = Material::new().shininess(1.0).build();
+    let _ = Material::new().substance(Substance::VACUUM).build();
+    let _ = Material::new().substance(Substance::AIR).build();
+    let _ = Material::new().substance(Substance::WATER).build();
+    let _ = Material::new().substance(Substance::GLASS).build();
+    let _ = Material::new().substance(Substance::DIAMOND).build();
+    let _ = Material::new().transparency(0.0).build();
 }
 
 #[test]
@@ -96,4 +102,11 @@ fn ch8_test1_lighting_with_surface_in_shadow() {
 fn ch11_test1_reflectivity_for_default_material() {
     let m = Material::new().build();
     assert_eq!(m.reflective, 0.0);
+}
+
+#[test]
+fn ch11_test8_transparency_and_refractive_index_on_default_material() {
+    let m = Material::new().build();
+    assert_eq!(m.transparency, 0.0);
+    assert_eq!(m.substance.refractive_index(), 1.0);
 }

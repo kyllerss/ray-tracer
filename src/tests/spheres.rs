@@ -1,5 +1,5 @@
 use crate::domain::color::Color;
-use crate::domain::material::Material;
+use crate::domain::material::{Material, Substance};
 use crate::domain::matrix::Matrix;
 use crate::domain::object::{Object, Sphere};
 use crate::domain::ray::Ray;
@@ -174,4 +174,22 @@ fn ch6_test8_sphere_has_material() {
     let m = Material::new().color(c).ambient(1.0).build();
     let s: Object = Sphere::new().material(m).build().into();
     assert_eq!(s.shape().material.ambient, 1.0);
+}
+
+#[test]
+fn ch11_test9_produce_sphere_with_glassy_material() {
+    let s = Sphere::new()
+        .material(
+            Material::new()
+                .transparency(1.0)
+                .substance(Substance::GLASS)
+                .build(),
+        )
+        .build();
+    assert_eq!(
+        s.shape.transformation,
+        crate::domain::matrix::IDENTITY.clone()
+    );
+    assert_eq!(s.shape.material.transparency, 1.0);
+    assert_eq!(s.shape.material.substance.refractive_index(), 1.52);
 }

@@ -10,6 +10,8 @@ pub struct Material {
     pub shininess: f64,
     pub pattern: Option<Pattern>,
     pub reflective: f64,
+    pub transparency: f64,
+    pub substance: Substance,
 }
 
 impl Default for Material {
@@ -22,6 +24,8 @@ impl Default for Material {
             shininess: Material::DEFAULT_SHININESS,
             pattern: None,
             reflective: Material::DEFAULT_REFLECTIVE,
+            transparency: Material::DEFAULT_TRANSPARENCY,
+            substance: Material::DEFAULT_SUBSTANCE,
         }
     }
 }
@@ -34,6 +38,8 @@ pub struct MaterialBuilder {
     shininess: Option<f64>,
     pattern: Option<Pattern>,
     reflective: Option<f64>,
+    transparency: Option<f64>,
+    substance: Option<Substance>,
 }
 
 impl Material {
@@ -42,6 +48,8 @@ impl Material {
     pub const DEFAULT_SPECULAR: f64 = 0.9;
     pub const DEFAULT_SHININESS: f64 = 200.0;
     pub const DEFAULT_REFLECTIVE: f64 = 0.0;
+    pub const DEFAULT_TRANSPARENCY: f64 = 0.0;
+    pub const DEFAULT_SUBSTANCE: Substance = Substance::VACUUM;
 
     // builder
     pub fn new() -> MaterialBuilder {
@@ -53,6 +61,8 @@ impl Material {
             shininess: Option::None,
             pattern: Option::None,
             reflective: Option::None,
+            transparency: Option::None,
+            substance: Option::None,
         }
     }
 }
@@ -68,41 +78,74 @@ impl MaterialBuilder {
             shininess: self.shininess.unwrap_or(Material::DEFAULT_SHININESS),
             pattern: self.pattern.clone(),
             reflective: self.reflective.unwrap_or(Material::DEFAULT_REFLECTIVE),
+            transparency: self.transparency.unwrap_or(Material::DEFAULT_TRANSPARENCY),
+            substance: self.substance.unwrap_or(Material::DEFAULT_SUBSTANCE),
         }
     }
 
     pub fn color(&mut self, color: Color) -> &mut MaterialBuilder {
-        self.color = Some(color);
+        self.color = Option::Some(color);
         self
     }
 
     pub fn ambient(&mut self, ambient: f64) -> &mut MaterialBuilder {
-        self.ambient = Some(ambient);
+        self.ambient = Option::Some(ambient);
         self
     }
 
     pub fn diffuse(&mut self, diffuse: f64) -> &mut MaterialBuilder {
-        self.diffuse = Some(diffuse);
+        self.diffuse = Option::Some(diffuse);
         self
     }
 
     pub fn specular(&mut self, specular: f64) -> &mut MaterialBuilder {
-        self.specular = Some(specular);
+        self.specular = Option::Some(specular);
         self
     }
 
     pub fn shininess(&mut self, shininess: f64) -> &mut MaterialBuilder {
-        self.shininess = Some(shininess);
+        self.shininess = Option::Some(shininess);
         self
     }
 
     pub fn pattern(&mut self, pattern: Pattern) -> &mut MaterialBuilder {
-        self.pattern = Some(pattern);
+        self.pattern = Option::Some(pattern);
         self
     }
 
     pub fn reflective(&mut self, reflective: f64) -> &mut MaterialBuilder {
-        self.reflective = Some(reflective);
+        self.reflective = Option::Some(reflective);
         self
+    }
+
+    pub fn transparency(&mut self, transparency: f64) -> &mut MaterialBuilder {
+        self.transparency = Option::Some(transparency);
+        self
+    }
+
+    pub fn substance(&mut self, substance: Substance) -> &mut MaterialBuilder {
+        self.substance = Option::Some(substance);
+        self
+    }
+}
+
+#[derive(PartialEq, Debug, Clone, Copy)]
+pub enum Substance {
+    VACUUM,
+    AIR,
+    WATER,
+    GLASS,
+    DIAMOND,
+}
+
+impl Substance {
+    pub fn refractive_index(&self) -> f64 {
+        match self {
+            Substance::VACUUM => 1.0,
+            Substance::AIR => 1.00029,
+            Substance::WATER => 1.333,
+            Substance::GLASS => 1.52,
+            Substance::DIAMOND => 2.417,
+        }
     }
 }
