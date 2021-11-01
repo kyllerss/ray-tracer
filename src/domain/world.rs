@@ -60,11 +60,13 @@ impl World {
     pub fn color_at(&self, r: &Ray, iteration: usize) -> Color {
         // find intersections
         let mut ints = self.intersect(r);
+        let original_ints = ints.clone();
 
         let result: Color;
 
         if let Some(intersection) = ints.hit() {
-            let comps = Computations::prepare_computations(&intersection, r);
+            let comps =
+                Computations::prepare_computations(&intersection, r, Option::Some(&original_ints));
             result = self.shade_hit(&comps, iteration);
         } else {
             result = Color::BLACK;

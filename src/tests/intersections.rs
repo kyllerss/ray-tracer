@@ -1,4 +1,5 @@
 use crate::domain::intersection::{Computations, Intersection, Intersections};
+use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::object::{Object, Plane, Sphere};
 use crate::domain::ray::Ray;
@@ -112,7 +113,7 @@ fn ch7_test4_precomputing_state_of_intersection() {
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
     let shape: Object = Sphere::new().build().into();
     let i = Intersection::new(4.0, &shape);
-    let comps = Computations::prepare_computations(&i, &r);
+    let comps = Computations::prepare_computations(&i, &r, Option::None);
     assert_eq!(comps.distance, i.distance);
     assert_eq!(comps.object, i.object);
     assert_eq!(comps.point, Point::new(0.0, 0.0, -1.0));
@@ -126,13 +127,13 @@ fn ch7_test5_prepare_computations_when_hit_outside_and_inside() {
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
     let shape: Object = Sphere::new().build().into();
     let i = Intersection::new(4.0, &shape);
-    let comps = Computations::prepare_computations(&i, &r);
+    let comps = Computations::prepare_computations(&i, &r, Option::None);
     assert_eq!(comps.inside, false);
 
     // inside hit
     let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
     let i = Intersection::new(1.0, &shape);
-    let comps = Computations::prepare_computations(&i, &r);
+    let comps = Computations::prepare_computations(&i, &r, Option::None);
     assert_eq!(comps.point, Point::new(0.0, 0.0, 1.0));
     assert_eq!(comps.eye_v, Vector::new(0.0, 0.0, -1.0));
     assert_eq!(comps.inside, true);
@@ -147,7 +148,7 @@ fn ch8_test7_hit_should_offset_point() {
         .build()
         .into();
     let i = Intersection::new(5.0, &shape);
-    let comps = Computations::prepare_computations(&i, &r);
+    let comps = Computations::prepare_computations(&i, &r, Option::None);
     assert!(comps.over_point.z() < -crate::domain::EPSILON / 2.0);
     assert!(comps.point.z() > comps.over_point.z());
 }
@@ -160,9 +161,100 @@ fn ch11_test2_precomputing_reflection_vector() {
         Vector::new(0.0, -2_f64.sqrt() / 2_f64, 2_f64.sqrt() / 2_f64),
     );
     let i = Intersection::new(2_f64.sqrt(), &shape);
-    let comps = Computations::prepare_computations(&i, &r);
+    let comps = Computations::prepare_computations(&i, &r, Option::None);
     assert_eq!(
         comps.reflect_v,
         Vector::new(0.0, 2_f64.sqrt() / 2_f64, 2_f64.sqrt() / 2_f64)
     );
+}
+
+#[test]
+fn ch11_test10_finding_n1_and_n2_at_various_intersections() {
+    let a = Sphere::new()
+        .material(
+            Material::new()
+                .transparency(1.0)
+                .refractive_index_override(1.5)
+                .build(),
+        )
+        .transformation(Matrix::new_scaling(2.0, 2.0, 2.0))
+        .build()
+        .into();
+    let b = Sphere::new()
+        .material(
+            Material::new()
+                .transparency(1.0)
+                .refractive_index_override(2.0)
+                .build(),
+        )
+        .transformation(Matrix::new_translation(0.0, 0.0, -0.25))
+        .build()
+        .into();
+    let c = Sphere::new()
+        .material(
+            Material::new()
+                .transparency(1.0)
+                .refractive_index_override(2.5)
+                .build(),
+        )
+        .transformation(Matrix::new_scaling(0.0, 0.0, 0.25))
+        .build()
+        .into();
+    let r = Ray::new(Point::new(0.0, 0.0, -4.0), Vector::new(0.0, 0.0, 1.0));
+
+    let int1 = Intersection::new(2.0, &a);
+    let int2 = Intersection::new(2.75, &b);
+    let int3 = Intersection::new(3.25, &c);
+    let int4 = Intersection::new(4.75, &b);
+    let int5 = Intersection::new(5.25, &c);
+    let int6 = Intersection::new(6.0, &a);
+    let ints_container = vec![int1, int2, int3, int4, int5, int6];
+
+    let mut ints = Intersections::new();
+    ints.push(int1);
+    ints.push(int2);
+    ints.push(int3);
+    ints.push(int4);
+    ints.push(int5);
+    ints.push(int6);
+
+    let runs: [(f64, f64); 6] = [
+        (1.0, 1.5),
+        (1.5, 2.0),
+        (2.0, 2.5),
+        (2.5, 2.5),
+        (2.5, 1.5),
+        (1.5, 1.0),
+    ];
+
+    let run = 0;
+    let comps = Computations::prepare_computations(&ints_container[run], &r, Option::Some(&ints));
+    assert_eq!(comps.n1, runs[run].0);
+    assert_eq!(comps.n2, runs[run].1);
+    let run = 1;
+    let comps = Computations::prepare_computations(&ints_container[run], &r, Option::Some(&ints));
+    assert_eq!(comps.n1, runs[run].0);
+    assert_eq!(comps.n2, runs[run].1);
+    let run = 2;
+    let comps = Computations::prepare_computations(&ints_container[run], &r, Option::Some(&ints));
+    assert_eq!(comps.n1, runs[run].0);
+    assert_eq!(comps.n2, runs[run].1);
+    let run = 3;
+    let comps = Computations::prepare_computations(&ints_container[run], &r, Option::Some(&ints));
+    assert_eq!(comps.n1, runs[run].0);
+    assert_eq!(comps.n2, runs[run].1);
+    let run = 4;
+    let comps = Computations::prepare_computations(&ints_container[run], &r, Option::Some(&ints));
+    assert_eq!(comps.n1, runs[run].0);
+    assert_eq!(comps.n2, runs[run].1);
+    let run = 5;
+    let comps = Computations::prepare_computations(&ints_container[run], &r, Option::Some(&ints));
+    assert_eq!(comps.n1, runs[run].0);
+    assert_eq!(comps.n2, runs[run].1);
+
+    // runs.iter().enumerate().for_each(|(i, (i1, i2))| {
+    //     let comps = Computations::prepare_computations(&ints_container[i], &r, Option::Some(&ints));
+    //     assert_eq!(comps.n1, *i1);
+    //     assert_eq!(comps.n2, *i2);
+    // });
 }
