@@ -50,12 +50,10 @@ fn ch7_test2_validate_default_world() {
 
     let mc = Color::new(0.8, 1.0, 0.6);
     let m1 = Material::new().color(mc).diffuse(0.7).specular(0.2).build();
-    let s1_exp: Object = Sphere::new().material(m1).build().into();
-    assert!(w.objects.contains(&s1_exp));
+    assert_eq!(w.objects[0].shape().material, m1);
 
     let t2 = Matrix::new_scaling(0.5, 0.5, 0.5);
-    let s2_exp: Object = Sphere::new().transformation(t2).build().into();
-    assert!(w.objects.contains(&s2_exp));
+    assert_eq!(w.objects[1].shape().transformation, t2);
 }
 
 #[test]

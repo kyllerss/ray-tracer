@@ -1,9 +1,9 @@
 use crate::domain::object::Object;
 use crate::domain::ray::Ray;
-use crate::domain::{Point, Vector};
+use crate::domain::{Id, Point, Vector};
+use linked_hash_map::LinkedHashMap;
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
-use linked_hash_map::LinkedHashMap;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Intersection<'a> {
@@ -186,20 +186,73 @@ impl<'a> Computations<'a> {
         let reflect_v = ray.direction.reflect(&normal_v);
 
         // refractive index section
-        let (n1, n2) = precompute_refractive_indexes(hit_intersection, all_intersections);
+        let (n1, n2) =
+            Computations::precompute_refractive_indexes(hit_intersection, all_intersections);
 
         Computations::new(
-            hit_intersection.distance, hit_intersection.object, point, eye_v, normal_v, inside, over_point, reflect_v, n1, n2,
+            hit_intersection.distance,
+            hit_intersection.object,
+            point,
+            eye_v,
+            normal_v,
+            inside,
+            over_point,
+            reflect_v,
+            n1,
+            n2,
         )
     }
 
-    fn precompute_refractive_indexes(hit_intersection: &'a Intersection, _all_intersections: Option<&'a Intersections>) -> (f64, f64) {
-        let containers = LinkedHashMap::new<&'a Object, &'a Intersection>();
+    fn precompute_refractive_indexes(
+        hit_intersection: &'a Intersection,
+        all_intersections: Option<&'a Intersections>,
+    ) -> (f64, f64) {
+        let (mut n1, mut n2) = (1.0, 1.0);
+        let mut containers: LinkedHashMap<&Id, &Object> = LinkedHashMap::new();
         //containers.insert() -> Option<V> (old overlapping value)
         //containers.back() -> Option<&K, &V>
         //containers.remove(&k) -> Option<V>
         //containers.get(&k) -> Option<&V>
+        if all_intersections.is_some() {
+            for i in &all_intersections.unwrap().intersections {
+                if i == hit_intersection {
+                    match containers.is_empty() {
+                        true => n1 = 1.0,
+                        false => {
+                            n1 = containers
+                                .back()
+                                .unwrap()
+                                .1
+                                .shape()
+                                .material
+                                .refractive_index()
+                        }
+                    }
+                }
 
-        (1.0, 1.0)
+                let obj_key = &i.object.shape().id;
+                if containers.contains_key(obj_key) {
+                    containers.remove(obj_key);
+                } else {
+                    containers.insert(obj_key, &i.object);
+                }
+
+                if i == hit_intersection {
+                    match containers.is_empty() {
+                        true => n2 = 1.0,
+                        false => {
+                            n2 = containers
+                                .back()
+                                .unwrap()
+                                .1
+                                .shape()
+                                .material
+                                .refractive_index()
+                        }
+                    }
+                }
+            }
+        }
+        (n1, n2)
     }
 }

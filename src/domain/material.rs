@@ -12,7 +12,7 @@ pub struct Material {
     pub reflective: f64,
     pub transparency: f64,
     pub substance: Substance,
-    pub refractive_index_override: f64,
+    pub refractive_index_override: Option<f64>,
 }
 
 impl Default for Material {
@@ -27,7 +27,7 @@ impl Default for Material {
             reflective: Material::DEFAULT_REFLECTIVE,
             transparency: Material::DEFAULT_TRANSPARENCY,
             substance: Material::DEFAULT_SUBSTANCE,
-            refractive_index_override: Material::DEFAULT_SUBSTANCE.refractive_index(),
+            refractive_index_override: Option::None,
         }
     }
 }
@@ -69,6 +69,11 @@ impl Material {
             refractive_index_override: Option::None,
         }
     }
+
+    pub fn refractive_index(&self) -> f64 {
+        self.refractive_index_override
+            .unwrap_or(self.substance.refractive_index())
+    }
 }
 
 impl MaterialBuilder {
@@ -84,9 +89,7 @@ impl MaterialBuilder {
             reflective: self.reflective.unwrap_or(Material::DEFAULT_REFLECTIVE),
             transparency: self.transparency.unwrap_or(Material::DEFAULT_TRANSPARENCY),
             substance: self.substance.unwrap_or(Material::DEFAULT_SUBSTANCE),
-            refractive_index_override: self
-                .refractive_index_override
-                .unwrap_or(Material::DEFAULT_SUBSTANCE.refractive_index()),
+            refractive_index_override: self.refractive_index_override,
         }
     }
 

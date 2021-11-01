@@ -1,3 +1,6 @@
+use std::hash::Hash;
+use std::sync::atomic::{AtomicUsize, Ordering};
+
 pub(crate) mod camera;
 pub(crate) mod canvas;
 pub(crate) mod color;
@@ -21,6 +24,22 @@ where
     let abs: F = (a - b).abs();
     let c: Option<f64> = num::cast(abs);
     c.unwrap() < EPSILON
+}
+
+#[derive(Hash, PartialEq, Eq, Copy, Clone, Debug)]
+pub struct Id {
+    id: usize,
+}
+
+impl Id {
+    // Generates a unique global id for given run.
+    // stolen from: https://users.rust-lang.org/t/idiomatic-rust-way-to-generate-unique-id/33805/5
+    pub fn new() -> Id {
+        static COUNTER: AtomicUsize = AtomicUsize::new(1);
+        Id {
+            id: COUNTER.fetch_add(1, Ordering::Relaxed),
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug)]

@@ -197,7 +197,7 @@ fn ch11_test10_finding_n1_and_n2_at_various_intersections() {
                 .refractive_index_override(2.5)
                 .build(),
         )
-        .transformation(Matrix::new_scaling(0.0, 0.0, 0.25))
+        .transformation(Matrix::new_translation(0.0, 0.0, 0.25))
         .build()
         .into();
     let r = Ray::new(Point::new(0.0, 0.0, -4.0), Vector::new(0.0, 0.0, 1.0));

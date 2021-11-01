@@ -2,11 +2,12 @@ use crate::domain::intersection::{Intersection, Intersections};
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::ray::Ray;
-use crate::domain::{Point, RayTuple, Vector};
+use crate::domain::{Id, Point, RayTuple, Vector};
 use std::fmt::Debug;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Shape {
+    pub id: Id,
     pub transformation: Matrix,
     pub material: Material,
 }
@@ -147,6 +148,7 @@ impl Object {
 impl Default for Shape {
     fn default() -> Self {
         Shape {
+            id: Id::new(),
             transformation: crate::domain::matrix::IDENTITY.clone(),
             material: Material::default(),
         }
@@ -185,6 +187,7 @@ impl ShapeBuilder {
 
     pub fn build(&self) -> Shape {
         Shape {
+            id: Id::new(),
             transformation: self
                 .transformation
                 .clone()
