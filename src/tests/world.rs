@@ -271,3 +271,90 @@ fn ch11_test7_reflected_color_for_reflected_material() {
     let color = w.reflected_color(&comps, 0);
     assert_eq!(color, Color::BLACK);
 }
+
+#[test]
+fn ch11_test12_refracted_color_with_opaque_surface() {
+    let w = build_test_world();
+    let shape = &w.objects[0];
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let int = Intersection::new(4.0, shape);
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(int.clone());
+        xs.push(Intersection::new(6.0, shape));
+        xs
+    };
+    let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
+    let c = w.refracted_color(&comps, 5);
+    assert_eq!(c, Color::BLACK);
+}
+
+#[test]
+fn ch11_test13_refracted_color_at_max_recursive_depth() {
+    let w = {
+        let mut w = build_test_world();
+        w.objects
+            .get_mut(0)
+            .unwrap()
+            .shape_mut()
+            .material
+            .transparency = 1.0;
+        w.objects
+            .get_mut(0)
+            .unwrap()
+            .shape_mut()
+            .material
+            .refractive_index_override = Option::Some(1.5);
+        w
+    };
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let shape = &w.objects[0];
+
+    let int = Intersection::new(4.0, shape);
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(int);
+        xs.push(Intersection::new(6.0, shape));
+        xs
+    };
+    let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
+    let c = w.refracted_color(&comps, 0);
+    assert_eq!(c, Color::BLACK);
+}
+
+#[test]
+fn ch11_test14_refracted_color_under_total_internal_reflection() {
+    let w = {
+        let mut w = build_test_world();
+        w.objects
+            .get_mut(0)
+            .unwrap()
+            .shape_mut()
+            .material
+            .transparency = 1.0;
+        w.objects
+            .get_mut(0)
+            .unwrap()
+            .shape_mut()
+            .material
+            .refractive_index_override = Option::Some(1.5);
+        w
+    };
+
+    let r = Ray::new(
+        Point::new(0.0, 0.0, 2_f64.sqrt() / 2.0),
+        Vector::new(0.0, 1.0, 0.0),
+    );
+
+    let shape = &w.objects[0];
+    let int = Intersection::new(2_f64.sqrt() / 2.0, shape);
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(Intersection::new(-2_f64.sqrt() / 2.0, shape));
+        xs.push(int.clone());
+        xs
+    };
+    let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
+    let c = w.refracted_color(&comps, 5);
+    assert_eq!(c, Color::BLACK);
+}

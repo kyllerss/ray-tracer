@@ -6,6 +6,7 @@ use crate::domain::light::Light;
 use crate::domain::object::Object;
 use crate::domain::ray::Ray;
 use crate::domain::Point;
+use num::traits::Pow;
 use rayon::prelude::*;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
@@ -145,5 +146,23 @@ impl World {
             let color = self.color_at(&reflect_ray, iteration - 1);
             &color * comps.object.shape().material.reflective as f32
         }
+    }
+
+    // performs refracted color calculation
+    pub fn refracted_color(&self, comps: &Computations, iteration: usize) -> Color {
+        let iteration_end = iteration == 0;
+        let opaque = comps.object.shape().material.transparency == 0.0;
+        if iteration_end || opaque || World::total_internal_reflection(comps) {
+            Color::BLACK
+        } else {
+            Color::WHITE
+        }
+    }
+
+    fn total_internal_reflection(comps: &Computations) -> bool {
+        let n_ratio = comps.n1 / comps.n2;
+        let cos_i = comps.eye_v.dot_product(&comps.normal_v);
+        let sin2_t = n_ratio.pow(2) * (1.0 - cos_i.pow(2));
+        sin2_t > 1.0
     }
 }
