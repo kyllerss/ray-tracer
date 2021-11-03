@@ -1,5 +1,5 @@
 use crate::domain::intersection::{Computations, Intersection, Intersections};
-use crate::domain::material::Material;
+use crate::domain::material::{Material, Substance};
 use crate::domain::matrix::Matrix;
 use crate::domain::object::{Object, Plane, Sphere};
 use crate::domain::ray::Ray;
@@ -257,4 +257,23 @@ fn ch11_test10_finding_n1_and_n2_at_various_intersections() {
     //     assert_eq!(comps.n1, *i1);
     //     assert_eq!(comps.n2, *i2);
     // });
+}
+
+#[test]
+fn ch11_test11_under_point_is_offset_below_the_surface() {
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let shape: Object = Sphere::new()
+        .transformation(Matrix::new_translation(0.0, 0.0, 1.0))
+        .material(Material::new().substance(Substance::GLASS).build())
+        .build()
+        .into();
+    let i = Intersection::new(5.0, &shape);
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(i.clone());
+        xs
+    };
+    let comps = Computations::prepare_computations(&i, &r, Option::Some(&xs));
+    assert!(comps.under_point.z() > crate::domain::EPSILON / 2.0);
+    assert!(comps.point.z() < comps.under_point.z());
 }

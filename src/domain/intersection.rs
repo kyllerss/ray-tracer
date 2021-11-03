@@ -133,6 +133,7 @@ pub struct Computations<'a> {
     pub reflect_v: Vector,
     pub n1: f64,
     pub n2: f64,
+    pub under_point: Point,
 }
 
 impl<'a> Computations<'a> {
@@ -148,6 +149,7 @@ impl<'a> Computations<'a> {
         reflect_v: Vector,
         n1: f64,
         n2: f64,
+        under_point: Point,
     ) -> Computations {
         Computations {
             distance,
@@ -160,6 +162,7 @@ impl<'a> Computations<'a> {
             reflect_v,
             n1,
             n2,
+            under_point,
         }
     }
 
@@ -181,7 +184,9 @@ impl<'a> Computations<'a> {
             inside = false;
         }
 
-        let over_point = &point + &(&normal_v * crate::domain::EPSILON);
+        let epsilon_scaled_normal = &normal_v * crate::domain::EPSILON;
+        let over_point = &point + &epsilon_scaled_normal;
+        let under_point = &point - &epsilon_scaled_normal;
 
         let reflect_v = ray.direction.reflect(&normal_v);
 
@@ -200,6 +205,7 @@ impl<'a> Computations<'a> {
             reflect_v,
             n1,
             n2,
+            under_point,
         )
     }
 
