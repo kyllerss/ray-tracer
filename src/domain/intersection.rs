@@ -250,6 +250,8 @@ impl<'a> Computations<'a> {
                                 .refractive_index()
                         }
                     }
+
+                    break;
                 }
             }
         }
