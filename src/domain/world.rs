@@ -150,19 +150,23 @@ impl World {
 
     // performs refracted color calculation
     pub fn refracted_color(&self, comps: &Computations, iteration: usize) -> Color {
-        let iteration_end = iteration == 0;
-        let opaque = comps.object.shape().material.transparency == 0.0;
-        if iteration_end || opaque || World::total_internal_reflection(comps) {
+        if iteration == 0 {
+            Color::BLACK
+        } else if comps.object.shape().material.transparency == 0.0 {
             Color::BLACK
         } else {
-            Color::WHITE
-        }
-    }
+            let n_ratio = comps.n1 / comps.n2;
+            let cos_i = comps.eye_v.dot_product(&comps.normal_v);
+            let sin2_t: f64 = n_ratio.pow(2) * (1.0 - cos_i.pow(2));
+            //sin2_t > 1.0
 
-    fn total_internal_reflection(comps: &Computations) -> bool {
-        let n_ratio = comps.n1 / comps.n2;
-        let cos_i = comps.eye_v.dot_product(&comps.normal_v);
-        let sin2_t = n_ratio.pow(2) * (1.0 - cos_i.pow(2));
-        sin2_t > 1.0
+            let cos_t: f64 = (1_f64 - sin2_t).sqrt();
+            let direction =
+                &(&comps.normal_v * (n_ratio * cos_i - cos_t)) - &(&comps.eye_v * n_ratio);
+            let refract_ray = Ray::new(comps.under_point.clone(), direction);
+
+            &self.color_at(&refract_ray, iteration - 1)
+                * comps.object.shape().material.transparency as f32
+        }
     }
 }

@@ -4,6 +4,7 @@ use crate::domain::light::Light;
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::object::{Object, Plane, Sphere};
+use crate::domain::pattern::Pattern;
 use crate::domain::ray::Ray;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
@@ -357,4 +358,38 @@ fn ch11_test14_refracted_color_under_total_internal_reflection() {
     let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
     let c = w.refracted_color(&comps, 5);
     assert_eq!(c, Color::BLACK);
+}
+
+#[test]
+fn ch11_test15_refracted_color_with_refracted_ray() {
+    let w = {
+        let mut w = build_test_world();
+        w.objects[0].shape_mut().material.ambient = 1.0;
+        w.objects[0].shape_mut().material.pattern = Option::Some(Pattern::new_null());
+
+        w.objects[1].shape_mut().material.transparency = 1.0;
+        w.objects[1].shape_mut().material.refractive_index_override = Option::Some(1.5);
+
+        w
+    };
+
+    let shape_a = &w.objects[0];
+    let shape_b = &w.objects[1];
+
+    let r = Ray::new(Point::new(0.0, 0.0, 0.1), Vector::new(0.0, 1.0, 0.0));
+    let int = Intersection::new(0.4899, shape_b);
+
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(Intersection::new(-0.9899, shape_a));
+        xs.push(Intersection::new(-0.4899, shape_b));
+        xs.push(int);
+        xs.push(Intersection::new(0.9899, shape_a));
+
+        xs
+    };
+
+    let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
+    let c = w.refracted_color(&comps, 5);
+    assert_eq!(c, Color::new(0.0, 0.99888, 0.04725));
 }

@@ -25,6 +25,9 @@ pub enum Pattern {
         b: Color,
         transformation: Matrix,
     },
+    NULL {
+        transformation: Matrix,
+    },
 }
 
 // pub struct TwoColorBuilder {
@@ -107,6 +110,12 @@ impl Pattern {
         }
     }
 
+    pub fn new_null() -> Pattern {
+        Pattern::NULL {
+            transformation: crate::domain::matrix::IDENTITY.clone(),
+        }
+    }
+
     // TODO Turn this into a trait method to obviate pattern matching
     pub fn transformation(&self) -> &Matrix {
         match self {
@@ -114,6 +123,7 @@ impl Pattern {
             Pattern::GRADIENT { transformation, .. } => transformation,
             Pattern::RINGED { transformation, .. } => transformation,
             Pattern::CHECKERED { transformation, .. } => transformation,
+            Pattern::NULL { transformation, .. } => transformation,
         }
     }
 
@@ -128,6 +138,7 @@ impl Pattern {
             Pattern::GRADIENT { a, b, .. } => color_at_gradient(a, b, &pattern_point),
             Pattern::RINGED { a, b, .. } => color_at_ringed(a, b, &pattern_point),
             Pattern::CHECKERED { a, b, .. } => color_at_checkered(a, b, &pattern_point),
+            Pattern::NULL { .. } => color_at_null(&pattern_point),
         }
     }
 }
@@ -166,4 +177,8 @@ fn color_at_checkered<'a, 'b>(a: &'a Color, b: &'a Color, point: &'b Point) -> C
     } else {
         b.clone()
     }
+}
+
+fn color_at_null(point: &Point) -> Color {
+    Color::new(point.x() as f32, point.y() as f32, point.z() as f32)
 }
