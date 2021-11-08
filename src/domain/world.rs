@@ -54,7 +54,9 @@ impl World {
         );
 
         let reflected = self.reflected_color(comp, iteration);
-        &surface + &reflected
+        let refracted = self.refracted_color(comp, iteration);
+
+        &(&surface + &reflected) + &refracted
     }
 
     // calculates color at a given point

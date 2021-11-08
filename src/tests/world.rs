@@ -393,3 +393,50 @@ fn ch11_test15_refracted_color_with_refracted_ray() {
     let c = w.refracted_color(&comps, 5);
     assert_eq!(c, Color::new(0.0, 0.99888, 0.04725));
 }
+
+#[test]
+fn ch11_test16_shade_hit_with_transparent_material() {
+    let floor: Object = Plane::new()
+        .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
+        .material(
+            Material::new()
+                .transparency(0.5)
+                .refractive_index_override(1.5)
+                .build(),
+        )
+        .build()
+        .into();
+    let w = {
+        let mut w = build_test_world();
+        w.add_object(floor.clone());
+
+        let ball = Sphere::new()
+            .material(
+                Material::new()
+                    .color(Color::new(1.0, 0.0, 0.0))
+                    .ambient(0.5)
+                    .build(),
+            )
+            .transformation(Matrix::new_translation(0.0, -3.5, -0.5))
+            .build()
+            .into();
+        w.add_object(ball);
+
+        w
+    };
+
+    let r = Ray::new(
+        Point::new(0.0, 0.0, -3.0),
+        Vector::new(0.0, -(2_f64.sqrt() / 2.0), 2_f64.sqrt() / 2.0),
+    );
+    let int = Intersection::new(2_f64.sqrt(), &floor);
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(int.clone());
+        xs
+    };
+
+    let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
+    let color = w.shade_hit(&comps, 5);
+    assert_eq!(color, Color::new(0.93642, 0.68642, 0.68642));
+}
