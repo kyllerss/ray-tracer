@@ -23,7 +23,7 @@ impl Default for Material {
             diffuse: Material::DEFAULT_DIFFUSE,
             specular: Material::DEFAULT_SPECULAR,
             shininess: Material::DEFAULT_SHININESS,
-            pattern: None,
+            pattern: Option::None,
             reflective: Material::DEFAULT_REFLECTIVE,
             transparency: Material::DEFAULT_TRANSPARENCY,
             substance: Material::DEFAULT_SUBSTANCE,

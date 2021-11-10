@@ -81,7 +81,7 @@ fn main() -> Result<(), Error> {
         }
         11 => {
             println!("Chapter 11..");
-            ch11::run()
+            ch11::run(3)
         }
         _ => {
             panic!("Unsupported chapter {}!", chapter);

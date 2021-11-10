@@ -11,6 +11,9 @@ use rayon::prelude::*;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
+// Determines maximum iteration depth when tracking ray bounces.
+const MAX_ITERATIONS: usize = 5;
+
 pub struct World {
     pub objects: Vec<Object>,
     pub light_source: Option<Light>,
@@ -83,7 +86,7 @@ impl World {
     pub fn render(
         &self,
         camera: &Camera,
-        _logger: Arc<dyn Fn(usize, usize) -> () + Send + Sync>,
+        logger: Arc<dyn Fn(usize, usize) -> () + Send + Sync>,
     ) -> Canvas {
         let total_size = camera.vsize * camera.hsize;
         //let mut results: Vec<(usize, usize, Color)> = Vec::with_capacity(total_size);
@@ -91,7 +94,7 @@ impl World {
         // track iterations for logging
         let itr_counter = AtomicUsize::new(0);
 
-        let iteration_max = 10;
+        let iteration_max = MAX_ITERATIONS;
 
         // compute pixels
         let mut results = (0..camera.vsize)
@@ -107,8 +110,8 @@ impl World {
 
                 // log increment
                 let size = itr_counter.fetch_add(camera.hsize, Ordering::Relaxed);
-                let logger = Arc::clone(&_logger);
-                logger(size + camera.hsize, total_size);
+                let log = Arc::clone(&logger);
+                log(size + camera.hsize, total_size);
 
                 // return value
                 r

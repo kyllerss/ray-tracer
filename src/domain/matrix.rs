@@ -4,10 +4,17 @@ use num::Integer;
 use std::ops::{Index, IndexMut, Mul};
 
 #[derive(Clone, Debug)]
+struct CachedComponents {
+    inv_contents: Option<Vec<f64>>,
+    determinant: f64,
+}
+
+#[derive(Clone, Debug)]
 pub struct Matrix {
     pub width: usize,
     pub height: usize,
     contents: Vec<f64>,
+    cache: Option<CachedComponents>,
 }
 
 // All references need to be dereferenced
@@ -25,8 +32,8 @@ lazy_static! {
 
 #[rustfmt::skip::macros(vec, matrix)]
 impl Matrix {
-    // constructor
-    pub fn new(width: usize, height: usize, contents: Vec<f64>) -> Matrix {
+    // constructor (no caching)
+    pub fn new_uncached(width: usize, height: usize, contents: Vec<f64>) -> Matrix {
         if width * height != contents.len() {
             panic!("Dimensions for matrix do not match contents.");
         }
@@ -35,7 +42,26 @@ impl Matrix {
             width,
             height,
             contents,
+            cache: Option::None,
         }
+    }
+
+    // constructor
+    pub fn new(width: usize, height: usize, contents: Vec<f64>) -> Matrix {
+        let mut matrix = Matrix::new_uncached(width, height, contents);
+        matrix.initialize_cache();
+        matrix
+    }
+
+    fn initialize_cache(&mut self) {
+        let inv_matrix = self.inverse();
+
+        let mut cache = CachedComponents {
+            inv_contents: inv_matrix.map_or(Option::None, |m| Option::Some(m.contents)),
+            determinant: self.determinant(),
+        };
+
+        self.cache = Option::Some(cache);
     }
 
     // new translation matrix
@@ -122,12 +148,18 @@ impl Matrix {
             }
         }
 
+        self.initialize_cache();
+
         self
     }
 
     // calculate determinant on 2x2 matrix
     // Returns None if matrix is not 2x2
     pub fn determinant(&self) -> f64 {
+        if self.cache.is_some() {
+            return self.cache.as_ref().unwrap().determinant;
+        }
+
         let mut result: f64 = 0.0;
         if self.width == 2 && self.height == 2 {
             result = self[0][0] * self[1][1] - self[0][1] * self[1][0];
@@ -155,7 +187,7 @@ impl Matrix {
             }
         }
 
-        Matrix::new(self.width - 1, self.height - 1, v)
+        Matrix::new_uncached(self.width - 1, self.height - 1, v)
     }
 
     pub fn minor(&self, row: usize, col: usize) -> f64 {
@@ -174,14 +206,24 @@ impl Matrix {
     }
 
     pub fn is_invertible(&self) -> bool {
-        self.determinant() != 0.0
+        self.cache
+            .as_ref()
+            .map_or(self.determinant(), |c| c.determinant)
+            != 0.0
     }
 
     pub fn inverse(&self) -> Option<Matrix> {
         if !self.is_invertible() {
             return None;
         }
-        let mut m_inv = Matrix::new(
+
+        if self.cache.is_some() {
+            let inv_c = self.cache.as_ref().unwrap().inv_contents.clone().unwrap();
+            let inv_m = Matrix::new_uncached(self.width, self.height, inv_c);
+            return Option::Some(inv_m);
+        }
+
+        let mut m_inv = Matrix::new_uncached(
             self.width,
             self.height,
             vec![f64::default(); self.width * self.height],
