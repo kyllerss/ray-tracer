@@ -3,7 +3,9 @@ use crate::domain::ray::Ray;
 use crate::domain::{Id, Point, Vector};
 use linked_hash_map::LinkedHashMap;
 use std::cmp::Ordering;
-use std::collections::BinaryHeap;
+use std::collections::{BinaryHeap, HashMap, HashSet};
+use std::fmt::{Debug, Formatter};
+use std::io::{stdout, Write};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Intersection<'a> {
@@ -20,14 +22,17 @@ impl<'a> Intersection<'a> {
 
 impl<'a> PartialOrd for Intersection<'a> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        // smallest is GT - contrary to self.partial_cmp(other)
         other.distance.partial_cmp(&self.distance)
-        // self.distance.partial_cmp(&other.distance)
     }
 }
 
 impl<'a> PartialEq for Intersection<'a> {
     fn eq(&self, other: &Self) -> bool {
-        self.distance == other.distance
+        crate::domain::epsilon_eq(self.distance, other.distance)
+            && self.object.shape().id == other.object.shape().id
+        //self.distance == other.distance
+
         // let d1_valid = !self.distance.is_nan() && !self.distance.is_infinite();
         // let d2_valid = !other.distance.is_nan() && !other.distance.is_infinite();
         // if d1_valid && d2_valid {
@@ -63,6 +68,17 @@ impl<'a> Ord for Intersection<'a> {
 #[derive(Clone)]
 pub struct Intersections<'a> {
     intersections: BinaryHeap<Intersection<'a>>,
+}
+
+impl<'a> Debug for Intersections<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut tmp = self.clone();
+        let _ = write!(f, "Intersections [");
+        while let Some(int) = tmp.intersections.pop() {
+            let _ = write!(f, "{:?}, ", int);
+        }
+        write!(f, "]")
+    }
 }
 
 impl<'a> Intersections<'a> {
@@ -105,6 +121,7 @@ impl<'a> Intersections<'a> {
                     continue;
                 };
             }
+
             return Some(intersection);
         }
 
@@ -213,54 +230,79 @@ impl<'a> Computations<'a> {
         hit_intersection: &'a Intersection,
         all_intersections: Option<&'a Intersections>,
     ) -> (f64, f64) {
+        if all_intersections.is_none() {
+            return (1.0, 1.0);
+        }
+
+        // println!("Hit intersection: {:?}", &hit_intersection);
+        // println!("All intersections: {:?}", &all_intersections.unwrap());
+
         let (mut n1, mut n2) = (1.0, 1.0);
-        let mut containers: LinkedHashMap<&Id, &Object> = LinkedHashMap::new();
-        //containers.insert() -> Option<V> (old overlapping value)
-        //containers.back() -> Option<&K, &V>
-        //containers.remove(&k) -> Option<V>
-        //containers.get(&k) -> Option<&V>
-        if all_intersections.is_some() {
-            for i in &all_intersections.unwrap().intersections {
-                if i == hit_intersection {
-                    match containers.is_empty() {
-                        true => n1 = 1.0,
-                        false => {
-                            n1 = containers
-                                .back()
-                                .unwrap()
-                                .1
-                                .shape()
-                                .material
-                                .refractive_index()
-                        }
-                    }
-                }
+        let mut containers: Vec<&Object> = Vec::new();
+        //let mut container_keys: HashSet<&Id> = HashSet::new();
 
-                let obj_key = &i.object.shape().id;
-                if containers.contains_key(obj_key) {
-                    containers.remove(obj_key);
-                } else {
-                    containers.insert(obj_key, &i.object);
-                }
+        let mut tmp_heap = all_intersections.unwrap().clone().intersections;
+        while let Some(i) = tmp_heap.pop() {
+            let is_hit = i == *hit_intersection;
 
-                if i == hit_intersection {
-                    match containers.is_empty() {
-                        true => n2 = 1.0,
-                        false => {
-                            n2 = containers
-                                .back()
-                                .unwrap()
-                                .1
-                                .shape()
-                                .material
-                                .refractive_index()
-                        }
+            if is_hit {
+                match containers.is_empty() {
+                    true => {
+                        n1 = 1.0;
+                        // println!("Hit on {:?} -> n1: {} - empty", &i.object, n1)
                     }
 
-                    break;
+                    false => {
+                        let obj = containers.last().unwrap();
+                        // println!(
+                        //     "Hit on {:?} -> n1: {:?}",
+                        //     &i.object,
+                        //     obj.shape().material.refractive_index()
+                        // );
+                        n1 = obj.shape().material.refractive_index()
+                    }
                 }
             }
+            // let obj_key = &i.object.shape().id;
+            if containers.contains(&i.object) {
+                // println!("Removing {:?} from {:?}", &i.object, &containers);
+                // let removed_item = containers.pop().unwrap();
+                containers.retain(|item| item.shape().id != i.object.shape().id);
+                // println!("Containers is now {:?}", &containers);
+                // println!(
+                //     "Removed {} {:?}",
+                //     &i.object.shape().shape_type_name,
+                //     &i.object.shape().id
+                // );
+            } else {
+                // println!("Appending {:?} to {:?}", &i.object, &containers);
+                containers.push(i.object);
+                // println!("Containers is now {:?}", &containers);
+            }
+
+            if is_hit {
+                match containers.is_empty() {
+                    true => {
+                        n2 = 1.0;
+                        // println!("Hit on {:?} -> n2: {} - empty", &i.object, n2)
+                    }
+
+                    false => {
+                        let obj = containers.last().unwrap();
+                        // println!(
+                        //     "Hit on {:?} -> n2: {:?}",
+                        //     &i.object,
+                        //     obj.shape().material.refractive_index()
+                        // );
+                        n2 = obj.shape().material.refractive_index()
+                    }
+                }
+
+                break;
+            }
         }
+        // println!("Exiting: ({}, {})", n1, n2);
+        // let _ = stdout().flush();
         (n1, n2)
     }
 }

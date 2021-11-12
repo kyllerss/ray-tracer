@@ -278,4 +278,12 @@ mod tests {
         let result = &product * &inverse.unwrap();
         assert_eq!(result, a);
     }
+
+    #[test]
+    fn independent_inverse_of_identity() {
+        assert_eq!(
+            crate::domain::matrix::IDENTITY.clone().inverse().unwrap(),
+            crate::domain::matrix::IDENTITY.clone()
+        );
+    }
 }

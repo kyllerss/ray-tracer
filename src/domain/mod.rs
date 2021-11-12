@@ -26,6 +26,11 @@ where
     c.unwrap() < EPSILON
 }
 
+// Prints the type of the variable
+pub fn type_id<'a, T: std::any::Any>(_: T) -> String {
+    format!("{:?}", std::any::TypeId::of::<T>())
+}
+
 #[derive(Hash, PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Id {
     id: usize,

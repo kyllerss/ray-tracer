@@ -44,8 +44,8 @@ pub fn run(example: u8) -> Result<(), Error> {
 
 fn build_example_3() -> Result<(World, Camera), Error> {
     // camera
-    let camera_width = 600;
-    let camera_height = 600;
+    let camera_width = 300;
+    let camera_height = 300;
     let mut camera = Camera::new(camera_width, camera_height, 0.45);
     camera.transform = Matrix::new_view_transformation(
         &Point::new(0.0, 0.0, -5.0),
@@ -77,7 +77,7 @@ fn build_example_3() -> Result<(World, Camera), Error> {
     let glass_ball = Sphere::new()
         .material(
             Material::new()
-                .color(Color::new(0.1, 0.1, 0.1))
+                .color(Color::new(1.0, 1.0, 1.0))
                 .ambient(0.0)
                 .diffuse(0.0)
                 .specular(0.9)
@@ -93,7 +93,7 @@ fn build_example_3() -> Result<(World, Camera), Error> {
         .transformation(Matrix::new_scaling(0.5, 0.5, 0.5))
         .material(
             Material::new()
-                .color(Color::new(0.1, 0.1, 0.1))
+                .color(Color::new(1.0, 1.0, 1.0))
                 .ambient(0.0)
                 .diffuse(0.0)
                 .specular(0.9)

@@ -56,7 +56,7 @@ impl Matrix {
     fn initialize_cache(&mut self) {
         let inv_matrix = self.inverse();
 
-        let mut cache = CachedComponents {
+        let cache = CachedComponents {
             inv_contents: inv_matrix.map_or(Option::None, |m| Option::Some(m.contents)),
             determinant: self.determinant(),
         };

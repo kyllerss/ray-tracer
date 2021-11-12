@@ -8,6 +8,7 @@ use crate::domain::ray::Ray;
 use crate::domain::Point;
 use num::traits::Pow;
 use rayon::prelude::*;
+use std::io::{stdout, Write};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
@@ -68,17 +69,17 @@ impl World {
         let mut ints = self.intersect(r);
         let original_ints = ints.clone();
 
-        let result: Color;
-
-        if let Some(intersection) = ints.hit() {
-            let comps =
-                Computations::prepare_computations(&intersection, r, Option::Some(&original_ints));
-            result = self.shade_hit(&comps, iteration);
-        } else {
-            result = Color::BLACK;
+        match ints.hit() {
+            Some(intersection) => {
+                let comps = Computations::prepare_computations(
+                    &intersection,
+                    r,
+                    Option::Some(&original_ints),
+                );
+                self.shade_hit(&comps, iteration)
+            }
+            None => Color::BLACK,
         }
-
-        result
     }
 
     // renders world based on provided camera
@@ -103,7 +104,13 @@ impl World {
             .flat_map(move |(_i, y)| {
                 let mut r: Vec<(usize, usize, Color)> = Vec::with_capacity(camera.hsize);
                 for x in 0..camera.hsize {
+                    // if x != 125 || y != 125 {
+                    //     continue;
+                    // }
+                    // println!("Rendering pixel ({}, {})...", x, y);
                     let ray = camera.ray_for_pixel(x, y);
+                    // println!("---- Calling from world.render(...) ----");
+                    // let _ = stdout().flush();
                     let color = self.color_at(&ray, iteration_max);
                     r.push((x, y, color));
                 }
@@ -134,7 +141,7 @@ impl World {
 
         let r = Ray::new(p.clone(), direction);
         let mut intersections = self.intersect(&r);
-        let h = intersections.hit();
+        let h = intersections.hit(); // TODO Should this be 'unchecked_hit'?
         if h.is_some() && h.unwrap().distance < distance {
             true
         } else {
@@ -148,6 +155,8 @@ impl World {
             Color::BLACK
         } else {
             let reflect_ray = Ray::new(comps.over_point.clone(), comps.reflect_v.clone());
+            // println!("---- Calling from world.reflected_color(...) ----");
+            // let _ = stdout().flush();
             let color = self.color_at(&reflect_ray, iteration - 1);
             &color * comps.object.shape().material.reflective as f32
         }
@@ -163,15 +172,39 @@ impl World {
             let n_ratio = comps.n1 / comps.n2;
             let cos_i = comps.eye_v.dot_product(&comps.normal_v);
             let sin2_t: f64 = n_ratio.pow(2) * (1.0 - cos_i.pow(2));
-            //sin2_t > 1.0
+
+            if sin2_t > 1.0 {
+                return Color::BLACK;
+            }
 
             let cos_t: f64 = (1_f64 - sin2_t).sqrt();
             let direction =
                 &(&comps.normal_v * (n_ratio * cos_i - cos_t)) - &(&comps.eye_v * n_ratio);
             let refract_ray = Ray::new(comps.under_point.clone(), direction);
 
-            &self.color_at(&refract_ray, iteration - 1)
-                * comps.object.shape().material.transparency as f32
+            // println!("---- Calling from world.refracted_color(...) ----");
+            //let _ = stdout().flush();
+            let refracted_color = &self.color_at(&refract_ray, iteration - 1)
+                * comps.object.shape().material.transparency as f32;
+
+            // ---------
+            // println!("== remaining {} ==", iteration);
+            // println!("> n1: {}", &comps.n1);
+            // println!("> n2: {}", &comps.n2);
+            // println!("> eyev: {:?}", &comps.eye_v);
+            // println!("> normalv: {:?}", &comps.normal_v);
+            // println!("> under point: {:?}", &comps.under_point);
+            // println!("> n_ratio: {}", n_ratio);
+            // println!("> cos_i: {}", cos_i);
+            // println!("> sin2_t: {}", sin2_t);
+            // println!("> cos_t: {}", cos_t);
+            // println!("> refracted direction: {:?}", direction);
+            // println!("> refracted_color: {:?}", refracted_color);
+            // let _ = stdout().flush();
+            //
+            // ---------
+
+            refracted_color
         }
     }
 }

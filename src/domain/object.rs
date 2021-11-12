@@ -3,13 +3,14 @@ use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::ray::Ray;
 use crate::domain::{Id, Point, RayTuple, Vector};
-use std::fmt::Debug;
+use std::fmt::{Debug, Formatter};
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Shape {
     pub id: Id,
     pub transformation: Matrix,
     pub material: Material,
+    pub shape_type_name: String,
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -30,11 +31,23 @@ pub struct Plane {
     pub shape: Shape,
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Clone)]
 pub enum Object {
     Sphere(Sphere),
     Null(Null), // throw-away test implementation
     Plane(Plane),
+}
+
+impl Debug for Object {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} {} - {}",
+            self.shape().shape_type_name,
+            self.shape().id.id,
+            self.shape().material.refractive_index()
+        )
+    }
 }
 
 impl From<Sphere> for Object {
@@ -117,32 +130,6 @@ impl Object {
 
         world_normal.normalize()
     }
-
-    // builders/constructors
-    // pub fn new_sphere_unit() -> Object {
-    //     Object::Sphere(Sphere::new_unit())
-    // }
-    //
-    // pub fn new_sphere_with_matrix(matrix: Matrix) -> Object {
-    //     Object::Sphere(Sphere::new(matrix))
-    // }
-    //
-    // pub fn new_sphere_with_material(material: Material) -> Object {
-    //     Object::Sphere(Sphere::new_material(material))
-    // }
-    //
-    // // test item with minimal implementation
-    // pub fn new_null() -> Object {
-    //     Object::Null(Null::new())
-    // }
-    //
-    // // pub fn new_plane() -> Object {
-    // //     Object::Plane(Plane::new())
-    // // }
-    //
-    // pub fn new_plane_with_transformation_and_material(t: Matrix, m: Material) -> Object {
-    //     Object::Plane(Plane::new_with_transformation_and_material(t, m))
-    // }
 }
 
 impl Default for Shape {
@@ -151,6 +138,7 @@ impl Default for Shape {
             id: Id::new(),
             transformation: crate::domain::matrix::IDENTITY.clone(),
             material: Material::default(),
+            shape_type_name: String::default(),
         }
     }
 }
@@ -161,10 +149,11 @@ impl Shape {
         Shape::default()
     }
 
-    pub fn new() -> ShapeBuilder {
+    pub fn new(shape_type_name: &str) -> ShapeBuilder {
         ShapeBuilder {
             transformation: Option::None,
             material: Option::None,
+            shape_type_name: shape_type_name.parse().unwrap(),
         }
     }
 }
@@ -172,6 +161,7 @@ impl Shape {
 pub struct ShapeBuilder {
     transformation: Option<Matrix>,
     material: Option<Material>,
+    shape_type_name: String,
 }
 
 impl ShapeBuilder {
@@ -193,6 +183,7 @@ impl ShapeBuilder {
                 .clone()
                 .unwrap_or(crate::domain::matrix::IDENTITY.clone()),
             material: self.material.clone().unwrap_or(Material::default()),
+            shape_type_name: self.shape_type_name.clone(),
         }
     }
 }
@@ -221,7 +212,7 @@ impl NullBuilder {
 impl Null {
     pub fn new() -> NullBuilder {
         NullBuilder {
-            shape_builder: Shape::new(),
+            shape_builder: Shape::new("Null"),
         }
     }
     pub(crate) fn local_intersect(&self, _ray: &Ray) -> Vec<f64> {
@@ -265,7 +256,7 @@ impl PlaneBuilder {
 impl Plane {
     pub fn new() -> PlaneBuilder {
         PlaneBuilder {
-            shape_builder: Shape::new(),
+            shape_builder: Shape::new("Plane"),
         }
     }
 
@@ -329,7 +320,7 @@ impl Sphere {
         SphereBuilder {
             origin: Option::Some(Point::ORIGIN),
             //radius: UNIT,
-            shape_builder: Shape::new(),
+            shape_builder: Shape::new("Sphere"),
         }
     }
 
