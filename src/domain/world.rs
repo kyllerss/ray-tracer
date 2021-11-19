@@ -71,7 +71,7 @@ impl World {
         // );
 
         trace!(
-            "{:width$} COLOR_AT ({}) -> down the rabbit hole!",
+            "{:width$} COLOR_AT (remaining {}) -> down the rabbit hole!",
             " ",
             remaining_iterations,
             width = call * 3
@@ -83,7 +83,7 @@ impl World {
         let result = &(&surface + &reflected) + &refracted;
 
         trace!(
-            "{:width$} COLOR_AT ({}) -> total: {:?}, surface: {:?}, reflected: {:?}, refracted: {:?}",
+            "{:width$} COLOR_AT (remaining {}) -> total: {:?}, surface: {:?}, reflected: {:?}, refracted: {:?}",
             " ",
             remaining_iterations,
             (result.red, result.green, result.blue),
@@ -118,7 +118,7 @@ impl World {
             }
             None => {
                 trace!(
-                    "{:width$} COLOR_AT ({}) - NO INTERSECTIONS - Black",
+                    "{:width$} COLOR_AT (remaining {}) - NO INTERSECTIONS - Black",
                     " ",
                     remaining_iterations,
                     width = call * 3
@@ -217,7 +217,7 @@ impl World {
             //     remaining_iterations
             // );
             trace!(
-                "{:width$} REFLECTED ({}) -> EOL - Black",
+                "{:width$} REFLECTED (remaining {}) -> EOL - Black",
                 " ",
                 remaining_iterations,
                 width = call * 3
@@ -228,14 +228,14 @@ impl World {
             // println!("---- Calling from world.reflected_color(...) ----");
             // let _ = stdout().flush();
             trace!(
-                "{:width$} REFLECTED ({}) -> calling color_at",
+                "{:width$} REFLECTED (remaining {}) -> calling color_at",
                 " ",
                 remaining_iterations,
                 width = call * 3
             );
             let reflected_color = self.color_at(&reflect_ray, remaining_iterations - 1, call + 1);
             trace!(
-                "{:width$} REFLECTED ({}) -> returning {:?}",
+                "{:width$} REFLECTED (remaining {}) -> returning {:?}",
                 " ",
                 remaining_iterations,
                 (
@@ -262,7 +262,7 @@ impl World {
     ) -> Color {
         if remaining_iterations <= 0 || comps.object.shape().material.transparency == 0.0 {
             trace!(
-                "{:width$} REFRACTED ({}) -> EOL - Black",
+                "{:width$} REFRACTED (remaining {}) -> EOL - Black",
                 " ",
                 remaining_iterations,
                 width = call * 3
@@ -283,7 +283,7 @@ impl World {
                 //     remaining_iterations
                 // );
                 trace!(
-                    "{:width$} REFRACTED ({}) -> sin2_t > 1 - Black",
+                    "{:width$} REFRACTED (remaining {}) -> sin2_t > 1 - Black",
                     " ",
                     remaining_iterations,
                     width = call * 3
@@ -299,7 +299,7 @@ impl World {
             // println!("---- Calling from world.refracted_color(...) ----");
             //let _ = stdout().flush();
             trace!(
-                "{:width$} REFRACTED ({}) -> calling color_at",
+                "{:width$} REFRACTED (remaining {}) -> calling color_at",
                 " ",
                 remaining_iterations,
                 width = call * 3
@@ -308,7 +308,7 @@ impl World {
                 * comps.object.shape().material.transparency as f32;
 
             trace!(
-                "{:width$} REFRACTED ({}) -> returning {:?}",
+                "{:width$} REFRACTED (remaining {}) -> returning {:?}",
                 " ",
                 remaining_iterations,
                 (
