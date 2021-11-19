@@ -13,12 +13,14 @@ mod ch9;
 mod tests;
 pub mod utils;
 
+use log::{error, info};
 use std::env;
 use std::io::Error;
 use std::process::exit;
 
 #[rustfmt::skip::macros(vec)]
 fn main() -> Result<(), Error> {
+    env_logger::init();
     let mut chapter: usize = 0;
 
     let mut args_itr = env::args();
@@ -37,51 +39,51 @@ fn main() -> Result<(), Error> {
     }
 
     if error {
-        eprintln!("usage: ./ray-tracer --ch <chapter number to execute>");
+        error!("usage: ./ray-tracer --ch <chapter number to execute>");
         exit(1);
     }
 
     match chapter {
         1 => {
-            println!("Chapter 1...");
+            info!("Chapter 1...");
             ch1::run();
             Ok(())
         }
         2 => {
-            println!("Chapter 2...");
+            info!("Chapter 2...");
             ch2::run()
         }
         3 => {
-            println!("Nothing to do for chapter 3!");
+            info!("Nothing to do for chapter 3!");
             Ok(())
         }
         4 => {
-            println!("Chapter 4...");
+            info!("Chapter 4...");
             ch4::run()
         }
         5 => {
-            println!("Chapter 5...");
+            info!("Chapter 5...");
             ch5::run()
         }
         6 => {
-            println!("Chapter 6...");
+            info!("Chapter 6...");
             ch6::run()
         }
         7 => {
-            println!("Chapter 7..");
+            info!("Chapter 7..");
             ch7::run()
         }
         9 => {
-            println!("Chapter 9..");
+            info!("Chapter 9..");
             ch9::run()
         }
         10 => {
-            println!("Chapter 10..");
+            info!("Chapter 10..");
             ch10::run()
         }
         11 => {
-            println!("Chapter 11..");
-            ch11::run(3)
+            info!("Chapter 11..");
+            ch11::run()
         }
         _ => {
             panic!("Unsupported chapter {}!", chapter);

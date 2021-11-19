@@ -112,23 +112,32 @@ impl Object {
 
     // Finds intersections of ray against sphere instance
     pub fn intersect(&self, ray: &Ray) -> Intersections {
-        let inv_sphere_transform = self.shape().transformation.inverse();
-        if inv_sphere_transform.is_none() {
-            panic!("Unexpected non-invertible matrix.");
-        }
-        let localized_ray = ray.transform(&inv_sphere_transform.unwrap());
+        match self.shape().transformation.inverse() {
+            Option::Some(inv) => {
+                let localized_ray = ray.transform(&inv);
 
-        self.local_intersect(&localized_ray)
+                self.local_intersect(&localized_ray)
+            }
+            Option::None => {
+                panic!("Unexpected non-invertible matrix.");
+            }
+        }
     }
 
     // Computes the normal at given point.
     pub fn normal_at(&self, point: &Point) -> Vector {
-        let mut st_inv = self.shape().transformation.inverse().unwrap();
-        let local_point = &st_inv * point;
-        let local_normal = self.local_normal_at(&local_point);
-        let world_normal = &*st_inv.transpose() * &local_normal;
+        match self.shape().transformation.inverse() {
+            Option::Some(mut st_inv) => {
+                let local_point = &st_inv * point;
+                let local_normal = self.local_normal_at(&local_point);
+                let world_normal = &*st_inv.transpose() * &local_normal;
 
-        world_normal.normalize()
+                world_normal.normalize()
+            }
+            Option::None => {
+                panic!("Unexpected non-invertible matrix.");
+            }
+        }
     }
 }
 
@@ -260,18 +269,18 @@ impl Plane {
         }
     }
 
-    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+    pub fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
         let result;
         if ray.direction.y().abs() < crate::domain::EPSILON {
             result = Vec::new()
         } else {
-            let t = -ray.origin.y() / ray.direction.y();
+            let t = -(ray.origin.y()) / ray.direction.y();
             result = vec![t];
         }
         result
     }
 
-    pub(crate) fn local_normal_at(&self, _point: &Point) -> Vector {
+    pub fn local_normal_at(&self, _point: &Point) -> Vector {
         Vector::new(0.0, 1.0, 0.0)
     }
 }
