@@ -65,27 +65,27 @@ impl World {
         //     call_id, &comp.distance, &comp.point
         // );
 
-        trace!(
-            "{:width$} COLOR_AT ({}) -> down the rabbit hole!",
-            " ",
-            remaining_iterations,
-            width = (MAX_ITERATIONS - remaining_iterations) * 3
-        );
+        // trace!(
+        //     "{:width$} COLOR_AT ({}) -> down the rabbit hole!",
+        //     " ",
+        //     remaining_iterations,
+        //     width = (MAX_ITERATIONS - remaining_iterations) * 3
+        // );
         // let reflected = Color::BLACK; //self.reflected_color(comp, remaining_iterations);
         let refracted = self.refracted_color(comp, remaining_iterations);
         let reflected = self.reflected_color(comp, remaining_iterations);
 
         let result = &(&surface + &reflected) + &refracted;
 
-        trace!(
-            "{:width$} COLOR_AT ({}) -> total: {:?}, reflected: {:?}, refracted: {:?}",
-            " ",
-            remaining_iterations,
-            (result.red, result.green, result.blue),
-            (reflected.red, reflected.green, reflected.blue),
-            (refracted.red, refracted.green, refracted.blue),
-            width = (MAX_ITERATIONS - remaining_iterations) * 3
-        );
+        // trace!(
+        //     "{:width$} COLOR_AT ({}) -> total: {:?}, reflected: {:?}, refracted: {:?}",
+        //     " ",
+        //     remaining_iterations,
+        //     (result.red, result.green, result.blue),
+        //     (reflected.red, reflected.green, reflected.blue),
+        //     (refracted.red, refracted.green, refracted.blue),
+        //     width = (MAX_ITERATIONS - remaining_iterations) * 3
+        // );
 
         // println!(
         //     "remaining {} -> surface {:?}, refracted {:?}, result: {:?}",
@@ -157,7 +157,7 @@ impl World {
                         //     continue;
                         // }
                     }
-                    // println!("Rendering pixel ({}, {})...", x, y);
+                    trace!("Rendering pixel ({}, {})...", x, y);
                     let ray = camera.ray_for_pixel(x, y);
                     // println!("---- Calling from world.render(...) ----");
                     // let _ = stdout().flush();

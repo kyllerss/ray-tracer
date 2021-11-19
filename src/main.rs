@@ -39,7 +39,7 @@ fn main() -> Result<(), Error> {
     }
 
     if error {
-        error!("usage: ./ray-tracer --ch <chapter number to execute>");
+        error!("usage: [RUST_LOG=trace] ./ray-tracer --ch <chapter number to execute>");
         exit(1);
     }
 

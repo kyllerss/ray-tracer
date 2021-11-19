@@ -19,8 +19,6 @@ pub fn run() -> Result<(), Error> {
     info!("Running ch11... (example #{})", example);
 
     info!("Progress...");
-    info!("|----------|");
-    info!(" ");
 
     let (world, camera) = match example {
         1 => build_example_1()?,
@@ -35,8 +33,7 @@ pub fn run() -> Result<(), Error> {
         &camera,
         Arc::new(move |itr: usize, total_size: usize| {
             if ((itr as f64 / total_size as f64) * 100.0) % 10.0 == 0.0 {
-                //print!("#");
-                let _ = stdout().flush();
+                info!("{}/{}", itr, total_size);
             }
         }),
     );
