@@ -8,7 +8,6 @@ use crate::domain::ray::Ray;
 use crate::domain::Point;
 use num::traits::Pow;
 use rayon::prelude::*;
-use std::io::{stdout, Write};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
@@ -60,7 +59,14 @@ impl World {
         let reflected = self.reflected_color(comp, iteration);
         let refracted = self.refracted_color(comp, iteration);
 
-        &(&surface + &reflected) + &refracted
+        let material = &comp.object.shape().material;
+        if material.reflective > 0.0 && material.transparency > 0.0 {
+            let reflectance = comp.schlick();
+            &(&surface + &(&reflected * reflectance as f32))
+                + &(&refracted * (1.0 - reflectance as f32))
+        } else {
+            &(&surface + &reflected) + &refracted
+        }
     }
 
     // calculates color at a given point

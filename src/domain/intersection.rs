@@ -1,11 +1,9 @@
 use crate::domain::object::Object;
 use crate::domain::ray::Ray;
-use crate::domain::{Id, Point, Vector};
-use linked_hash_map::LinkedHashMap;
+use crate::domain::{Point, Vector};
 use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashMap, HashSet};
+use std::collections::BinaryHeap;
 use std::fmt::{Debug, Formatter};
-use std::io::{stdout, Write};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Intersection<'a> {
@@ -304,5 +302,23 @@ impl<'a> Computations<'a> {
         // println!("Exiting: ({}, {})", n1, n2);
         // let _ = stdout().flush();
         (n1, n2)
+    }
+
+    pub fn schlick(&self) -> f64 {
+        let mut cos = self.eye_v.dot_product(&self.normal_v);
+        if self.n1 > self.n2 {
+            let n = self.n1 / self.n2;
+            let sin2_t = n.powi(2) * (1.0 - cos.powi(2));
+            if sin2_t > 1.0 {
+                return 1.0;
+            }
+
+            let cos_t = (1.0 - sin2_t).sqrt();
+            cos = cos_t;
+        }
+
+        let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).powi(2);
+
+        r0 + (1.0 - r0) * (1.0 - cos).powi(5)
     }
 }

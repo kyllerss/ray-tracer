@@ -277,3 +277,77 @@ fn ch11_test11_under_point_is_offset_below_the_surface() {
     assert!(comps.under_point.z() > crate::domain::EPSILON / 2.0);
     assert!(comps.point.z() < comps.under_point.z());
 }
+
+#[test]
+fn ch11_test17_schlick_approximation_under_total_internal_reflection() {
+    let shape = Sphere::new()
+        .material(
+            Material::new()
+                .refractive_index_override(1.5)
+                .transparency(1.0)
+                .build(),
+        )
+        .build()
+        .into();
+    let r = Ray::new(
+        Point::new(0.0, 0.0, 2_f64.sqrt() / 2.0),
+        Vector::new(0.0, 1.0, 0.0),
+    );
+    let int = Intersection::new(2_f64.sqrt() / 2.0, &shape);
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(Intersection::new(-(2_f64.sqrt() / 2.0), &shape));
+        xs.push(int.clone());
+        xs
+    };
+    let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
+    let reflectance = comps.schlick();
+    assert_eq!(reflectance, 1.0);
+}
+
+#[test]
+fn ch11_test18_schlick_approximation_with_perpendicular_viewing_angle() {
+    let shape = Sphere::new()
+        .material(
+            Material::new()
+                .refractive_index_override(1.5)
+                .transparency(1.0)
+                .build(),
+        )
+        .build()
+        .into();
+    let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0));
+    let int = Intersection::new(1.0, &shape);
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(Intersection::new(-1.0, &shape));
+        xs.push(int.clone());
+        xs
+    };
+    let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
+    let reflectance = comps.schlick();
+    assert!(crate::domain::epsilon_eq(reflectance, 0.04));
+}
+
+#[test]
+fn ch11_test19_schlick_approximation_with_small_angle_and_n2_greater_than_n1() {
+    let shape = Sphere::new()
+        .material(
+            Material::new()
+                .refractive_index_override(1.5)
+                .transparency(1.0)
+                .build(),
+        )
+        .build()
+        .into();
+    let r = Ray::new(Point::new(0.0, 0.99, -2.0), Vector::new(0.0, 0.0, 1.0));
+    let int = Intersection::new(1.8589, &shape);
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(int.clone());
+        xs
+    };
+    let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
+    let reflectance = comps.schlick();
+    assert!(crate::domain::epsilon_eq(reflectance, 0.48873));
+}
