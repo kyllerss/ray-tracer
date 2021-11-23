@@ -107,6 +107,14 @@ impl World {
         let mut ints = self.intersect(r);
         let original_ints = ints.clone();
 
+        trace!(
+            "{:width$} COLOR_AT ray (remaining {}) - {:?}",
+            " ",
+            remaining_iterations,
+            r.direction,
+            width = call * 3
+        );
+
         match ints.hit() {
             Some(intersection) => {
                 let comps = Computations::prepare_computations(
@@ -151,10 +159,14 @@ impl World {
                 let mut r: Vec<(usize, usize, Color)> = Vec::with_capacity(camera.hsize);
                 for x in 0..camera.hsize {
                     if log_enabled!(Debug) {
-                        if x != 148 || y != 159 {
+                        if x != 148 || y != 153 {
                             // reflection
                             continue;
                         }
+                        // if x != 148 || y != 159 {
+                        //     // reflection
+                        //     continue;
+                        // }
                         // if x != 147 || y != 153 {
                         //     // no reflection
                         //     continue;

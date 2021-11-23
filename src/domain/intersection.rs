@@ -2,6 +2,8 @@ use crate::domain::object::Object;
 use crate::domain::ray::Ray;
 use crate::domain::{Id, Point, Vector};
 use linked_hash_map::LinkedHashMap;
+use log::trace;
+use num::traits::Pow;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::fmt::{Debug, Formatter};
@@ -245,63 +247,70 @@ impl<'a> Computations<'a> {
         while let Some(i) = tmp_heap.pop() {
             let is_hit = i == *hit_intersection;
 
+            trace!(
+                "Intersection at {:?} {:?}, hit: {:?}",
+                i.object.shape().shape_type_name,
+                i.distance,
+                is_hit
+            );
+
             if is_hit {
                 match containers.is_empty() {
                     true => {
                         n1 = 1.0;
-                        // println!("Hit on {:?} -> n1: {} - empty", &i.object, n1)
+                        trace!(
+                            "Hit on {:?} -> n1: {:?} - empty",
+                            &i.object.shape().shape_type_name,
+                            n1
+                        );
                     }
 
                     false => {
                         let obj = containers.last().unwrap();
-                        // println!(
-                        //     "Hit on {:?} -> n1: {:?}",
-                        //     &i.object,
-                        //     obj.shape().material.refractive_index()
-                        // );
-                        n1 = obj.shape().material.refractive_index()
+                        n1 = obj.shape().material.refractive_index();
+                        trace!("Hit on {:?} -> n1: {:?}", obj.shape().shape_type_name, n1);
                     }
                 }
             }
             // let obj_key = &i.object.shape().id;
+            trace!("Containers before: {:?}", &containers);
             if containers.contains(&i.object) {
-                // println!("Removing {:?} from {:?}", &i.object, &containers);
+                trace!("Removing {:?}", &i.object.shape().shape_type_name);
                 // let removed_item = containers.pop().unwrap();
                 containers.retain(|item| item.shape().id != i.object.shape().id);
-                // println!("Containers is now {:?}", &containers);
                 // println!(
                 //     "Removed {} {:?}",
                 //     &i.object.shape().shape_type_name,
                 //     &i.object.shape().id
                 // );
             } else {
-                // println!("Appending {:?} to {:?}", &i.object, &containers);
+                trace!("Appending {:?}", &i.object.shape().shape_type_name);
                 containers.push(i.object);
-                // println!("Containers is now {:?}", &containers);
             }
+            trace!("Containers after: {:?}", &containers);
 
             if is_hit {
                 match containers.is_empty() {
                     true => {
                         n2 = 1.0;
-                        // println!("Hit on {:?} -> n2: {} - empty", &i.object, n2)
+                        trace!(
+                            "Hit on {:?} -> n2: {:?} - empty",
+                            &i.object.shape().shape_type_name,
+                            n2
+                        );
                     }
 
                     false => {
                         let obj = containers.last().unwrap();
-                        // println!(
-                        //     "Hit on {:?} -> n2: {:?}",
-                        //     &i.object,
-                        //     obj.shape().material.refractive_index()
-                        // );
-                        n2 = obj.shape().material.refractive_index()
+                        n2 = obj.shape().material.refractive_index();
+                        trace!("Hit on {:?} -> n2: {:?}", obj.shape().shape_type_name, n2);
                     }
                 }
 
                 break;
             }
         }
-        // println!("Exiting: ({}, {})", n1, n2);
+        trace!("Exiting: ({}, {})", n1, n2);
         // let _ = stdout().flush();
         (n1, n2)
     }
