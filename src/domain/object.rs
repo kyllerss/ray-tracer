@@ -31,11 +31,17 @@ pub struct Plane {
     pub shape: Shape,
 }
 
+#[derive(PartialEq, Debug, Clone)]
+pub struct Cube {
+    pub shape: Shape,
+}
+
 #[derive(PartialEq, Clone)]
 pub enum Object {
     Sphere(Sphere),
     Null(Null), // throw-away test implementation
     Plane(Plane),
+    Cube(Cube),
 }
 
 impl Debug for Object {
@@ -68,6 +74,12 @@ impl From<Null> for Object {
     }
 }
 
+impl From<Cube> for Object {
+    fn from(v: Cube) -> Self {
+        Object::Cube(v)
+    }
+}
+
 impl Object {
     // TODO Define trait that returns these, so that the match is not necessary.
     fn local_intersect(&self, ray: &Ray) -> Intersections {
@@ -75,6 +87,7 @@ impl Object {
             Object::Sphere(sphere) => sphere.local_intersect(ray),
             Object::Null(null) => null.local_intersect(ray),
             Object::Plane(plane) => plane.local_intersect(ray),
+            Object::Cube(cube) => cube.local_intersect(ray),
         };
         let mut result = Intersections::new();
         ints.iter().for_each(|int| {
@@ -89,6 +102,7 @@ impl Object {
             Object::Sphere(sphere) => sphere.local_normal_at(point),
             Object::Null(null) => null.local_normal_at(point),
             Object::Plane(plane) => plane.local_normal_at(point),
+            Object::Cube(cube) => cube.local_normal_at(point),
         }
     }
 
@@ -98,6 +112,7 @@ impl Object {
             Object::Sphere(sphere) => &sphere.shape,
             Object::Null(null) => &null.shape,
             Object::Plane(plane) => &plane.shape,
+            Object::Cube(cube) => &cube.shape,
         }
     }
 
@@ -107,6 +122,7 @@ impl Object {
             Object::Sphere(sphere) => &mut sphere.shape,
             Object::Null(null) => &mut null.shape,
             Object::Plane(plane) => &mut plane.shape,
+            Object::Cube(cube) => &mut cube.shape,
         }
     }
 
@@ -347,5 +363,73 @@ impl Sphere {
     // Computes the normal at given point.
     fn local_normal_at(&self, point: &Point) -> Vector {
         point - &Sphere::ORIGIN
+    }
+}
+
+pub struct CubeBuilder {
+    shape_builder: ShapeBuilder,
+}
+
+impl CubeBuilder {
+    pub fn transformation(&mut self, transformation: Matrix) -> &mut CubeBuilder {
+        self.shape_builder.transformation(transformation);
+        self
+    }
+
+    pub fn material(&mut self, material: Material) -> &mut CubeBuilder {
+        self.shape_builder.material(material);
+        self
+    }
+
+    pub fn build(&self) -> Cube {
+        Cube {
+            shape: self.shape_builder.build(),
+        }
+    }
+}
+
+impl Cube {
+    pub fn new() -> CubeBuilder {
+        CubeBuilder {
+            shape_builder: Shape::new("Cube"),
+        }
+    }
+    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+        let (x_tmin, x_tmax) = Cube::check_axis(ray.origin.x(), ray.direction.x());
+        let (y_tmin, y_tmax) = Cube::check_axis(ray.origin.y(), ray.direction.y());
+        let (z_tmin, z_tmax) = Cube::check_axis(ray.origin.z(), ray.direction.z());
+
+        let tmin = x_tmin.max(y_tmin.max(z_tmin));
+        let tmax = x_tmax.min(y_tmax.min(z_tmax));
+
+        if tmin > tmax {
+            vec![]
+        } else {
+            vec![tmin, tmax]
+        }
+    }
+
+    fn check_axis(origin_component: f64, direction_component: f64) -> (f64, f64) {
+        let tmin_numerator = -1.0 - origin_component;
+        let tmax_numerator = 1.0 - origin_component;
+
+        let (tmin, tmax);
+        if direction_component.abs() >= crate::domain::EPSILON {
+            tmin = tmin_numerator / direction_component;
+            tmax = tmax_numerator / direction_component;
+        } else {
+            tmin = tmin_numerator * f64::INFINITY;
+            tmax = tmax_numerator * f64::INFINITY;
+        }
+
+        if tmin > tmax {
+            (tmax, tmin)
+        } else {
+            (tmin, tmax)
+        }
+    }
+
+    pub(crate) fn local_normal_at(&self, _point: &Point) -> Vector {
+        Vector::new(0.0, 0.0, 0.0)
     }
 }

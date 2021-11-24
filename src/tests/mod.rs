@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod camera;
 mod canvas;
+mod cubes;
 mod intersections;
 mod lights;
 mod materials;

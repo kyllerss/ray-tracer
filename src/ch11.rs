@@ -43,8 +43,8 @@ pub fn run(example: u8) -> Result<(), Error> {
 
 fn build_example_3() -> Result<(World, Camera), Error> {
     // camera
-    let camera_width = 1200;
-    let camera_height = 1200;
+    let camera_width = 600;
+    let camera_height = 600;
     let mut camera = Camera::new(camera_width, camera_height, 0.45);
     camera.transform = Matrix::new_view_transformation(
         &Point::new(0.0, 0.0, -5.0),
