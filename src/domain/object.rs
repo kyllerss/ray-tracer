@@ -394,6 +394,7 @@ impl Cube {
             shape_builder: Shape::new("Cube"),
         }
     }
+
     pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
         let (x_tmin, x_tmax) = Cube::check_axis(ray.origin.x(), ray.direction.x());
         let (y_tmin, y_tmax) = Cube::check_axis(ray.origin.y(), ray.direction.y());
@@ -429,7 +430,15 @@ impl Cube {
         }
     }
 
-    pub(crate) fn local_normal_at(&self, _point: &Point) -> Vector {
-        Vector::new(0.0, 0.0, 0.0)
+    pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {
+        let max_c = point.x().max(point.y().max(point.z()));
+
+        if max_c == point.x().abs() {
+            Vector::new(point.x(), 0.0, 0.0)
+        } else if max_c == point.y().abs() {
+            Vector::new(0.0, point.y(), 0.0)
+        } else {
+            Vector::new(0.0, 0.0, point.z())
+        }
     }
 }
