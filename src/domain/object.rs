@@ -128,11 +128,11 @@ impl Object {
 
     // Finds intersections of ray against sphere instance
     pub fn intersect(&self, ray: &Ray) -> Intersections {
-        let inv_sphere_transform = self.shape().transformation.inverse();
-        if inv_sphere_transform.is_none() {
+        let inv_transform = self.shape().transformation.inverse();
+        if inv_transform.is_none() {
             panic!("Unexpected non-invertible matrix.");
         }
-        let localized_ray = ray.transform(&inv_sphere_transform.unwrap());
+        let localized_ray = ray.transform(&inv_transform.unwrap());
 
         self.local_intersect(&localized_ray)
     }
@@ -431,7 +431,7 @@ impl Cube {
     }
 
     pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {
-        let max_c = point.x().max(point.y().max(point.z()));
+        let max_c = point.x().abs().max(point.y().abs().max(point.z().abs()));
 
         if max_c == point.x().abs() {
             Vector::new(point.x(), 0.0, 0.0)

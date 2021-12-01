@@ -99,9 +99,8 @@ fn ch12_test3_normal_on_surface_of_cube() {
     ];
 
     let c = Cube::new().build();
-    for (point, vector) in cases {
-        let r = Ray::new(point, vector);
-        let xs = c.local_intersect(&r);
-        assert!(xs.is_empty());
+    for (point, normal_exp) in cases {
+        let normal = c.local_normal_at(&point);
+        assert_eq!(normal, normal_exp);
     }
 }
