@@ -496,7 +496,10 @@ impl Cylinder {
             return vec![];
         }
 
-        vec![1.0]
+        let t0 = (-b - disc.sqrt()) / (2.0 * a);
+        let t1 = (-b + disc.sqrt()) / (2.0 * a);
+
+        vec![t0, t1]
     }
 
     pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {
