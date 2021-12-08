@@ -12,7 +12,7 @@ use std::io::{stdout, Error, Write};
 use std::sync::Arc;
 
 pub fn run() -> Result<(), Error> {
-    let example = 2;
+    let example = 1;
     println!("Running ch12... (example #{})", example);
 
     println!("Progress...");
@@ -86,23 +86,25 @@ fn build_example_2() -> Result<(World, Camera), Error> {
                 .substance(Substance::GLASS)
                 .build(),
         )
-        .transformation(Matrix::new_translation(1.0, 0.0, 0.0))
+        .transformation(Matrix::new_translation(2.0, 0.0, 0.0))
         .build();
 
     let glass_cube = Cube::new()
         .material(
             Material::new()
-                .color(Color::new(1.0, 1.0, 1.0))
-                .ambient(0.0)
-                .diffuse(0.0)
+                .color(Color::new(0.7, 0.2, 0.0))
+                .ambient(0.1)
+                .diffuse(0.5)
                 .specular(0.9)
                 .shininess(300.0)
-                .reflective(0.9)
-                .transparency(0.9)
-                .substance(Substance::GLASS)
+                .reflective(0.1)
+                //.transparency(0.9)
+                //.substance(Substance::GLASS)
                 .build(),
         )
-        .transformation(Matrix::new_translation(-1.0, 0.0, 0.0))
+        .transformation(
+            &Matrix::new_translation(-2.0, 0.0, 0.0) * &Matrix::new_rotation_y(PI / 3.0),
+        )
         .build();
 
     // world
@@ -115,12 +117,22 @@ fn build_example_2() -> Result<(World, Camera), Error> {
     Result::Ok((world, camera))
 }
 fn build_example_1() -> Result<(World, Camera), Error> {
+    // // camera
+    // let camera_width = 300;
+    // let camera_height = 300;
+    // let mut camera = Camera::new(camera_width, camera_height, 0.45);
+    // camera.transform = Matrix::new_view_transformation(
+    //     &Point::new(0.0, 0.0, -5.0),
+    //     &Point::new(0.0, 0.0, 0.0),
+    //     &Vector::new(0.0, 1.0, 0.0),
+    // );
+
     // camera
-    let camera_width = 600;
-    let camera_height = 600;
+    let camera_width = 300;
+    let camera_height = 300;
     let mut camera = Camera::new(camera_width, camera_height, 0.45);
     camera.transform = Matrix::new_view_transformation(
-        &Point::new(0.0, 0.0, -5.0),
+        &Point::new(10.0, 5.0, -5.0),
         &Point::new(0.0, 0.0, 0.0),
         &Vector::new(0.0, 1.0, 0.0),
     );
@@ -129,7 +141,8 @@ fn build_example_1() -> Result<(World, Camera), Error> {
     let light_source = Light::new(Point::new(2.0, 10.0, -5.0), Color::new(0.9, 0.9, 0.9));
 
     // wall
-    let wall_transform = &Matrix::new_translation(0.0, 0.0, 10.0) * &Matrix::new_rotation_x(1.5708);
+    //let wall_transform = &Matrix::new_translation(0.0, 0.0, 10.0) * &Matrix::new_rotation_x(1.5708);
+    let wall_transform = Matrix::new_translation(0.0, -10.0, 0.0);
     let wall = Plane::new()
         .transformation(wall_transform)
         .material(
@@ -146,7 +159,7 @@ fn build_example_1() -> Result<(World, Camera), Error> {
         )
         .build();
 
-    let glass_ball = Sphere::new()
+    let glass_ball = Cube::new()
         .material(
             Material::new()
                 .color(Color::new(1.0, 1.0, 1.0))
@@ -166,13 +179,13 @@ fn build_example_1() -> Result<(World, Camera), Error> {
         .material(
             Material::new()
                 .color(Color::new(1.0, 1.0, 1.0))
-                .ambient(0.0)
-                .diffuse(0.0)
+                .ambient(0.1)
+                .diffuse(0.1)
                 .specular(0.9)
                 .shininess(300.0)
-                .reflective(0.9)
-                .transparency(0.9)
-                .substance(Substance::AIR)
+                .reflective(0.1)
+                //.transparency(0.9)
+                //.substance(Substance::AIR)
                 .build(),
         )
         .build();
