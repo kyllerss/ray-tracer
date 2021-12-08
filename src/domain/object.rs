@@ -36,12 +36,18 @@ pub struct Cube {
     pub shape: Shape,
 }
 
+#[derive(PartialEq, Debug, Clone)]
+pub struct Cylinder {
+    pub shape: Shape,
+}
+
 #[derive(PartialEq, Clone)]
 pub enum Object {
     Sphere(Sphere),
     Null(Null), // throw-away test implementation
     Plane(Plane),
     Cube(Cube),
+    Cylinder(Cylinder),
 }
 
 impl Debug for Object {
@@ -88,6 +94,7 @@ impl Object {
             Object::Null(null) => null.local_intersect(ray),
             Object::Plane(plane) => plane.local_intersect(ray),
             Object::Cube(cube) => cube.local_intersect(ray),
+            Object::Cylinder(cylinder) => cylinder.local_intersect(ray),
         };
         let mut result = Intersections::new();
         ints.iter().for_each(|int| {
@@ -103,6 +110,7 @@ impl Object {
             Object::Null(null) => null.local_normal_at(point),
             Object::Plane(plane) => plane.local_normal_at(point),
             Object::Cube(cube) => cube.local_normal_at(point),
+            Object::Cylinder(cylinder) => cylinder.local_normal_at(point),
         }
     }
 
@@ -113,6 +121,7 @@ impl Object {
             Object::Null(null) => &null.shape,
             Object::Plane(plane) => &plane.shape,
             Object::Cube(cube) => &cube.shape,
+            Object::Cylinder(cylinder) => &cylinder.shape,
         }
     }
 
@@ -123,6 +132,7 @@ impl Object {
             Object::Null(null) => &mut null.shape,
             Object::Plane(plane) => &mut plane.shape,
             Object::Cube(cube) => &mut cube.shape,
+            Object::Cylinder(cylinder) => &mut cylinder.shape,
         }
     }
 
@@ -440,5 +450,56 @@ impl Cube {
         } else {
             Vector::new(0.0, 0.0, point.z())
         }
+    }
+}
+
+pub struct CylinderBuilder {
+    shape_builder: ShapeBuilder,
+}
+
+impl CylinderBuilder {
+    pub fn transformation(&mut self, transformation: Matrix) -> &mut CylinderBuilder {
+        self.shape_builder.transformation(transformation);
+        self
+    }
+
+    pub fn material(&mut self, material: Material) -> &mut CylinderBuilder {
+        self.shape_builder.material(material);
+        self
+    }
+
+    pub fn build(&self) -> Cylinder {
+        Cylinder {
+            shape: self.shape_builder.build(),
+        }
+    }
+}
+
+impl Cylinder {
+    pub fn new() -> CylinderBuilder {
+        CylinderBuilder {
+            shape_builder: Shape::new("Cylinder"),
+        }
+    }
+
+    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+        let a = ray.direction.x().powi(2) + ray.direction.z().powi(2);
+        if a < crate::domain::EPSILON {
+            return vec![];
+        }
+
+        let b = 2.0 * ray.origin.x() * ray.direction.x() + 2.0 * ray.origin.z() * ray.direction.z();
+        let c = ray.origin.x().powi(2) + ray.origin.z().powi(2) - 1.0;
+        let disc = b.powi(2) - 4.0 * a * c;
+
+        if disc < 0.0 {
+            return vec![];
+        }
+
+        vec![1.0]
+    }
+
+    pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {
+        Vector::new(0.0, point.y(), 0.0)
     }
 }
