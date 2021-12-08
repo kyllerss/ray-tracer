@@ -56,3 +56,19 @@ fn ch13_test2_ray_strikes_cylinder() {
         assert!(crate::domain::epsilon_eq(xs[1], t1));
     }
 }
+
+#[test]
+fn ch13_test3_normal_vector_on_cylinder() {
+    let cases = [
+        (Point::new(1.0, 0.0, 0.0), Vector::new(1.0, 0.0, 0.0)),
+        (Point::new(0.0, 5.0, -1.0), Vector::new(0.0, 0.0, -1.0)),
+        (Point::new(0.0, -2.0, 1.0), Vector::new(0.0, 0.0, 1.0)),
+        (Point::new(-1.0, 1.0, 0.0), Vector::new(-1.0, 0.0, 0.0)),
+    ];
+
+    let cyl = Cylinder::new().build();
+    for (point, n_exp) in cases {
+        let n = cyl.local_normal_at(&point);
+        assert_eq!(n, n_exp);
+    }
+}

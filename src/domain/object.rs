@@ -503,6 +503,6 @@ impl Cylinder {
     }
 
     pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {
-        Vector::new(0.0, point.y(), 0.0)
+        Vector::new(point.x(), 0.0, point.z())
     }
 }
