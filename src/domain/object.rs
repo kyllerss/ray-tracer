@@ -39,6 +39,8 @@ pub struct Cube {
 #[derive(PartialEq, Debug, Clone)]
 pub struct Cylinder {
     pub shape: Shape,
+    pub minimum: f64,
+    pub maximum: f64,
 }
 
 #[derive(PartialEq, Clone)]
@@ -455,6 +457,8 @@ impl Cube {
 
 pub struct CylinderBuilder {
     shape_builder: ShapeBuilder,
+    minimum: Option<f64>,
+    maximum: Option<f64>,
 }
 
 impl CylinderBuilder {
@@ -471,7 +475,18 @@ impl CylinderBuilder {
     pub fn build(&self) -> Cylinder {
         Cylinder {
             shape: self.shape_builder.build(),
+            minimum: self.minimum.unwrap_or(-f64::INFINITY),
+            maximum: self.maximum.unwrap_or(f64::INFINITY),
         }
+    }
+    pub fn minimum(&mut self, minimum: f64) -> &mut CylinderBuilder {
+        self.minimum = Option::Some(minimum);
+        self
+    }
+
+    pub fn maximum(&mut self, maximum: f64) -> &mut CylinderBuilder {
+        self.maximum = Option::Some(maximum);
+        self
     }
 }
 
@@ -479,6 +494,8 @@ impl Cylinder {
     pub fn new() -> CylinderBuilder {
         CylinderBuilder {
             shape_builder: Shape::new("Cylinder"),
+            minimum: Option::None,
+            maximum: Option::None,
         }
     }
 

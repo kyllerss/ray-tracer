@@ -72,3 +72,10 @@ fn ch13_test3_normal_vector_on_cylinder() {
         assert_eq!(n, n_exp);
     }
 }
+
+#[test]
+fn ch13_test4_default_minimum_and_maximum_for_cylinder() {
+    let cyl = Cylinder::new().build();
+    assert_eq!(cyl.minimum, -f64::INFINITY);
+    assert_eq!(cyl.maximum, f64::INFINITY);
+}
