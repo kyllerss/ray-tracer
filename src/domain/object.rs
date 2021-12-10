@@ -516,7 +516,20 @@ impl Cylinder {
         let t0 = (-b - disc.sqrt()) / (2.0 * a);
         let t1 = (-b + disc.sqrt()) / (2.0 * a);
 
-        vec![t0, t1]
+        let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
+
+        let mut xs = Vec::new();
+        let y0 = ray.origin.y() + t0 * ray.direction.y();
+        if self.minimum < y0 && y0 < self.maximum {
+            xs.push(t0);
+        }
+
+        let y1 = ray.origin.y() + t1 * ray.direction.y();
+        if self.minimum < y1 && y1 < self.maximum {
+            xs.push(t1);
+        }
+
+        xs
     }
 
     pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {

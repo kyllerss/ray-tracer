@@ -79,3 +79,23 @@ fn ch13_test4_default_minimum_and_maximum_for_cylinder() {
     assert_eq!(cyl.minimum, -f64::INFINITY);
     assert_eq!(cyl.maximum, f64::INFINITY);
 }
+
+#[test]
+fn ch13_test5_intersecting_constrained_cylinder() {
+    let cases = vec![
+        (Point::new(0.0, 1.5, 0.0), Vector::new(0.1, 1.0, 0.0), 0),
+        (Point::new(0.0, 3.0, -5.0), Vector::new(0.0, 0.0, 1.0), 0),
+        (Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0), 0),
+        (Point::new(0.0, 2.0, -5.0), Vector::new(0.0, 0.0, 1.0), 0),
+        (Point::new(0.0, 1.0, -5.0), Vector::new(0.0, 0.0, 1.0), 0),
+        (Point::new(0.0, 1.5, -2.0), Vector::new(0.0, 0.0, 1.0), 2),
+    ];
+
+    let cyl = Cylinder::new().minimum(1.0).maximum(2.0).build();
+    for (point, direction, count) in cases {
+        let direction_n = direction.normalize();
+        let r = Ray::new(point, direction_n);
+        let xs = cyl.local_intersect(&r);
+        assert_eq!(xs.len(), count);
+    }
+}
