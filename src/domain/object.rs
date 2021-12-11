@@ -41,6 +41,7 @@ pub struct Cylinder {
     pub shape: Shape,
     pub minimum: f64,
     pub maximum: f64,
+    pub closed: bool,
 }
 
 #[derive(PartialEq, Clone)]
@@ -459,6 +460,7 @@ pub struct CylinderBuilder {
     shape_builder: ShapeBuilder,
     minimum: Option<f64>,
     maximum: Option<f64>,
+    closed: Option<bool>,
 }
 
 impl CylinderBuilder {
@@ -477,6 +479,7 @@ impl CylinderBuilder {
             shape: self.shape_builder.build(),
             minimum: self.minimum.unwrap_or(-f64::INFINITY),
             maximum: self.maximum.unwrap_or(f64::INFINITY),
+            closed: self.closed.unwrap_or(false),
         }
     }
     pub fn minimum(&mut self, minimum: f64) -> &mut CylinderBuilder {
@@ -488,6 +491,11 @@ impl CylinderBuilder {
         self.maximum = Option::Some(maximum);
         self
     }
+
+    pub fn closed(&mut self, closed: bool) -> &mut CylinderBuilder {
+        self.closed = Option::Some(closed);
+        self
+    }
 }
 
 impl Cylinder {
@@ -496,40 +504,66 @@ impl Cylinder {
             shape_builder: Shape::new("Cylinder"),
             minimum: Option::None,
             maximum: Option::None,
+            closed: Option::None,
         }
     }
 
     pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
         let a = ray.direction.x().powi(2) + ray.direction.z().powi(2);
-        if a < crate::domain::EPSILON {
-            return vec![];
-        }
-
-        let b = 2.0 * ray.origin.x() * ray.direction.x() + 2.0 * ray.origin.z() * ray.direction.z();
-        let c = ray.origin.x().powi(2) + ray.origin.z().powi(2) - 1.0;
-        let disc = b.powi(2) - 4.0 * a * c;
-
-        if disc < 0.0 {
-            return vec![];
-        }
-
-        let t0 = (-b - disc.sqrt()) / (2.0 * a);
-        let t1 = (-b + disc.sqrt()) / (2.0 * a);
-
-        let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
 
         let mut xs = Vec::new();
-        let y0 = ray.origin.y() + t0 * ray.direction.y();
-        if self.minimum < y0 && y0 < self.maximum {
-            xs.push(t0);
+        if a > crate::domain::EPSILON {
+            let b =
+                2.0 * ray.origin.x() * ray.direction.x() + 2.0 * ray.origin.z() * ray.direction.z();
+            let c = ray.origin.x().powi(2) + ray.origin.z().powi(2) - 1.0;
+            let disc = b.powi(2) - 4.0 * a * c;
+
+            if disc < 0.0 {
+                return vec![];
+            }
+
+            let t0 = (-b - disc.sqrt()) / (2.0 * a);
+            let t1 = (-b + disc.sqrt()) / (2.0 * a);
+
+            let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
+
+            let y0 = ray.origin.y() + t0 * ray.direction.y();
+            if self.minimum < y0 && y0 < self.maximum {
+                xs.push(t0);
+            }
+
+            let y1 = ray.origin.y() + t1 * ray.direction.y();
+            if self.minimum < y1 && y1 < self.maximum {
+                xs.push(t1);
+            }
         }
 
-        let y1 = ray.origin.y() + t1 * ray.direction.y();
-        if self.minimum < y1 && y1 < self.maximum {
-            xs.push(t1);
-        }
+        self.intersect_caps(ray, &mut xs);
 
         xs
+    }
+
+    fn check_cap(ray: &Ray, t: f64) -> bool {
+        let x = ray.origin.x() + t * ray.direction.x();
+        let z = ray.origin.z() + t * ray.direction.z();
+
+        (x.powi(2) + z.powi(2)) <= 1.0
+    }
+
+    fn intersect_caps(&self, ray: &Ray, xs: &mut Vec<f64>) {
+        if !self.closed || ray.direction.y().abs() < crate::domain::EPSILON {
+            return;
+        }
+
+        let t = (self.minimum - ray.origin.y()) / ray.direction.y();
+        if Cylinder::check_cap(ray, t) {
+            xs.push(t);
+        }
+
+        let t = (self.maximum - ray.origin.y()) / ray.direction.y();
+        if Cylinder::check_cap(ray, t) {
+            xs.push(t);
+        }
     }
 
     pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {

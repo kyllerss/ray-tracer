@@ -99,3 +99,32 @@ fn ch13_test5_intersecting_constrained_cylinder() {
         assert_eq!(xs.len(), count);
     }
 }
+
+#[test]
+fn ch13_test6_default_closed_value_for_cylinder() {
+    let cyl = Cylinder::new().build();
+    assert_eq!(cyl.closed, false);
+}
+
+#[test]
+fn ch13_test7_intersecting_caps_of_closed_cylinder() {
+    let cases = [
+        (Point::new(0.0, 3.0, 0.0), Vector::new(0.0, -1.0, 0.0), 2),
+        (Point::new(0.0, 3.0, -2.0), Vector::new(0.0, -1.0, 2.0), 2),
+        (Point::new(0.0, 4.0, -2.0), Vector::new(0.0, -1.0, 1.0), 2),
+        (Point::new(0.0, 0.0, -2.0), Vector::new(0.0, 1.0, 2.0), 2),
+        (Point::new(0.0, -1.0, -2.0), Vector::new(0.0, 1.0, 1.0), 2),
+    ];
+
+    let cyl = Cylinder::new()
+        .minimum(1.0)
+        .maximum(2.0)
+        .closed(true)
+        .build();
+    for (point, direction, count) in cases {
+        let direction_n = direction.normalize();
+        let r = Ray::new(point, direction_n);
+        let xs = cyl.local_intersect(&r);
+        assert_eq!(xs.len(), count);
+    }
+}
