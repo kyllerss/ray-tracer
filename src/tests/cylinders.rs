@@ -128,3 +128,26 @@ fn ch13_test7_intersecting_caps_of_closed_cylinder() {
         assert_eq!(xs.len(), count);
     }
 }
+
+#[test]
+fn ch13_test8_normal_vector_on_cylinder_end_caps() {
+    let cases = vec![
+        (Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0)),
+        (Point::new(0.5, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0)),
+        (Point::new(0.0, 1.0, 0.5), Vector::new(0.0, -1.0, 0.0)),
+        (Point::new(0.0, 2.0, 0.0), Vector::new(0.0, 1.0, 0.0)),
+        (Point::new(0.5, 2.0, 0.0), Vector::new(0.0, 1.0, 0.0)),
+        (Point::new(0.0, 2.0, 0.5), Vector::new(0.0, 1.0, 0.0)),
+    ];
+
+    let cyl = Cylinder::new()
+        .minimum(1.0)
+        .maximum(2.0)
+        .closed(true)
+        .build();
+
+    for (point, normal_exp) in cases {
+        let n = cyl.local_normal_at(&point);
+        assert_eq!(n, normal_exp);
+    }
+}
