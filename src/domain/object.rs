@@ -89,6 +89,12 @@ impl From<Cube> for Object {
     }
 }
 
+impl From<Cylinder> for Object {
+    fn from(v: Cylinder) -> Self {
+        Object::Cylinder(v)
+    }
+}
+
 impl Object {
     // TODO Define trait that returns these, so that the match is not necessary.
     fn local_intersect(&self, ray: &Ray) -> Intersections {

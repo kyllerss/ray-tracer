@@ -7,6 +7,7 @@ mod macros;
 mod ch10;
 mod ch11;
 mod ch12;
+mod ch13;
 mod ch5;
 mod ch6;
 mod ch7;
@@ -87,6 +88,10 @@ fn main() -> Result<(), Error> {
         12 => {
             println!("Chapter 12..");
             ch12::run()
+        }
+        13 => {
+            println!("Chapter 13..");
+            ch13::run()
         }
         _ => {
             panic!("Unsupported chapter {}!", chapter);
