@@ -1,4 +1,4 @@
-use crate::domain::object::Cylinder;
+use crate::domain::object::{Cone, Cylinder};
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
 
@@ -151,3 +151,47 @@ fn ch13_test8_normal_vector_on_cylinder_end_caps() {
         assert_eq!(n, normal_exp);
     }
 }
+
+#[test]
+fn ch13_test9_intersecting_cone_with_ray() {
+    let cases = vec![
+        (
+            Point::new(0.0, 0.0, -5.0),
+            Vector::new(0.0, 0.0, 1.0),
+            5.0,
+            5.0,
+        ),
+        (
+            Point::new(0.0, 0.0, -5.0),
+            Vector::new(1.0, 1.0, 1.0),
+            8.66025,
+            8.66025,
+        ),
+        (
+            Point::new(1.0, 1.0, -5.0),
+            Vector::new(-0.5, -1.0, 1.0),
+            4.55006,
+            49.44994,
+        ),
+    ];
+
+    let shape = Cone::new().build();
+    for (origin, direction, t0, t1) in cases {
+        let direction_n = direction.normalize();
+        let r = Ray::new(origin, direction_n);
+        let xs = shape.local_intersect(&r);
+        assert_eq!(xs.len(), 2);
+        assert!(crate::domain::epsilon_eq(xs[0], t0));
+        assert!(crate::domain::epsilon_eq(xs[1], t1));
+    }
+}
+
+// #[test]
+// fn ch13_test10_intersecting_cone_with_ray_parallel_to_one_of_its_halves() {
+//     let shape = Cone::new().build();
+//     let direction = Vector::new(0.0, 1.0, 1.0).normalize();
+//     let r = Ray::new(Point::new(0.0, 0.0, -1.0), direction);
+//     let xs = shape.local_intersect(&r);
+//     assert_eq!(xs.len(), 1);
+//     assert_eq!(xs[0], 0.35355);
+// }
