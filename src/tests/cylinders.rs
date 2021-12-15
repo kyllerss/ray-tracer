@@ -186,12 +186,12 @@ fn ch13_test9_intersecting_cone_with_ray() {
     }
 }
 
-// #[test]
-// fn ch13_test10_intersecting_cone_with_ray_parallel_to_one_of_its_halves() {
-//     let shape = Cone::new().build();
-//     let direction = Vector::new(0.0, 1.0, 1.0).normalize();
-//     let r = Ray::new(Point::new(0.0, 0.0, -1.0), direction);
-//     let xs = shape.local_intersect(&r);
-//     assert_eq!(xs.len(), 1);
-//     assert_eq!(xs[0], 0.35355);
-// }
+#[test]
+fn ch13_test10_intersecting_cone_with_ray_parallel_to_one_of_its_halves() {
+    let shape = Cone::new().build();
+    let direction = Vector::new(0.0, 1.0, 1.0).normalize();
+    let r = Ray::new(Point::new(0.0, 0.0, -1.0), direction);
+    let xs = shape.local_intersect(&r);
+    assert_eq!(xs.len(), 1);
+    assert!(crate::domain::epsilon_eq(xs[0], 0.35355));
+}
