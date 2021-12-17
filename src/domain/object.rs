@@ -734,7 +734,12 @@ impl Cone {
         } else if dist < 1.0 && point.y() <= self.minimum + crate::domain::EPSILON {
             Vector::new(0.0, -1.0, 0.0)
         } else {
-            Vector::new(point.x(), 0.0, point.z())
+            let mut y = (point.x().powi(2) + point.z().powi(2)).sqrt();
+            if point.y() > 0.0 {
+                y = -y;
+            }
+
+            Vector::new(point.x(), y, point.z())
         }
     }
 }

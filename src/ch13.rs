@@ -3,7 +3,7 @@ use crate::domain::color::Color;
 use crate::domain::light::Light;
 use crate::domain::material::{Material, Substance};
 use crate::domain::matrix::Matrix;
-use crate::domain::object::{Cube, Cylinder, Plane, Sphere};
+use crate::domain::object::{Cone, Cube, Cylinder, Plane, Sphere};
 use crate::domain::pattern::Pattern;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
@@ -42,8 +42,8 @@ pub fn run() -> Result<(), Error> {
 
 fn build_example_1() -> Result<(World, Camera), Error> {
     // camera
-    let camera_width = 300;
-    let camera_height = 300;
+    let camera_width = 1200;
+    let camera_height = 1200;
     let mut camera = Camera::new(camera_width, camera_height, 0.45);
     camera.transform = Matrix::new_view_transformation(
         &Point::new(10.0, 7.0, -10.0),
@@ -123,12 +123,38 @@ fn build_example_1() -> Result<(World, Camera), Error> {
         )
         .build();
 
+    let cone = Cone::new()
+        .material(
+            Material::new()
+                .color(Color::new(0.5, 0.8, 0.3))
+                .ambient(0.2)
+                .diffuse(0.3)
+                .specular(0.9)
+                .shininess(300.0)
+                .reflective(0.1)
+                .build(),
+        )
+        .transformation(
+            &Matrix::new_translation(3.0, 0.5, -3.0) * &Matrix::new_scaling(0.5, 1.0, 0.5),
+        )
+        .closed(true)
+        .minimum(0.0)
+        .maximum(1.0)
+        .build();
+
     // world
     let mut world = World::new();
     world.light_source = Some(light_source);
-    world
-        .objects
-        .append(vec![floor.into(), ball.into(), cube.into(), cylinder.into()].as_mut());
+    world.objects.append(
+        vec![
+            floor.into(),
+            ball.into(),
+            cube.into(),
+            cylinder.into(),
+            cone.into(),
+        ]
+        .as_mut(),
+    );
 
     Result::Ok((world, camera))
 }

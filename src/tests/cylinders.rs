@@ -214,11 +214,19 @@ fn ch13_test11_intersecting_cone_end_caps() {
 }
 
 #[test]
-fn ch13_test12_intersecting_cone_with_ray_parallel_to_one_of_its_halves() {
+fn ch13_test12_computing_normal_vector_on_cone() {
+    let cases = [
+        (Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 0.0)),
+        (
+            Point::new(1.0, 1.0, 1.0),
+            Vector::new(1.0, -2_f64.sqrt(), 1.0),
+        ),
+        (Point::new(-1.0, -1.0, 0.0), Vector::new(-1.0, 1.0, 0.0)),
+    ];
+
     let shape = Cone::new().build();
-    let direction = Vector::new(0.0, 1.0, 1.0).normalize();
-    let r = Ray::new(Point::new(0.0, 0.0, -1.0), direction);
-    let xs = shape.local_intersect(&r);
-    assert_eq!(xs.len(), 1);
-    assert!(crate::domain::epsilon_eq(xs[0], 0.35355));
+    for (point, normal_exp) in cases {
+        let normal = shape.local_normal_at(&point);
+        assert_eq!(normal, normal_exp);
+    }
 }
