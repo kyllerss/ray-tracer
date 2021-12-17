@@ -703,11 +703,11 @@ impl Cone {
         xs
     }
 
-    fn check_cap(ray: &Ray, t: f64) -> bool {
+    fn check_cap(ray: &Ray, t: f64, radius: f64) -> bool {
         let x = ray.origin.x() + t * ray.direction.x();
         let z = ray.origin.z() + t * ray.direction.z();
 
-        (x.powi(2) + z.powi(2)) <= 1.0
+        (x.powi(2) + z.powi(2)) <= radius
     }
 
     fn intersect_caps(&self, ray: &Ray, xs: &mut Vec<f64>) {
@@ -716,12 +716,12 @@ impl Cone {
         }
 
         let t = (self.minimum - ray.origin.y()) / ray.direction.y();
-        if Cylinder::check_cap(ray, t) {
+        if Cone::check_cap(ray, t, self.minimum.abs()) {
             xs.push(t);
         }
 
         let t = (self.maximum - ray.origin.y()) / ray.direction.y();
-        if Cylinder::check_cap(ray, t) {
+        if Cone::check_cap(ray, t, self.maximum.abs()) {
             xs.push(t);
         }
     }

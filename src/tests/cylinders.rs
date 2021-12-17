@@ -195,3 +195,20 @@ fn ch13_test10_intersecting_cone_with_ray_parallel_to_one_of_its_halves() {
     assert_eq!(xs.len(), 1);
     assert!(crate::domain::epsilon_eq(xs[0], 0.35355));
 }
+
+#[test]
+fn ch13_test11_intersecting_cone_end_caps() {
+    let cases = vec![
+        (Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0), 0),
+        (Point::new(0.0, 0.0, -0.25), Vector::new(0.0, 1.0, 1.0), 2),
+        (Point::new(0.0, 0.0, -0.25), Vector::new(0.0, 1.0, 0.0), 4),
+    ];
+
+    let shape = Cone::new().minimum(-0.5).maximum(0.5).closed(true).build();
+    for (origin, direction, count) in cases {
+        let direction_n = direction.normalize();
+        let r = Ray::new(origin, direction_n);
+        let xs = shape.local_intersect(&r);
+        assert_eq!(xs.len(), count);
+    }
+}
