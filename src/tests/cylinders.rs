@@ -212,3 +212,13 @@ fn ch13_test11_intersecting_cone_end_caps() {
         assert_eq!(xs.len(), count);
     }
 }
+
+#[test]
+fn ch13_test12_intersecting_cone_with_ray_parallel_to_one_of_its_halves() {
+    let shape = Cone::new().build();
+    let direction = Vector::new(0.0, 1.0, 1.0).normalize();
+    let r = Ray::new(Point::new(0.0, 0.0, -1.0), direction);
+    let xs = shape.local_intersect(&r);
+    assert_eq!(xs.len(), 1);
+    assert!(crate::domain::epsilon_eq(xs[0], 0.35355));
+}
