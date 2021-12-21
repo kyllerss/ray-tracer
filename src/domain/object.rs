@@ -52,6 +52,12 @@ pub struct Cone {
     pub closed: bool,
 }
 
+#[derive(PartialEq, Debug, Clone)]
+pub struct Group {
+    pub shape: Shape,
+    pub children: Vec<Object>,
+}
+
 #[derive(PartialEq, Clone)]
 pub enum Object {
     Sphere(Sphere),
@@ -60,6 +66,7 @@ pub enum Object {
     Cube(Cube),
     Cylinder(Cylinder),
     Cone(Cone),
+    Group(Group),
 }
 
 impl Debug for Object {
@@ -110,6 +117,12 @@ impl From<Cone> for Object {
     }
 }
 
+impl From<Group> for Object {
+    fn from(v: Group) -> Self {
+        Object::Group(v)
+    }
+}
+
 impl Object {
     // TODO Define trait that returns these, so that the match is not necessary.
     fn local_intersect(&self, ray: &Ray) -> Intersections {
@@ -120,6 +133,7 @@ impl Object {
             Object::Cube(cube) => cube.local_intersect(ray),
             Object::Cylinder(cylinder) => cylinder.local_intersect(ray),
             Object::Cone(cone) => cone.local_intersect(ray),
+            Object::Group(group) => group.local_intersect(ray),
         };
         let mut result = Intersections::new();
         ints.iter().for_each(|int| {
@@ -137,6 +151,7 @@ impl Object {
             Object::Cube(cube) => cube.local_normal_at(point),
             Object::Cylinder(cylinder) => cylinder.local_normal_at(point),
             Object::Cone(cone) => cone.local_normal_at(point),
+            Object::Group(group) => group.local_normal_at(point),
         }
     }
 
@@ -149,6 +164,7 @@ impl Object {
             Object::Cube(cube) => &cube.shape,
             Object::Cylinder(cylinder) => &cylinder.shape,
             Object::Cone(cone) => &cone.shape,
+            Object::Group(group) => &group.shape,
         }
     }
 
@@ -161,6 +177,7 @@ impl Object {
             Object::Cube(cube) => &mut cube.shape,
             Object::Cylinder(cylinder) => &mut cylinder.shape,
             Object::Cone(cone) => &mut cone.shape,
+            Object::Group(group) => &mut group.shape,
         }
     }
 
@@ -741,5 +758,46 @@ impl Cone {
 
             Vector::new(point.x(), y, point.z())
         }
+    }
+}
+
+pub struct GroupBuilder {
+    shape_builder: ShapeBuilder,
+    children: Vec<Object>,
+}
+
+impl GroupBuilder {
+    pub fn transformation(&mut self, transformation: Matrix) -> &mut GroupBuilder {
+        self.shape_builder.transformation(transformation);
+        self
+    }
+
+    pub fn build(&self) -> Group {
+        Group {
+            shape: self.shape_builder.build(),
+            children: self.children.clone(),
+        }
+    }
+
+    pub fn add_child(&mut self, child: Object) -> &mut GroupBuilder {
+        self.children.push(child);
+        self
+    }
+}
+
+impl Group {
+    pub fn new() -> GroupBuilder {
+        GroupBuilder {
+            shape_builder: Shape::new("Group"),
+            children: Vec::new(),
+        }
+    }
+
+    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+        vec![]
+    }
+
+    pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {
+        Vector::new(0.0, 0.0, 0.0)
     }
 }
