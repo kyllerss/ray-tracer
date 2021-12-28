@@ -41,7 +41,7 @@ pub fn run() -> Result<(), Error> {
     crate::utils::write_imagefile("refractive_scene.ppm", "/tmp", &canvas)
 }
 
-fn build_example_2() -> Result<(World, Camera), Error> {
+fn build_example_2<'a>() -> Result<(World<'a>, Camera), Error> {
     // camera
     let camera_width = 600;
     let camera_height = 600;
@@ -116,7 +116,7 @@ fn build_example_2() -> Result<(World, Camera), Error> {
 
     Result::Ok((world, camera))
 }
-fn build_example_1() -> Result<(World, Camera), Error> {
+fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
     // // camera
     // let camera_width = 300;
     // let camera_height = 300;

@@ -14,13 +14,13 @@ use std::sync::Arc;
 // Determines maximum iteration depth when tracking ray bounces.
 const MAX_ITERATIONS: usize = 5;
 
-pub struct World {
-    pub objects: Vec<Object>,
+pub struct World<'a> {
+    pub objects: Vec<Object<'a>>,
     pub light_source: Option<Light>,
 }
 
-impl World {
-    pub fn new() -> World {
+impl<'a, 'b> World<'a> {
+    pub fn new() -> World<'a> {
         World {
             objects: Vec::new(),
             light_source: Option::None,
@@ -28,7 +28,7 @@ impl World {
     }
 
     // adds object to world
-    pub fn add_object(&mut self, obj: Object) -> &Self {
+    pub fn add_object(&'b mut self, obj: Object<'a>) -> &Self {
         self.objects.push(obj);
         self
     }

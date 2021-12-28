@@ -41,7 +41,7 @@ pub fn run(example: u8) -> Result<(), Error> {
     crate::utils::write_imagefile("refractive_scene.ppm", "/tmp", &canvas)
 }
 
-fn build_example_3() -> Result<(World, Camera), Error> {
+fn build_example_3<'a>() -> Result<(World<'a>, Camera), Error> {
     // camera
     let camera_width = 600;
     let camera_height = 600;
@@ -114,7 +114,7 @@ fn build_example_3() -> Result<(World, Camera), Error> {
     Result::Ok((world, camera))
 }
 
-fn build_example_2() -> Result<(World, Camera), Error> {
+fn build_example_2<'a>() -> Result<(World<'a>, Camera), Error> {
     let floor = Plane::new()
         .material(
             Material::new()
@@ -169,7 +169,7 @@ fn build_example_2() -> Result<(World, Camera), Error> {
     Result::Ok((world, camera))
 }
 
-fn build_example_1() -> Result<(World, Camera), Error> {
+fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
     // floor
     let floor_pattern = Pattern::new_striped(
         Color::new(1.0, 0.0, 0.0),

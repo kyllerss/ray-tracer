@@ -40,7 +40,7 @@ pub fn run() -> Result<(), Error> {
     crate::utils::write_imagefile("cylinders_cones_scene.ppm", "/tmp", &canvas)
 }
 
-fn build_example_1() -> Result<(World, Camera), Error> {
+fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
     // camera
     let camera_width = 1200;
     let camera_height = 1200;

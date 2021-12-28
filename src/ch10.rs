@@ -22,7 +22,8 @@ pub fn run() -> Result<(), Error> {
     );
 
     let t = crate::domain::matrix::IDENTITY.clone(); //Matrix::new_rotation_z(PI / 3.0);
-    let mut floor: Object = Plane::new().transformation(t).build().into();
+    let mut plane = Plane::new();
+    let mut floor: Object = plane.transformation(t).build().into();
     floor.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
         .specular(0.0)
@@ -38,7 +39,8 @@ pub fn run() -> Result<(), Error> {
 
     let t = &Matrix::new_translation(15.0, 0.0, 5.0)
         * &(&Matrix::new_rotation_z(PI / 2.0) * &Matrix::new_rotation_y(1.5 * PI / 4.0));
-    let mut right_wall: Object = Plane::new().transformation(t).build().into();
+    let mut plane = Plane::new();
+    let mut right_wall: Object = plane.transformation(t).build().into();
     right_wall.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
         .specular(0.0)
@@ -54,7 +56,8 @@ pub fn run() -> Result<(), Error> {
 
     let t = &Matrix::new_translation(-15.0, 0.0, 5.0)
         * &(&Matrix::new_rotation_z(PI / 2.0) * &Matrix::new_rotation_y(4.5 * PI / 4.0));
-    let mut left_wall: Object = Plane::new().transformation(t).build().into();
+    let mut plane = Plane::new();
+    let mut left_wall: Object = plane.transformation(t).build().into();
     left_wall.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
         .specular(0.0)
@@ -67,16 +70,18 @@ pub fn run() -> Result<(), Error> {
         Color::new(0.8, 0.2, 0.8),
         crate::domain::matrix::IDENTITY.clone(),
     );
-    let mut middle: Object = Sphere::new().build().into();
-    middle.shape_mut().transformation =
-        &Matrix::new_translation(-0.5, 1.0, 0.5) * &Matrix::new_rotation_x(PI / 4.0);
-    middle.shape_mut().material = Material::new()
-        .color(Color::new(0.1, 1.0, 0.5))
-        .diffuse(0.7)
-        .specular(0.3)
-        .pattern(middle_pattern)
-        .build();
-
+    let middle = {
+        let mut middle: Object = Sphere::new().build().into();
+        middle.shape_mut().transformation =
+            &Matrix::new_translation(-0.5, 1.0, 0.5) * &Matrix::new_rotation_x(PI / 4.0);
+        middle.shape_mut().material = Material::new()
+            .color(Color::new(0.1, 1.0, 0.5))
+            .diffuse(0.7)
+            .specular(0.3)
+            .pattern(middle_pattern)
+            .build();
+        middle
+    };
     // right sphere
     let right_pattern = Pattern::new_ringed(
         Color::WHITE,

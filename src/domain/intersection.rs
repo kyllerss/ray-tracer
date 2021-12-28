@@ -7,13 +7,13 @@ use std::fmt::{Debug, Formatter};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Intersection<'a> {
-    pub object: &'a Object,
+    pub object: &'a Object<'a>,
     pub distance: f64,
 }
 
 impl<'a> Intersection<'a> {
     // constructor
-    pub fn new(distance: f64, object: &'a Object) -> Intersection {
+    pub fn new(distance: f64, object: &'a Object) -> Intersection<'a> {
         Intersection { object, distance }
     }
 }
@@ -139,7 +139,7 @@ impl<'a> Intersections<'a> {
 
 pub struct Computations<'a> {
     pub distance: f64,
-    pub object: &'a Object,
+    pub object: &'a Object<'a>,
     pub point: Point,
     pub eye_v: Vector,
     pub normal_v: Vector,
@@ -165,7 +165,7 @@ impl<'a> Computations<'a> {
         n1: f64,
         n2: f64,
         under_point: Point,
-    ) -> Computations {
+    ) -> Computations<'a> {
         Computations {
             distance,
             object,

@@ -16,7 +16,7 @@ fn ch7_test1_world_can_be_constructed() {
     assert_eq!(w.light_source, Option::None);
 }
 
-pub fn build_test_world() -> World {
+pub fn build_test_world<'a>() -> World<'a> {
     let light_point = Point::new(-10.0, 10.0, -10.0);
     let intensity = Color::new(1.0, 1.0, 1.0);
     let light = Light::new(light_point, intensity);

@@ -6,70 +6,71 @@ use crate::domain::{Id, Point, RayTuple, Vector};
 use std::fmt::{Debug, Formatter};
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Shape {
+pub struct Shape<'a> {
     pub id: Id,
     pub transformation: Matrix,
     pub material: Material,
     pub shape_type_name: String,
+    pub parent: Option<&'a Object<'a>>,
 }
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Sphere {
-    pub shape: Shape,
+pub struct Sphere<'a> {
+    pub shape: Shape<'a>,
     pub origin: Point,
     //radius: f64,
 }
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Null {
-    pub shape: Shape,
+pub struct Null<'a> {
+    pub shape: Shape<'a>,
     // pub saved_ray: Option<Ray>, // for unit testing
 }
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Plane {
-    pub shape: Shape,
+pub struct Plane<'a> {
+    pub shape: Shape<'a>,
 }
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Cube {
-    pub shape: Shape,
+pub struct Cube<'a> {
+    pub shape: Shape<'a>,
 }
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Cylinder {
-    pub shape: Shape,
+pub struct Cylinder<'a> {
+    pub shape: Shape<'a>,
     pub minimum: f64,
     pub maximum: f64,
     pub closed: bool,
 }
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Cone {
-    pub shape: Shape,
+pub struct Cone<'a> {
+    pub shape: Shape<'a>,
     pub minimum: f64,
     pub maximum: f64,
     pub closed: bool,
 }
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Group {
-    pub shape: Shape,
-    pub children: Vec<Object>,
+pub struct Group<'a> {
+    pub shape: Shape<'a>,
+    pub children: Vec<Object<'a>>,
 }
 
 #[derive(PartialEq, Clone)]
-pub enum Object {
-    Sphere(Sphere),
-    Null(Null), // throw-away test implementation
-    Plane(Plane),
-    Cube(Cube),
-    Cylinder(Cylinder),
-    Cone(Cone),
-    Group(Group),
+pub enum Object<'a> {
+    Sphere(Sphere<'a>),
+    Null(Null<'a>), // throw-away test implementation
+    Plane(Plane<'a>),
+    Cube(Cube<'a>),
+    Cylinder(Cylinder<'a>),
+    Cone(Cone<'a>),
+    Group(Group<'a>),
 }
 
-impl Debug for Object {
+impl<'a> Debug for Object<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
@@ -81,49 +82,49 @@ impl Debug for Object {
     }
 }
 
-impl From<Sphere> for Object {
-    fn from(v: Sphere) -> Self {
+impl<'a> From<Sphere<'a>> for Object<'a> {
+    fn from(v: Sphere<'a>) -> Self {
         Object::Sphere(v)
     }
 }
 
-impl From<Plane> for Object {
-    fn from(v: Plane) -> Self {
+impl<'a> From<Plane<'a>> for Object<'a> {
+    fn from(v: Plane<'a>) -> Self {
         Object::Plane(v)
     }
 }
 
-impl From<Null> for Object {
-    fn from(v: Null) -> Self {
+impl<'a> From<Null<'a>> for Object<'a> {
+    fn from(v: Null<'a>) -> Self {
         Object::Null(v)
     }
 }
 
-impl From<Cube> for Object {
-    fn from(v: Cube) -> Self {
+impl<'a> From<Cube<'a>> for Object<'a> {
+    fn from(v: Cube<'a>) -> Self {
         Object::Cube(v)
     }
 }
 
-impl From<Cylinder> for Object {
-    fn from(v: Cylinder) -> Self {
+impl<'a> From<Cylinder<'a>> for Object<'a> {
+    fn from(v: Cylinder<'a>) -> Self {
         Object::Cylinder(v)
     }
 }
 
-impl From<Cone> for Object {
-    fn from(v: Cone) -> Self {
+impl<'a> From<Cone<'a>> for Object<'a> {
+    fn from(v: Cone<'a>) -> Self {
         Object::Cone(v)
     }
 }
 
-impl From<Group> for Object {
-    fn from(v: Group) -> Self {
+impl<'a> From<Group<'a>> for Object<'a> {
+    fn from(v: Group<'a>) -> Self {
         Object::Group(v)
     }
 }
 
-impl Object {
+impl<'a> Object<'a> {
     // TODO Define trait that returns these, so that the match is not necessary.
     fn local_intersect(&self, ray: &Ray) -> Intersections {
         let ints = match self {
@@ -156,7 +157,7 @@ impl Object {
     }
 
     // TODO Define trait that returns these, so that the match is not necessary.
-    pub fn shape(&self) -> &Shape {
+    pub fn shape(&self) -> &Shape<'a> {
         match self {
             Object::Sphere(sphere) => &sphere.shape,
             Object::Null(null) => &null.shape,
@@ -169,7 +170,7 @@ impl Object {
     }
 
     // TODO Define trait that returns these, so that the match is not necessary.
-    pub fn shape_mut(&mut self) -> &mut Shape {
+    pub fn shape_mut<'b>(&'b mut self) -> &mut Shape<'a> {
         match self {
             Object::Sphere(sphere) => &mut sphere.shape,
             Object::Null(null) => &mut null.shape,
@@ -203,20 +204,21 @@ impl Object {
     }
 }
 
-impl Default for Shape {
+impl<'a> Default for Shape<'a> {
     fn default() -> Self {
         Shape {
             id: Id::new(),
             transformation: crate::domain::matrix::IDENTITY.clone(),
             material: Material::default(),
             shape_type_name: String::default(),
+            parent: Option::None,
         }
     }
 }
 
-impl Shape {
+impl<'a> Shape<'a> {
     // default constructor
-    pub fn new_unit() -> Shape {
+    pub fn new_unit() -> Shape<'a> {
         Shape::default()
     }
 
@@ -235,7 +237,7 @@ pub struct ShapeBuilder {
     shape_type_name: String,
 }
 
-impl ShapeBuilder {
+impl<'a> ShapeBuilder {
     pub fn transformation(&mut self, transformation: Matrix) -> &mut ShapeBuilder {
         self.transformation = Option::Some(transformation);
         self
@@ -246,7 +248,7 @@ impl ShapeBuilder {
         self
     }
 
-    pub fn build(&self) -> Shape {
+    pub fn build(&self) -> Shape<'a> {
         Shape {
             id: Id::new(),
             transformation: self
@@ -255,6 +257,7 @@ impl ShapeBuilder {
                 .unwrap_or(crate::domain::matrix::IDENTITY.clone()),
             material: self.material.clone().unwrap_or(Material::default()),
             shape_type_name: self.shape_type_name.clone(),
+            parent: Option::None,
         }
     }
 }
@@ -263,7 +266,7 @@ pub struct NullBuilder {
     shape_builder: ShapeBuilder,
 }
 
-impl NullBuilder {
+impl<'a> NullBuilder {
     pub fn transformation(&mut self, transformation: Matrix) -> &mut NullBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -274,13 +277,13 @@ impl NullBuilder {
         self
     }
 
-    pub fn build(&self) -> Null {
+    pub fn build<'b>(&'b self) -> Null<'a> {
         Null {
             shape: self.shape_builder.build(),
         }
     }
 }
-impl Null {
+impl<'a> Null<'a> {
     pub fn new() -> NullBuilder {
         NullBuilder {
             shape_builder: Shape::new("Null"),
@@ -306,7 +309,7 @@ pub struct PlaneBuilder {
     shape_builder: ShapeBuilder,
 }
 
-impl PlaneBuilder {
+impl<'a> PlaneBuilder {
     pub fn transformation(&mut self, transformation: Matrix) -> &mut PlaneBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -317,14 +320,14 @@ impl PlaneBuilder {
         self
     }
 
-    pub fn build(&self) -> Plane {
+    pub fn build(&self) -> Plane<'a> {
         Plane {
             shape: self.shape_builder.build(),
         }
     }
 }
 
-impl Plane {
+impl<'a> Plane<'a> {
     pub fn new() -> PlaneBuilder {
         PlaneBuilder {
             shape_builder: Shape::new("Plane"),
@@ -352,7 +355,7 @@ pub struct SphereBuilder {
     origin: Option<Point>,
 }
 
-impl SphereBuilder {
+impl<'a> SphereBuilder {
     pub fn transformation(&mut self, transformation: Matrix) -> &mut SphereBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -368,7 +371,7 @@ impl SphereBuilder {
         self
     }
 
-    pub fn build(&self) -> Sphere {
+    pub fn build(&self) -> Sphere<'a> {
         Sphere {
             shape: self.shape_builder.build(),
             origin: self.origin.unwrap_or(Point::ORIGIN),
@@ -376,7 +379,7 @@ impl SphereBuilder {
     }
 }
 
-impl Sphere {
+impl<'a> Sphere<'a> {
     const ORIGIN: Point = Point {
         ray_tuple: RayTuple {
             x: 0.0,
@@ -425,7 +428,7 @@ pub struct CubeBuilder {
     shape_builder: ShapeBuilder,
 }
 
-impl CubeBuilder {
+impl<'a> CubeBuilder {
     pub fn transformation(&mut self, transformation: Matrix) -> &mut CubeBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -436,14 +439,14 @@ impl CubeBuilder {
         self
     }
 
-    pub fn build(&self) -> Cube {
+    pub fn build(&self) -> Cube<'a> {
         Cube {
             shape: self.shape_builder.build(),
         }
     }
 }
 
-impl Cube {
+impl<'a> Cube<'a> {
     pub fn new() -> CubeBuilder {
         CubeBuilder {
             shape_builder: Shape::new("Cube"),
@@ -505,7 +508,7 @@ pub struct CylinderBuilder {
     closed: Option<bool>,
 }
 
-impl CylinderBuilder {
+impl<'a> CylinderBuilder {
     pub fn transformation(&mut self, transformation: Matrix) -> &mut CylinderBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -516,7 +519,7 @@ impl CylinderBuilder {
         self
     }
 
-    pub fn build(&self) -> Cylinder {
+    pub fn build(&self) -> Cylinder<'a> {
         Cylinder {
             shape: self.shape_builder.build(),
             minimum: self.minimum.unwrap_or(-f64::INFINITY),
@@ -540,7 +543,7 @@ impl CylinderBuilder {
     }
 }
 
-impl Cylinder {
+impl<'a> Cylinder<'a> {
     pub fn new() -> CylinderBuilder {
         CylinderBuilder {
             shape_builder: Shape::new("Cylinder"),
@@ -628,7 +631,7 @@ pub struct ConeBuilder {
     closed: Option<bool>,
 }
 
-impl ConeBuilder {
+impl<'a> ConeBuilder {
     pub fn transformation(&mut self, transformation: Matrix) -> &mut ConeBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -639,7 +642,7 @@ impl ConeBuilder {
         self
     }
 
-    pub fn build(&self) -> Cone {
+    pub fn build(&self) -> Cone<'a> {
         Cone {
             shape: self.shape_builder.build(),
             minimum: self.minimum.unwrap_or(-f64::INFINITY),
@@ -663,7 +666,7 @@ impl ConeBuilder {
     }
 }
 
-impl Cone {
+impl<'a> Cone<'a> {
     pub fn new() -> ConeBuilder {
         ConeBuilder {
             shape_builder: Shape::new("Cone"),
@@ -761,32 +764,32 @@ impl Cone {
     }
 }
 
-pub struct GroupBuilder {
+pub struct GroupBuilder<'a> {
     shape_builder: ShapeBuilder,
-    children: Vec<Object>,
+    children: Vec<Object<'a>>,
 }
 
-impl GroupBuilder {
-    pub fn transformation(&mut self, transformation: Matrix) -> &mut GroupBuilder {
+impl<'a> GroupBuilder<'a> {
+    pub fn transformation(&'a mut self, transformation: Matrix) -> &mut GroupBuilder {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn build(&self) -> Group {
+    pub fn build<'b>(&'b self) -> Group<'a> {
         Group {
             shape: self.shape_builder.build(),
             children: self.children.clone(),
         }
     }
 
-    pub fn add_child(&mut self, child: Object) -> &mut GroupBuilder {
+    pub fn add_child(&'a mut self, child: Object<'a>) -> &mut GroupBuilder {
         self.children.push(child);
         self
     }
 }
 
-impl Group {
-    pub fn new() -> GroupBuilder {
+impl<'a> Group<'a> {
+    pub fn new() -> GroupBuilder<'a> {
         GroupBuilder {
             shape_builder: Shape::new("Group"),
             children: Vec::new(),
