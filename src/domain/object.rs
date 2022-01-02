@@ -11,7 +11,7 @@ pub struct Shape<'a> {
     pub transformation: Matrix,
     pub material: Material,
     pub shape_type_name: String,
-    pub parent: Option<&'a Object<'a>>,
+    pub parent: Option<&'a Group<'a>>,
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -770,26 +770,39 @@ pub struct GroupBuilder<'a> {
 }
 
 impl<'a> GroupBuilder<'a> {
-    pub fn transformation(&'a mut self, transformation: Matrix) -> &mut GroupBuilder {
+    pub fn transformation(&'a mut self, transformation: Matrix) -> &mut GroupBuilder<'a> {
         self.shape_builder.transformation(transformation);
         self
     }
 
     pub fn build<'b>(&'b self) -> Group<'a> {
-        Group {
+        // define reference parent
+        let mut parent_group = Group {
             shape: self.shape_builder.build(),
             children: self.children.clone(),
+        };
+
+        // set parent reference on children
+        for child in parent_group.children.iter_mut() {
+            child.shape_mut().parent = Option::Some(&parent_group);
         }
+        // bound_children
+        //     .iter_mut()
+        //     .for_each(move |child| child.shape_mut().parent = Option::Some(&parent_group));
+
+        // parent_group.children.append(bound_children.as_mut());
+
+        parent_group
     }
 
-    pub fn add_child(&'a mut self, child: Object<'a>) -> &mut GroupBuilder {
+    pub fn add_child<'b>(&'b mut self, child: Object<'a>) -> &mut GroupBuilder<'a> {
         self.children.push(child);
         self
     }
 }
 
-impl<'a> Group<'a> {
-    pub fn new() -> GroupBuilder<'a> {
+impl<'a, 'b> Group<'a> {
+    pub fn new() -> GroupBuilder<'b> {
         GroupBuilder {
             shape_builder: Shape::new("Group"),
             children: Vec::new(),
