@@ -23,9 +23,18 @@ fn ch14_test3_adding_child_to_group() {
     let g = Group::new().add_child(s.clone().into()).build();
 
     assert_eq!(g.children.len(), 1);
-    assert_eq!(g.children[0], Object::Null(s.clone()));
-    assert_eq!(
-        g.children[0].shape().parent,
-        Option::Some(&g.clone().into())
-    );
+    assert_eq!(g.children[0].shape().id, s.shape.id);
+    unsafe {
+        assert_eq!(
+            *(g.children[0].shape().parent.unwrap()),
+            *(Box::into_raw(g.clone()))
+        );
+    }
+    //
+    //
+    // assert_eq!(g.children[0], Object::Null(s.clone()));
+    // assert_eq!(
+    //     g.children[0].shape().parent,
+    //     Option::Some(&g.clone().into())
+    // );
 }

@@ -11,7 +11,7 @@ pub struct Shape<'a> {
     pub transformation: Matrix,
     pub material: Material,
     pub shape_type_name: String,
-    pub parent: Option<&'a Group<'a>>,
+    pub parent: Option<*mut Group<'a>>,
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -124,9 +124,12 @@ impl<'a> From<Group<'a>> for Object<'a> {
     }
 }
 
+unsafe impl<'a> Sync for Shape<'a> {}
+unsafe impl<'a> Send for Shape<'a> {}
+
 impl<'a> Object<'a> {
     // TODO Define trait that returns these, so that the match is not necessary.
-    fn local_intersect(&self, ray: &Ray) -> Intersections {
+    fn local_intersect(&'a self, ray: &Ray) -> Intersections<'a> {
         let ints = match self {
             Object::Sphere(sphere) => sphere.local_intersect(ray),
             Object::Null(null) => null.local_intersect(ray),
@@ -183,7 +186,7 @@ impl<'a> Object<'a> {
     }
 
     // Finds intersections of ray against sphere instance
-    pub fn intersect(&self, ray: &Ray) -> Intersections {
+    pub fn intersect(&'a self, ray: &Ray) -> Intersections<'a> {
         let inv_transform = self.shape().transformation.inverse();
         if inv_transform.is_none() {
             panic!("Unexpected non-invertible matrix.");
@@ -775,24 +778,20 @@ impl<'a> GroupBuilder<'a> {
         self
     }
 
-    pub fn build<'b>(&'b self) -> Group<'a> {
-        // define reference parent
-        let mut parent_group = Group {
-            shape: self.shape_builder.build(),
-            children: self.children.clone(),
-        };
+    pub fn build<'b>(&'b self) -> Box<Group<'a>> {
+        unsafe {
+            // set parent reference on children
+            let parent_group_ref: *mut Group = Box::into_raw(Box::new(Group {
+                shape: self.shape_builder.build(),
+                children: self.children.clone(),
+            }));
 
-        // set parent reference on children
-        for child in parent_group.children.iter_mut() {
-            child.shape_mut().parent = Option::Some(&parent_group);
+            for child in (*parent_group_ref).children.iter_mut() {
+                child.shape_mut().parent = Option::Some(parent_group_ref.clone());
+            }
+
+            Box::from_raw(parent_group_ref)
         }
-        // bound_children
-        //     .iter_mut()
-        //     .for_each(move |child| child.shape_mut().parent = Option::Some(&parent_group));
-
-        // parent_group.children.append(bound_children.as_mut());
-
-        parent_group
     }
 
     pub fn add_child<'b>(&'b mut self, child: Object<'a>) -> &mut GroupBuilder<'a> {

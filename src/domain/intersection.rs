@@ -13,7 +13,7 @@ pub struct Intersection<'a> {
 
 impl<'a> Intersection<'a> {
     // constructor
-    pub fn new(distance: f64, object: &'a Object) -> Intersection<'a> {
+    pub fn new(distance: f64, object: &'a Object<'a>) -> Intersection<'a> {
         Intersection { object, distance }
     }
 }
@@ -111,7 +111,7 @@ impl<'a> Intersections<'a> {
         self.len() == 0
     }
 
-    fn inner_hit(&mut self, validate: bool) -> Option<Intersection> {
+    fn inner_hit<'b>(&'b mut self, validate: bool) -> Option<Intersection<'a>> {
         while let Some(intersection) = self.intersections.pop() {
             if validate {
                 let valid = !intersection.distance.is_infinite() && !intersection.distance.is_nan();
@@ -127,12 +127,12 @@ impl<'a> Intersections<'a> {
     }
 
     // returns first item (regardless of sign (negative/positive)
-    pub fn hit_unchecked(&mut self) -> Option<Intersection> {
+    pub fn hit_unchecked<'b>(&'b mut self) -> Option<Intersection<'a>> {
         self.inner_hit(false)
     }
 
     // pops minimal item from heap
-    pub fn hit(&mut self) -> Option<Intersection> {
+    pub fn hit<'b>(&'b mut self) -> Option<Intersection<'a>> {
         self.inner_hit(true)
     }
 }
@@ -155,7 +155,7 @@ impl<'a> Computations<'a> {
     // builder
     pub fn new(
         distance: f64,
-        object: &'a Object,
+        object: &'a Object<'a>,
         point: Point,
         eye_v: Vector,
         normal_v: Vector,
@@ -183,9 +183,9 @@ impl<'a> Computations<'a> {
 
     // Utility method for pre-computing reusable, frequently-used computations
     pub fn prepare_computations(
-        hit_intersection: &'a Intersection,
+        hit_intersection: &'a Intersection<'a>,
         ray: &'a Ray,
-        all_intersections: Option<&'a Intersections>,
+        all_intersections: Option<&'a Intersections<'a>>,
     ) -> Computations<'a> {
         let point = ray.position(hit_intersection.distance);
         let eye_v = -ray.direction;
@@ -225,8 +225,8 @@ impl<'a> Computations<'a> {
     }
 
     fn precompute_refractive_indexes(
-        hit_intersection: &'a Intersection,
-        all_intersections: Option<&'a Intersections>,
+        hit_intersection: &'a Intersection<'a>,
+        all_intersections: Option<&'a Intersections<'a>>,
     ) -> (f64, f64) {
         if all_intersections.is_none() {
             return (1.0, 1.0);
