@@ -26,7 +26,7 @@ impl<'r, 's> PartialOrd for Intersection<'r, 's> {
 }
 
 impl<'r, 's: 'r> PartialEq for Intersection<'r, 's> {
-    fn eq<'a>(&'a self, other: &'a Self) -> bool {
+    fn eq(&self, other: &Self) -> bool {
         crate::domain::epsilon_eq(self.distance, other.distance)
             && self.object.shape().id == other.object.shape().id
         //self.distance == other.distance
@@ -79,7 +79,7 @@ impl<'r, 's> Debug for Intersections<'r, 's> {
     }
 }
 
-impl<'r, 's> Intersections<'r, 's> {
+impl<'r, 's: 'r> Intersections<'r, 's> {
     // constructor
     pub fn new() -> Intersections<'r, 's> {
         Intersections {
