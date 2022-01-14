@@ -1,5 +1,7 @@
 use crate::domain::matrix::Matrix;
-use crate::domain::object::{Group, Null, Object};
+use crate::domain::object::{Group, Null, Object, Sphere};
+use crate::domain::ray::Ray;
+use crate::domain::{Point, Vector};
 
 #[test]
 fn ch14_test1_creating_new_group() {
@@ -30,11 +32,33 @@ fn ch14_test3_adding_child_to_group() {
             *(Box::into_raw(g.clone()))
         );
     }
-    //
-    //
-    // assert_eq!(g.children[0], Object::Null(s.clone()));
-    // assert_eq!(
-    //     g.children[0].shape().parent,
-    //     Option::Some(&g.clone().into())
-    // );
+}
+
+#[test]
+fn ch14_test4_intersecting_ray_with_empty_group() {
+    let g = Group::new().build();
+    let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+    let xs = g.local_intersect(&r);
+    assert!(xs.is_empty());
+}
+
+#[test]
+fn ch14_test5_intersecting_ray_with_nonempty_group() {
+    let s1 = Sphere::new().build();
+    let s2 = Sphere::new()
+        .transformation(Matrix::new_translation(0.0, 0.0, -3.0))
+        .build();
+    let s3 = Sphere::new()
+        .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
+        .build();
+    let g = Group::new()
+        .add_child(s1.clone().into())
+        .add_child(s2.clone().into())
+        .add_child(s3.clone().into())
+        .build();
+
+    let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+    let xs = g.local_intersect(&r);
+
+    assert_eq!(xs.len(), 4);
 }
