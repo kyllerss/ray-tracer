@@ -127,9 +127,9 @@ impl<'a> From<Group<'a>> for Object<'a> {
 unsafe impl<'a> Sync for Shape<'a> {}
 unsafe impl<'a> Send for Shape<'a> {}
 
-impl<'a> Object<'a> {
+impl<'s> Object<'s> {
     // TODO Define trait that returns these, so that the match is not necessary.
-    fn local_intersect(&'a self, ray: &Ray) -> Intersections<'a> {
+    fn local_intersect(&self, ray: &Ray) -> Intersections<'_, 's> {
         let ints = match self {
             Object::Sphere(sphere) => sphere.local_intersect(ray),
             Object::Null(null) => null.local_intersect(ray),
@@ -160,7 +160,7 @@ impl<'a> Object<'a> {
     }
 
     // TODO Define trait that returns these, so that the match is not necessary.
-    pub fn shape(&self) -> &Shape<'a> {
+    pub fn shape(&self) -> &'_ Shape<'s> {
         match self {
             Object::Sphere(sphere) => &sphere.shape,
             Object::Null(null) => &null.shape,
@@ -173,7 +173,7 @@ impl<'a> Object<'a> {
     }
 
     // TODO Define trait that returns these, so that the match is not necessary.
-    pub fn shape_mut<'b>(&'b mut self) -> &mut Shape<'a> {
+    pub fn shape_mut(&mut self) -> &'_ mut Shape<'s> {
         match self {
             Object::Sphere(sphere) => &mut sphere.shape,
             Object::Null(null) => &mut null.shape,
@@ -186,7 +186,7 @@ impl<'a> Object<'a> {
     }
 
     // Finds intersections of ray against sphere instance
-    pub fn intersect(&'a self, ray: &Ray) -> Intersections<'a> {
+    pub fn intersect(&self, ray: &Ray) -> Intersections<'_, 's> {
         let inv_transform = self.shape().transformation.inverse();
         if inv_transform.is_none() {
             panic!("Unexpected non-invertible matrix.");

@@ -19,8 +19,8 @@ pub struct World<'a> {
     pub light_source: Option<Light>,
 }
 
-impl<'a, 'b> World<'a> {
-    pub fn new() -> World<'a> {
+impl<'s> World<'s> {
+    pub fn new() -> World<'s> {
         World {
             objects: Vec::new(),
             light_source: Option::None,
@@ -28,13 +28,13 @@ impl<'a, 'b> World<'a> {
     }
 
     // adds object to world
-    pub fn add_object(&'b mut self, obj: Object<'a>) -> &Self {
+    pub fn add_object(&mut self, obj: Object<'s>) -> &Self {
         self.objects.push(obj);
         self
     }
 
     // Returns all intersections for given ray in world's objects.
-    pub fn intersect(&'a self, ray: &Ray) -> Intersections<'a> {
+    pub fn intersect(&self, ray: &Ray) -> Intersections<'_, 's> {
         let mut ints = Intersections::new();
         self.objects
             .iter()
@@ -43,7 +43,7 @@ impl<'a, 'b> World<'a> {
     }
 
     // Calculates shade hit for the given computations
-    pub fn shade_hit(&'a self, comp: &Computations, iteration: usize) -> Color {
+    pub fn shade_hit(&self, comp: &Computations, iteration: usize) -> Color {
         let in_shadow = self.is_shadowed(&comp.over_point);
 
         let surface = Light::lighting(
@@ -70,7 +70,7 @@ impl<'a, 'b> World<'a> {
     }
 
     // calculates color at a given point
-    pub fn color_at(&'a self, r: &'a Ray, iteration: usize) -> Color {
+    pub fn color_at(&self, r: &Ray, iteration: usize) -> Color {
         // find intersections
         let mut ints = self.intersect(r);
         let original_ints = ints.clone();
@@ -91,7 +91,7 @@ impl<'a, 'b> World<'a> {
     // renders world based on provided camera
     // _logger fix for multi-threading comes from: https://users.rust-lang.org/t/how-to-send-function-closure-to-another-thread/43549
     pub fn render(
-        &'a self,
+        &self,
         camera: &Camera,
         logger: Arc<dyn Fn(usize, usize) -> () + Send + Sync>,
     ) -> Canvas {
@@ -140,7 +140,7 @@ impl<'a, 'b> World<'a> {
     }
 
     // determines if point is shadowed
-    pub fn is_shadowed(&'a self, p: &Point) -> bool {
+    pub fn is_shadowed(&self, p: &Point) -> bool {
         let v = &self.light_source.unwrap().position - p;
         let distance = v.magnitude();
         let direction = v.normalize();
@@ -156,7 +156,7 @@ impl<'a, 'b> World<'a> {
     }
 
     // performs reflection calculations
-    pub fn reflected_color(&'a self, comps: &Computations, iteration: usize) -> Color {
+    pub fn reflected_color(&self, comps: &Computations, iteration: usize) -> Color {
         if iteration == 0 || comps.object.shape().material.reflective == 0.0 {
             Color::BLACK
         } else {
@@ -169,7 +169,7 @@ impl<'a, 'b> World<'a> {
     }
 
     // performs refracted color calculation
-    pub fn refracted_color(&'a self, comps: &Computations, iteration: usize) -> Color {
+    pub fn refracted_color(&self, comps: &Computations, iteration: usize) -> Color {
         if iteration == 0 {
             Color::BLACK
         } else if comps.object.shape().material.transparency == 0.0 {

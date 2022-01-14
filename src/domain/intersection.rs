@@ -6,27 +6,27 @@ use std::collections::BinaryHeap;
 use std::fmt::{Debug, Formatter};
 
 #[derive(Debug, Clone, Copy)]
-pub struct Intersection<'a> {
-    pub object: &'a Object<'a>,
+pub struct Intersection<'r, 's> {
+    pub object: &'r Object<'s>,
     pub distance: f64,
 }
 
-impl<'a> Intersection<'a> {
+impl<'r, 's: 'r> Intersection<'r, 's> {
     // constructor
-    pub fn new(distance: f64, object: &'a Object<'a>) -> Intersection<'a> {
+    pub fn new(distance: f64, object: &'r Object<'s>) -> Intersection<'r, 's> {
         Intersection { object, distance }
     }
 }
 
-impl<'a> PartialOrd for Intersection<'a> {
+impl<'r, 's> PartialOrd for Intersection<'r, 's> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         // smallest is GT - contrary to self.partial_cmp(other)
         other.distance.partial_cmp(&self.distance)
     }
 }
 
-impl<'a> PartialEq for Intersection<'a> {
-    fn eq(&self, other: &Self) -> bool {
+impl<'r, 's: 'r> PartialEq for Intersection<'r, 's> {
+    fn eq<'a>(&'a self, other: &'a Self) -> bool {
         crate::domain::epsilon_eq(self.distance, other.distance)
             && self.object.shape().id == other.object.shape().id
         //self.distance == other.distance
@@ -41,9 +41,9 @@ impl<'a> PartialEq for Intersection<'a> {
     }
 }
 
-impl<'a> Eq for Intersection<'a> {}
+impl<'r, 's> Eq for Intersection<'r, 's> {}
 
-impl<'a> Ord for Intersection<'a> {
+impl<'r, 's> Ord for Intersection<'r, 's> {
     fn cmp(&self, other: &Self) -> Ordering {
         let partial_cmp = self.partial_cmp(other);
         match partial_cmp {
@@ -64,11 +64,11 @@ impl<'a> Ord for Intersection<'a> {
 }
 
 #[derive(Clone)]
-pub struct Intersections<'a> {
-    intersections: BinaryHeap<Intersection<'a>>,
+pub struct Intersections<'r, 's> {
+    intersections: BinaryHeap<Intersection<'r, 's>>,
 }
 
-impl<'a> Debug for Intersections<'a> {
+impl<'r, 's> Debug for Intersections<'r, 's> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let mut tmp = self.clone();
         let _ = write!(f, "Intersections [");
@@ -79,21 +79,21 @@ impl<'a> Debug for Intersections<'a> {
     }
 }
 
-impl<'a> Intersections<'a> {
+impl<'r, 's> Intersections<'r, 's> {
     // constructor
-    pub fn new() -> Intersections<'a> {
+    pub fn new() -> Intersections<'r, 's> {
         Intersections {
             intersections: BinaryHeap::new(),
         }
     }
 
     // Takes ownership of intersection
-    pub fn push(&mut self, intersection: Intersection<'a>) {
+    pub fn push(&mut self, intersection: Intersection<'r, 's>) {
         self.intersections.push(intersection);
     }
 
     // adds all intersections into data structure
-    pub fn append(&mut self, ints: Intersections<'a>) {
+    pub fn append(&mut self, ints: Intersections<'r, 's>) {
         if ints.is_empty() {
             return ();
         }
@@ -111,7 +111,7 @@ impl<'a> Intersections<'a> {
         self.len() == 0
     }
 
-    fn inner_hit<'b>(&'b mut self, validate: bool) -> Option<Intersection<'a>> {
+    fn inner_hit(&mut self, validate: bool) -> Option<Intersection<'r, 's>> {
         while let Some(intersection) = self.intersections.pop() {
             if validate {
                 let valid = !intersection.distance.is_infinite() && !intersection.distance.is_nan();
@@ -127,19 +127,19 @@ impl<'a> Intersections<'a> {
     }
 
     // returns first item (regardless of sign (negative/positive)
-    pub fn hit_unchecked<'b>(&'b mut self) -> Option<Intersection<'a>> {
+    pub fn hit_unchecked(&mut self) -> Option<Intersection<'r, 's>> {
         self.inner_hit(false)
     }
 
     // pops minimal item from heap
-    pub fn hit<'b>(&'b mut self) -> Option<Intersection<'a>> {
+    pub fn hit(&mut self) -> Option<Intersection<'r, 's>> {
         self.inner_hit(true)
     }
 }
 
-pub struct Computations<'a> {
+pub struct Computations<'r, 's> {
     pub distance: f64,
-    pub object: &'a Object<'a>,
+    pub object: &'r Object<'s>,
     pub point: Point,
     pub eye_v: Vector,
     pub normal_v: Vector,
@@ -151,11 +151,11 @@ pub struct Computations<'a> {
     pub under_point: Point,
 }
 
-impl<'a> Computations<'a> {
+impl<'r, 's: 'r> Computations<'r, 's> {
     // builder
     pub fn new(
         distance: f64,
-        object: &'a Object<'a>,
+        object: &'r Object<'s>,
         point: Point,
         eye_v: Vector,
         normal_v: Vector,
@@ -165,7 +165,7 @@ impl<'a> Computations<'a> {
         n1: f64,
         n2: f64,
         under_point: Point,
-    ) -> Computations<'a> {
+    ) -> Computations<'r, 's> {
         Computations {
             distance,
             object,
@@ -183,10 +183,10 @@ impl<'a> Computations<'a> {
 
     // Utility method for pre-computing reusable, frequently-used computations
     pub fn prepare_computations(
-        hit_intersection: &'a Intersection<'a>,
-        ray: &'a Ray,
-        all_intersections: Option<&'a Intersections<'a>>,
-    ) -> Computations<'a> {
+        hit_intersection: &'r Intersection<'r, 's>,
+        ray: &Ray,
+        all_intersections: Option<&'r Intersections<'r, 's>>,
+    ) -> Computations<'r, 's> {
         let point = ray.position(hit_intersection.distance);
         let eye_v = -ray.direction;
         let mut normal_v = hit_intersection.object.normal_at(&point);
@@ -225,8 +225,8 @@ impl<'a> Computations<'a> {
     }
 
     fn precompute_refractive_indexes(
-        hit_intersection: &'a Intersection<'a>,
-        all_intersections: Option<&'a Intersections<'a>>,
+        hit_intersection: &'r Intersection<'r, 's>,
+        all_intersections: Option<&'r Intersections<'r, 's>>,
     ) -> (f64, f64) {
         if all_intersections.is_none() {
             return (1.0, 1.0);
