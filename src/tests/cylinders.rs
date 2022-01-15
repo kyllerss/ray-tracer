@@ -13,10 +13,11 @@ fn ch13_test1_ray_misses_cylinder() {
 
     // test code
     let cyl = Cylinder::new().build();
+    let cyl_obj = cyl.clone().into();
     for (origin, direction) in cases {
         let direction_normalized = direction.normalize();
         let r = Ray::new(origin, direction_normalized);
-        let xs = cyl.local_intersect(&r);
+        let xs = cyl.local_intersect(&r, &cyl_obj);
         assert!(xs.is_empty());
     }
 }
@@ -47,13 +48,15 @@ fn ch13_test2_ray_strikes_cylinder() {
 
     // test code
     let cyl = Cylinder::new().build();
+    let cyl_obj = cyl.clone().into();
+
     for (origin, direction, t0, t1) in cases {
         let direction_normalized = direction.normalize();
         let r = Ray::new(origin, direction_normalized);
-        let xs = cyl.local_intersect(&r);
+        let xs = cyl.local_intersect(&r, &cyl_obj);
         assert_eq!(xs.len(), 2);
-        assert!(crate::domain::epsilon_eq(xs[0], t0));
-        assert!(crate::domain::epsilon_eq(xs[1], t1));
+        assert!(crate::domain::epsilon_eq(xs[0].distance, t0));
+        assert!(crate::domain::epsilon_eq(xs[1].distance, t1));
     }
 }
 
@@ -92,10 +95,11 @@ fn ch13_test5_intersecting_constrained_cylinder() {
     ];
 
     let cyl = Cylinder::new().minimum(1.0).maximum(2.0).build();
+    let cyl_obj = cyl.clone().into();
     for (point, direction, count) in cases {
         let direction_n = direction.normalize();
         let r = Ray::new(point, direction_n);
-        let xs = cyl.local_intersect(&r);
+        let xs = cyl.local_intersect(&r, &cyl_obj);
         assert_eq!(xs.len(), count);
     }
 }
@@ -121,10 +125,11 @@ fn ch13_test7_intersecting_caps_of_closed_cylinder() {
         .maximum(2.0)
         .closed(true)
         .build();
+    let cyl_obj = cyl.clone().into();
     for (point, direction, count) in cases {
         let direction_n = direction.normalize();
         let r = Ray::new(point, direction_n);
-        let xs = cyl.local_intersect(&r);
+        let xs = cyl.local_intersect(&r, &cyl_obj);
         assert_eq!(xs.len(), count);
     }
 }
@@ -176,24 +181,27 @@ fn ch13_test9_intersecting_cone_with_ray() {
     ];
 
     let shape = Cone::new().build();
+    let shape_obj = shape.clone().into();
+
     for (origin, direction, t0, t1) in cases {
         let direction_n = direction.normalize();
         let r = Ray::new(origin, direction_n);
-        let xs = shape.local_intersect(&r);
+        let xs = shape.local_intersect(&r, &shape_obj);
         assert_eq!(xs.len(), 2);
-        assert!(crate::domain::epsilon_eq(xs[0], t0));
-        assert!(crate::domain::epsilon_eq(xs[1], t1));
+        assert!(crate::domain::epsilon_eq(xs[0].distance, t0));
+        assert!(crate::domain::epsilon_eq(xs[1].distance, t1));
     }
 }
 
 #[test]
 fn ch13_test10_intersecting_cone_with_ray_parallel_to_one_of_its_halves() {
     let shape = Cone::new().build();
+    let shape_obj = shape.clone().into();
     let direction = Vector::new(0.0, 1.0, 1.0).normalize();
     let r = Ray::new(Point::new(0.0, 0.0, -1.0), direction);
-    let xs = shape.local_intersect(&r);
+    let xs = shape.local_intersect(&r, &shape_obj);
     assert_eq!(xs.len(), 1);
-    assert!(crate::domain::epsilon_eq(xs[0], 0.35355));
+    assert!(crate::domain::epsilon_eq(xs[0].distance, 0.35355));
 }
 
 #[test]
@@ -205,10 +213,11 @@ fn ch13_test11_intersecting_cone_end_caps() {
     ];
 
     let shape = Cone::new().minimum(-0.5).maximum(0.5).closed(true).build();
+    let shape_obj = shape.clone().into();
     for (origin, direction, count) in cases {
         let direction_n = direction.normalize();
         let r = Ray::new(origin, direction_n);
-        let xs = shape.local_intersect(&r);
+        let xs = shape.local_intersect(&r, &shape_obj);
         assert_eq!(xs.len(), count);
     }
 }

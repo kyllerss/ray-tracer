@@ -37,8 +37,9 @@ fn ch14_test3_adding_child_to_group() {
 #[test]
 fn ch14_test4_intersecting_ray_with_empty_group() {
     let g = Group::new().build();
+    let g_obj = g.clone().into();
     let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
-    let xs = g.local_intersect(&r);
+    let xs = g.local_intersect(&r, &g_obj);
     assert!(xs.is_empty());
 }
 
@@ -51,14 +52,23 @@ fn ch14_test5_intersecting_ray_with_nonempty_group() {
     let s3 = Sphere::new()
         .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
         .build();
-    let g = Group::new()
+    let g: Object = Group::new()
         .add_child(s1.clone().into())
         .add_child(s2.clone().into())
         .add_child(s3.clone().into())
-        .build();
+        .build()
+        .into();
 
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let xs = g.local_intersect(&r);
+    let mut xs = g.local_intersect(&r);
 
     assert_eq!(xs.len(), 4);
+    assert_eq!(xs.hit_unchecked().unwrap().object.shape().id, s2.shape.id);
+    assert_eq!(xs.hit_unchecked().unwrap().object.shape().id, s2.shape.id);
+    assert_eq!(xs.hit_unchecked().unwrap().object.shape().id, s1.shape.id);
+    assert_eq!(xs.hit_unchecked().unwrap().object.shape().id, s1.shape.id);
+    // xs[0] = s2
+    // xs[1] = s2
+    // xs[2] = s1
+    // xs[3] = s1
 }

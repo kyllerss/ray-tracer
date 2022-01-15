@@ -67,7 +67,7 @@ pub enum Object<'a> {
     Cube(Cube<'a>),
     Cylinder(Cylinder<'a>),
     Cone(Cone<'a>),
-    Group(Group<'a>),
+    Group(Box<Group<'a>>),
 }
 
 impl<'a> Debug for Object<'a> {
@@ -118,8 +118,8 @@ impl<'a> From<Cone<'a>> for Object<'a> {
     }
 }
 
-impl<'a> From<Group<'a>> for Object<'a> {
-    fn from(v: Group<'a>) -> Self {
+impl<'a> From<Box<Group<'a>>> for Object<'a> {
+    fn from(v: Box<Group<'a>>) -> Self {
         Object::Group(v)
     }
 }
@@ -129,19 +129,19 @@ unsafe impl<'a> Send for Shape<'a> {}
 
 impl<'s> Object<'s> {
     // TODO Define trait that returns these, so that the match is not necessary.
-    fn local_intersect(&self, ray: &Ray) -> Intersections<'_, 's> {
-        let ints = match self {
-            Object::Sphere(sphere) => sphere.local_intersect(ray),
-            Object::Null(null) => null.local_intersect(ray),
-            Object::Plane(plane) => plane.local_intersect(ray),
-            Object::Cube(cube) => cube.local_intersect(ray),
-            Object::Cylinder(cylinder) => cylinder.local_intersect(ray),
-            Object::Cone(cone) => cone.local_intersect(ray),
-            Object::Group(group) => group.local_intersect(ray),
+    pub(crate) fn local_intersect(&self, ray: &Ray) -> Intersections<'_, 's> {
+        let mut ints = match self {
+            Object::Sphere(sphere) => sphere.local_intersect(ray, &self),
+            Object::Null(null) => null.local_intersect(ray, &self),
+            Object::Plane(plane) => plane.local_intersect(ray, &self),
+            Object::Cube(cube) => cube.local_intersect(ray, &self),
+            Object::Cylinder(cylinder) => cylinder.local_intersect(ray, &self),
+            Object::Cone(cone) => cone.local_intersect(ray, &self),
+            Object::Group(group) => group.local_intersect(ray, &self),
         };
         let mut result = Intersections::new();
-        ints.iter().for_each(|int| {
-            result.push(Intersection::new(*int, self));
+        ints.drain(..).for_each(|int| {
+            result.push(int);
         });
         result
     }
@@ -286,13 +286,17 @@ impl<'a> NullBuilder {
         }
     }
 }
-impl<'a> Null<'a> {
+impl<'s> Null<'s> {
     pub fn new() -> NullBuilder {
         NullBuilder {
             shape_builder: Shape::new("Null"),
         }
     }
-    pub(crate) fn local_intersect(&self, _ray: &Ray) -> Vec<f64> {
+    pub(crate) fn local_intersect<'r>(
+        &self,
+        _ray: &Ray,
+        _wrapped_self: &'r Object<'s>,
+    ) -> Vec<Intersection<'r, 's>> {
         // NOTE: Ch9 - test 3 require mutability on an intersect calculation that otherwise
         // never leads to mutable state. This commented-out line below causes the API to lead
         // through to other callers - leading to additional complications with lifetimes and
@@ -330,20 +334,24 @@ impl<'a> PlaneBuilder {
     }
 }
 
-impl<'a> Plane<'a> {
+impl<'s> Plane<'s> {
     pub fn new() -> PlaneBuilder {
         PlaneBuilder {
             shape_builder: Shape::new("Plane"),
         }
     }
 
-    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+    pub(crate) fn local_intersect<'r>(
+        &self,
+        ray: &Ray,
+        wrapped_self: &'r Object<'s>,
+    ) -> Vec<Intersection<'r, 's>> {
         let result;
         if ray.direction.y().abs() < crate::domain::EPSILON {
             result = Vec::new()
         } else {
             let t = -ray.origin.y() / ray.direction.y();
-            result = vec![t];
+            result = vec![Intersection::new(t, wrapped_self)];
         }
         result
     }
@@ -382,7 +390,7 @@ impl<'a> SphereBuilder {
     }
 }
 
-impl<'a> Sphere<'a> {
+impl<'s> Sphere<'s> {
     const ORIGIN: Point = Point {
         ray_tuple: RayTuple {
             x: 0.0,
@@ -402,7 +410,11 @@ impl<'a> Sphere<'a> {
     }
 
     // Finds intersections of ray against sphere instance
-    fn local_intersect(&self, localized_ray: &Ray) -> Vec<f64> {
+    fn local_intersect<'r>(
+        &self,
+        localized_ray: &Ray,
+        wrapped_self: &'r Object<'s>,
+    ) -> Vec<Intersection<'r, 's>> {
         let sphere_to_ray = &localized_ray.origin - &self.origin;
         let a: f64 = localized_ray
             .direction
@@ -417,7 +429,10 @@ impl<'a> Sphere<'a> {
             let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
             let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-            vec![t1, t2]
+            vec![
+                Intersection::new(t1, wrapped_self),
+                Intersection::new(t2, wrapped_self),
+            ]
         }
     }
 
@@ -449,14 +464,18 @@ impl<'a> CubeBuilder {
     }
 }
 
-impl<'a> Cube<'a> {
+impl<'s> Cube<'s> {
     pub fn new() -> CubeBuilder {
         CubeBuilder {
             shape_builder: Shape::new("Cube"),
         }
     }
 
-    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+    pub(crate) fn local_intersect<'r>(
+        &self,
+        ray: &Ray,
+        wrapped_self: &'r Object<'s>,
+    ) -> Vec<Intersection<'r, 's>> {
         let (x_tmin, x_tmax) = Cube::check_axis(ray.origin.x(), ray.direction.x());
         let (y_tmin, y_tmax) = Cube::check_axis(ray.origin.y(), ray.direction.y());
         let (z_tmin, z_tmax) = Cube::check_axis(ray.origin.z(), ray.direction.z());
@@ -467,7 +486,10 @@ impl<'a> Cube<'a> {
         if tmin > tmax {
             vec![]
         } else {
-            vec![tmin, tmax]
+            vec![
+                Intersection::new(tmin, wrapped_self),
+                Intersection::new(tmax, wrapped_self),
+            ]
         }
     }
 
@@ -546,7 +568,7 @@ impl<'a> CylinderBuilder {
     }
 }
 
-impl<'a> Cylinder<'a> {
+impl<'s> Cylinder<'s> {
     pub fn new() -> CylinderBuilder {
         CylinderBuilder {
             shape_builder: Shape::new("Cylinder"),
@@ -556,7 +578,11 @@ impl<'a> Cylinder<'a> {
         }
     }
 
-    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+    pub(crate) fn local_intersect<'r>(
+        &self,
+        ray: &Ray,
+        wrapped_self: &'r Object<'s>,
+    ) -> Vec<Intersection<'r, 's>> {
         let a = ray.direction.x().powi(2) + ray.direction.z().powi(2);
 
         let mut xs = Vec::new();
@@ -577,16 +603,16 @@ impl<'a> Cylinder<'a> {
 
             let y0 = ray.origin.y() + t0 * ray.direction.y();
             if self.minimum < y0 && y0 < self.maximum {
-                xs.push(t0);
+                xs.push(Intersection::new(t0, wrapped_self));
             }
 
             let y1 = ray.origin.y() + t1 * ray.direction.y();
             if self.minimum < y1 && y1 < self.maximum {
-                xs.push(t1);
+                xs.push(Intersection::new(t1, wrapped_self));
             }
         }
 
-        self.intersect_caps(ray, &mut xs);
+        self.intersect_caps(ray, wrapped_self, &mut xs);
 
         xs
     }
@@ -598,19 +624,24 @@ impl<'a> Cylinder<'a> {
         (x.powi(2) + z.powi(2)) <= 1.0
     }
 
-    fn intersect_caps(&self, ray: &Ray, xs: &mut Vec<f64>) {
+    fn intersect_caps<'r>(
+        &self,
+        ray: &Ray,
+        wrapped_self: &'r Object<'s>,
+        xs: &mut Vec<Intersection<'r, 's>>,
+    ) {
         if !self.closed || ray.direction.y().abs() < crate::domain::EPSILON {
             return;
         }
 
         let t = (self.minimum - ray.origin.y()) / ray.direction.y();
         if Cylinder::check_cap(ray, t) {
-            xs.push(t);
+            xs.push(Intersection::new(t, wrapped_self));
         }
 
         let t = (self.maximum - ray.origin.y()) / ray.direction.y();
         if Cylinder::check_cap(ray, t) {
-            xs.push(t);
+            xs.push(Intersection::new(t, wrapped_self));
         }
     }
 
@@ -669,7 +700,7 @@ impl<'a> ConeBuilder {
     }
 }
 
-impl<'a> Cone<'a> {
+impl<'s> Cone<'s> {
     pub fn new() -> ConeBuilder {
         ConeBuilder {
             shape_builder: Shape::new("Cone"),
@@ -679,7 +710,11 @@ impl<'a> Cone<'a> {
         }
     }
 
-    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+    pub(crate) fn local_intersect<'r>(
+        &self,
+        ray: &Ray,
+        wrapped_self: &'r Object<'s>,
+    ) -> Vec<Intersection<'r, 's>> {
         let a = ray.direction.x().powi(2) - ray.direction.y().powi(2) + ray.direction.z().powi(2);
         let b = 2.0 * ray.origin.x() * ray.direction.x() - 2.0 * ray.origin.y() * ray.direction.y()
             + 2.0 * ray.origin.z() * ray.direction.z();
@@ -697,7 +732,7 @@ impl<'a> Cone<'a> {
         if a_is_zero && !b_is_zero {
             let t = -c / (2.0 * b);
 
-            xs.push(t);
+            xs.push(Intersection::new(t, wrapped_self));
         } else {
             let disc = b.powi(2) - 4.0 * a * c;
 
@@ -712,16 +747,16 @@ impl<'a> Cone<'a> {
 
             let y0 = ray.origin.y() + t0 * ray.direction.y();
             if self.minimum < y0 && y0 < self.maximum {
-                xs.push(t0);
+                xs.push(Intersection::new(t0, wrapped_self));
             }
 
             let y1 = ray.origin.y() + t1 * ray.direction.y();
             if self.minimum < y1 && y1 < self.maximum {
-                xs.push(t1);
+                xs.push(Intersection::new(t1, wrapped_self));
             }
         }
 
-        self.intersect_caps(ray, &mut xs);
+        self.intersect_caps(ray, wrapped_self, &mut xs);
 
         xs
     }
@@ -733,19 +768,24 @@ impl<'a> Cone<'a> {
         (x.powi(2) + z.powi(2)) <= radius
     }
 
-    fn intersect_caps(&self, ray: &Ray, xs: &mut Vec<f64>) {
+    fn intersect_caps<'r>(
+        &self,
+        ray: &Ray,
+        wrapped_self: &'r Object<'s>,
+        xs: &mut Vec<Intersection<'r, 's>>,
+    ) {
         if !self.closed || ray.direction.y().abs() < crate::domain::EPSILON {
             return;
         }
 
         let t = (self.minimum - ray.origin.y()) / ray.direction.y();
         if Cone::check_cap(ray, t, self.minimum.abs()) {
-            xs.push(t);
+            xs.push(Intersection::new(t, wrapped_self));
         }
 
         let t = (self.maximum - ray.origin.y()) / ray.direction.y();
         if Cone::check_cap(ray, t, self.maximum.abs()) {
-            xs.push(t);
+            xs.push(Intersection::new(t, wrapped_self));
         }
     }
 
@@ -800,15 +840,19 @@ impl<'a> GroupBuilder<'a> {
     }
 }
 
-impl<'a, 'b> Group<'a> {
-    pub fn new() -> GroupBuilder<'b> {
+impl<'s> Group<'s> {
+    pub fn new() -> GroupBuilder<'s> {
         GroupBuilder {
             shape_builder: Shape::new("Group"),
             children: Vec::new(),
         }
     }
 
-    pub(crate) fn local_intersect(&self, ray: &Ray) -> Vec<f64> {
+    pub(crate) fn local_intersect<'r>(
+        &self,
+        ray: &Ray,
+        wrapped_self: &'r Object<'s>,
+    ) -> Vec<Intersection<'r, 's>> {
         vec![]
     }
 

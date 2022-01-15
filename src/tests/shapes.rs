@@ -78,14 +78,16 @@ fn ch9_test5_normal_of_plane_is_constant_everywhere() {
 fn ch9_test6_intersect_ray_parallel_to_plane_and_coplanar() {
     // prallel
     let p = Plane::new().build();
+    let p_obj = p.clone().into();
     let r = Ray::new(Point::new(0.0, 10.0, 0.0), Vector::new(0.0, 0.0, 1.0));
-    let xs = p.local_intersect(&r);
+    let xs = p.local_intersect(&r, &p_obj);
     assert!(xs.is_empty());
 
     // coplanar
     let p = Plane::new().build();
+    let p_obj = p.clone().into();
     let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
-    let xs = p.local_intersect(&r);
+    let xs = p.local_intersect(&r, &p_obj);
     assert!(xs.is_empty());
 }
 
@@ -93,17 +95,19 @@ fn ch9_test6_intersect_ray_parallel_to_plane_and_coplanar() {
 fn ch9_test7_ray_intersecting_plane_from_above_and_below() {
     // above
     let p = Plane::new().build();
+    let p_obj = p.clone().into();
     let r = Ray::new(Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
-    let xs = p.local_intersect(&r);
+    let xs = p.local_intersect(&r, &p_obj);
 
     assert_eq!(xs.len(), 1);
-    assert_eq!(xs[0], 1.0);
+    assert_eq!(xs[0].distance, 1.0);
 
     // below
     let p = Plane::new().build();
+    let p_obj = p.clone().into();
     let r = Ray::new(Point::new(0.0, -1.0, 0.0), Vector::new(0.0, 1.0, 0.0));
-    let xs = p.local_intersect(&r);
+    let xs = p.local_intersect(&r, &p_obj);
 
     assert_eq!(xs.len(), 1);
-    assert_eq!(xs[0], 1.0);
+    assert_eq!(xs[0].distance, 1.0);
 }
