@@ -848,15 +848,26 @@ impl<'s> Group<'s> {
         }
     }
 
-    pub(crate) fn local_intersect<'r>(
+    pub(crate) fn local_intersect(
         &self,
         ray: &Ray,
-        wrapped_self: &'r Object<'s>,
-    ) -> Vec<Intersection<'r, 's>> {
-        vec![]
+        _wrapped_self: &'_ Object<'s>,
+    ) -> Vec<Intersection<'_, 's>> {
+        self.children
+            .iter()
+            .map(|c| {
+                let mut ints = c.intersect(ray);
+                let mut result = Vec::new();
+                while let Some(int) = ints.hit_unchecked() {
+                    result.push(int);
+                }
+                result
+            })
+            .flatten()
+            .collect::<Vec<Intersection<'_, 's>>>()
     }
 
-    pub(crate) fn local_normal_at(&self, point: &Point) -> Vector {
+    pub(crate) fn local_normal_at(&self, _point: &Point) -> Vector {
         Vector::new(0.0, 0.0, 0.0)
     }
 }
