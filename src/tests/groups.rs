@@ -74,3 +74,20 @@ fn ch14_test5_intersecting_ray_with_nonempty_group() {
     assert_eq!(r3.object.shape().id, s1.shape().id);
     assert_eq!(r4.object.shape().id, s1.shape().id);
 }
+
+#[test]
+fn ch14_test6_intersecting_transformed_group() {
+    let s = Sphere::new()
+        .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
+        .build()
+        .into();
+    let g: Object = Group::new()
+        .transformation(Matrix::new_scaling(2.0, 2.0, 2.0))
+        .add_child(s)
+        .build()
+        .into();
+
+    let r = Ray::new(Point::new(10.0, 0.0, -10.0), Vector::new(0.0, 0.0, 1.0));
+    let xs = g.intersect(&r);
+    assert_eq!(xs.len(), 2);
+}

@@ -813,12 +813,12 @@ pub struct GroupBuilder<'a> {
 }
 
 impl<'a> GroupBuilder<'a> {
-    pub fn transformation(&'a mut self, transformation: Matrix) -> &mut GroupBuilder<'a> {
+    pub fn transformation(&mut self, transformation: Matrix) -> &mut GroupBuilder<'a> {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn build<'b>(&'b self) -> Box<Group<'a>> {
+    pub fn build(&self) -> Box<Group<'a>> {
         unsafe {
             // set parent reference on children
             let parent_group_ref: *mut Group = Box::into_raw(Box::new(Group {
@@ -834,7 +834,7 @@ impl<'a> GroupBuilder<'a> {
         }
     }
 
-    pub fn add_child<'b>(&'b mut self, child: Object<'a>) -> &mut GroupBuilder<'a> {
+    pub fn add_child(&mut self, child: Object<'a>) -> &mut GroupBuilder<'a> {
         self.children.push(child);
         self
     }
