@@ -113,7 +113,7 @@ fn ch14_test7_convert_point_from_world_to_object_space() {
     }
     .into();
 
-    let p = s_inner.world_to_object(Point::new(-2.0, 0.0, -10.0));
+    let p = s_inner.world_to_object(&Point::new(-2.0, 0.0, -10.0));
     let p_exp = Point::new(0.0, 0.0, -1.0);
     assert_eq!(p, p_exp);
 }
@@ -137,11 +137,36 @@ fn ch16_test8_convert_normal_from_object_to_world_space() {
         _ => panic!("Unexpected structure!"),
     };
 
-    let n = inner_sphere.normal_to_world(Vector::new(
+    let n = inner_sphere.normal_to_world(&Vector::new(
         3_f64.sqrt() / 3.0,
         3_f64.sqrt() / 3.0,
         3_f64.sqrt() / 3.0,
     ));
+    let n_exp = Vector::new(0.2857, 0.4286, -0.8571);
+
+    assert_eq!(n, n_exp);
+}
+
+#[test]
+fn ch16_test9_finding_normal_of_child_object() {
+    let s = Sphere::new()
+        .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
+        .build();
+    let g2 = Group::new()
+        .transformation(Matrix::new_scaling(1.0, 2.0, 3.0))
+        .add_child(s.into())
+        .build();
+    let g1 = Group::new()
+        .transformation(Matrix::new_rotation_y(PI / 2.0))
+        .add_child(g2.into())
+        .build();
+
+    let inner_sphere = match &g1.children[0] {
+        Object::Group(inner_g2) => &inner_g2.children[0],
+        _ => panic!("Unexpected structure!"),
+    };
+
+    let n = inner_sphere.normal_at(&Point::new(1.7321, 1.1547, -5.5774));
     let n_exp = Vector::new(0.2857, 0.4286, -0.8571);
 
     assert_eq!(n, n_exp);

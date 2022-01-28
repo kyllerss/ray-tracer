@@ -197,40 +197,29 @@ impl<'s> Object<'s> {
     }
 
     // Computes the normal at given point.
-    pub fn normal_at(&self, point: &Point) -> Vector {
-        let mut st_inv = self.shape().transformation.inverse().unwrap();
-        let local_point = &st_inv * point;
+    pub fn normal_at(&self, world_point: &Point) -> Vector {
+        let local_point = self.world_to_object(world_point);
         let local_normal = self.local_normal_at(&local_point);
-        let world_normal = &*st_inv.transpose() * &local_normal;
-
-        world_normal.normalize()
+        self.normal_to_world(&local_normal)
     }
 
     // Computes world point relative to object space
-    // pub fn world_to_object(&self, world_point: Point) -> Point {
-    //     let point = match self.shape().parent {
-    //         Option::Some(parent_group) => parent_group.world_to_object(world_point),
-    //         Option::None => world_point,
-    //     };
-    //     &self.shape().transformation * &point
-    // }
-    // Computes world point relative to object space
-    pub fn world_to_object(&self, world_point: Point) -> Point {
+    pub fn world_to_object(&self, world_point: &Point) -> Point {
         let point = match self.shape().parent() {
             Option::Some(parent_group) => parent_group.world_to_object(world_point),
 
-            Option::None => world_point,
+            Option::None => world_point.clone(),
         };
         &self.shape().transformation.inverse().unwrap() * &point
     }
 
     // computes normal taking into consideration potential for object to be embedded in one or more groups
-    pub fn normal_to_world(&self, normal: Vector) -> Vector {
-        let n: Vector = self.shape().transformation.inverse().unwrap().transpose() * &normal;
+    pub fn normal_to_world(&self, normal: &Vector) -> Vector {
+        let n: Vector = self.shape().transformation.inverse().unwrap().transpose() * normal;
         let n = n.normalize();
 
         match self.shape().parent() {
-            Option::Some(parent_group) => parent_group.normal_to_world(n),
+            Option::Some(parent_group) => parent_group.normal_to_world(&n),
             _ => n,
         }
     }
@@ -909,6 +898,6 @@ impl<'s> Group<'s> {
     }
 
     pub(crate) fn local_normal_at(&self, _point: &Point) -> Vector {
-        Vector::new(0.0, 0.0, 0.0)
+        panic!("Group's local_normal_at called!");
     }
 }
