@@ -17,7 +17,7 @@ fn ch14_test1_creating_new_group() {
 #[test]
 fn ch14_test2_shape_has_parent_attribute() {
     let s = Null::new().build();
-    assert_eq!(s.shape.parent, Option::None);
+    assert_eq!(s.shape.parent(), Option::None);
 }
 
 #[test]
@@ -27,12 +27,7 @@ fn ch14_test3_adding_child_to_group() {
 
     assert_eq!(g.children.len(), 1);
     assert_eq!(g.children[0].shape().id, s.shape.id);
-    unsafe {
-        assert_eq!(
-            *(g.children[0].shape().parent.unwrap()),
-            *(Box::into_raw(g.clone()))
-        );
-    }
+    assert_eq!(g.children[0].shape().parent().unwrap(), g.into());
 }
 
 #[test]
@@ -121,4 +116,33 @@ fn ch14_test7_convert_point_from_world_to_object_space() {
     let p = s_inner.world_to_object(Point::new(-2.0, 0.0, -10.0));
     let p_exp = Point::new(0.0, 0.0, -1.0);
     assert_eq!(p, p_exp);
+}
+
+#[test]
+fn ch16_test8_convert_normal_from_object_to_world_space() {
+    let sphere = Sphere::new()
+        .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
+        .build();
+    let g2 = Group::new()
+        .transformation(Matrix::new_scaling(1.0, 2.0, 3.0))
+        .add_child(sphere.into())
+        .build();
+    let g1 = Group::new()
+        .transformation(Matrix::new_rotation_y(PI / 2.0))
+        .add_child(g2.into())
+        .build();
+
+    let inner_sphere = match &g1.children[0] {
+        Object::Group(inner_g2) => &inner_g2.children[0],
+        _ => panic!("Unexpected structure!"),
+    };
+
+    let n = inner_sphere.normal_to_world(Vector::new(
+        3_f64.sqrt() / 3.0,
+        3_f64.sqrt() / 3.0,
+        3_f64.sqrt() / 3.0,
+    ));
+    let n_exp = Vector::new(0.2857, 0.4286, -0.8571);
+
+    assert_eq!(n, n_exp);
 }

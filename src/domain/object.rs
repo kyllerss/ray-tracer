@@ -11,7 +11,7 @@ pub struct Shape<'a> {
     pub transformation: Matrix,
     pub material: Material,
     pub shape_type_name: String,
-    pub parent: Option<*mut Group<'a>>,
+    parent: Option<*mut Group<'a>>,
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -216,18 +216,23 @@ impl<'s> Object<'s> {
     // }
     // Computes world point relative to object space
     pub fn world_to_object(&self, world_point: Point) -> Point {
-        let point = match self.shape().parent {
-            Option::Some(parent_group) => {
-                //parent_group.world_to_object(world_point)
-                unsafe {
-                    let parent_ref: Object =
-                        Box::new((parent_group as *const Group).as_ref().unwrap().clone()).into();
-                    parent_ref.world_to_object(world_point)
-                }
-            }
+        let point = match self.shape().parent() {
+            Option::Some(parent_group) => parent_group.world_to_object(world_point),
+
             Option::None => world_point,
         };
         &self.shape().transformation.inverse().unwrap() * &point
+    }
+
+    // computes normal taking into consideration potential for object to be embedded in one or more groups
+    pub fn normal_to_world(&self, normal: Vector) -> Vector {
+        let n: Vector = self.shape().transformation.inverse().unwrap().transpose() * &normal;
+        let n = n.normalize();
+
+        match self.shape().parent() {
+            Option::Some(parent_group) => parent_group.normal_to_world(n),
+            _ => n,
+        }
     }
 }
 
@@ -254,6 +259,18 @@ impl<'a> Shape<'a> {
             transformation: Option::None,
             material: Option::None,
             shape_type_name: shape_type_name.parse().unwrap(),
+        }
+    }
+
+    // Translates raw pointer into Object representation.
+    pub fn parent(&self) -> Option<Object<'a>> {
+        match self.parent {
+            Option::Some(parent_group) => unsafe {
+                Option::Some(
+                    Box::new((parent_group as *const Group).as_ref().unwrap().clone()).into(),
+                )
+            },
+            _ => Option::None,
         }
     }
 }
@@ -894,21 +911,4 @@ impl<'s> Group<'s> {
     pub(crate) fn local_normal_at(&self, _point: &Point) -> Vector {
         Vector::new(0.0, 0.0, 0.0)
     }
-
-    // // Computes world point relative to object space
-    // pub(crate) fn world_to_object(&self, world_point: Point) -> Point {
-    //     let point = match self.shape.parent {
-    //         Option::Some(parent_group) => {
-    //             //parent_group.world_to_object(world_point)
-    //             unsafe {
-    //                 (parent_group as *const Group)
-    //                     .as_ref()
-    //                     .unwrap()
-    //                     .world_to_object(world_point)
-    //             }
-    //         }
-    //         Option::None => world_point,
-    //     };
-    //     &self.shape.transformation * &point
-    // }
 }

@@ -134,7 +134,7 @@ impl Matrix {
     }
 
     // transposes a matrix
-    pub fn transpose(&mut self) -> &mut Self {
+    pub fn transpose(&mut self) -> &Self {
         'outer: for row in 0..self.height {
             for col in 0..self.width {
                 if row == col {
