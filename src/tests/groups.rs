@@ -119,7 +119,7 @@ fn ch14_test7_convert_point_from_world_to_object_space() {
 }
 
 #[test]
-fn ch16_test8_convert_normal_from_object_to_world_space() {
+fn ch14_test8_convert_normal_from_object_to_world_space() {
     let sphere = Sphere::new()
         .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
         .build();
@@ -148,7 +148,7 @@ fn ch16_test8_convert_normal_from_object_to_world_space() {
 }
 
 #[test]
-fn ch16_test9_finding_normal_of_child_object() {
+fn ch14_test9_finding_normal_of_child_object() {
     let s = Sphere::new()
         .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
         .build();
