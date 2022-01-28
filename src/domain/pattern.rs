@@ -130,8 +130,8 @@ impl Pattern {
     // calculates color for the given pattern at the given point
     pub fn color_at(&self, object: &Object, world_point: &Point) -> Color {
         // convert pattern to object and pattern orientations
-        let object_point = &object.shape().transformation.inverse().unwrap() * world_point;
-        let pattern_point = &self.transformation().inverse().unwrap() * &object_point;
+        let object_point = &object.world_to_object(world_point);
+        let pattern_point = &self.transformation().inverse().unwrap() * object_point;
 
         match &self {
             Pattern::STRIPED { a, b, .. } => color_at_striped(a, b, &pattern_point),
