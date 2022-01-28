@@ -227,7 +227,7 @@ impl<'s> Object<'s> {
             }
             Option::None => world_point,
         };
-        &self.shape().transformation * &point
+        &self.shape().transformation.inverse().unwrap() * &point
     }
 }
 
