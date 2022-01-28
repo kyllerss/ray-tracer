@@ -205,6 +205,30 @@ impl<'s> Object<'s> {
 
         world_normal.normalize()
     }
+
+    // Computes world point relative to object space
+    // pub fn world_to_object(&self, world_point: Point) -> Point {
+    //     let point = match self.shape().parent {
+    //         Option::Some(parent_group) => parent_group.world_to_object(world_point),
+    //         Option::None => world_point,
+    //     };
+    //     &self.shape().transformation * &point
+    // }
+    // Computes world point relative to object space
+    pub fn world_to_object(&self, world_point: Point) -> Point {
+        let point = match self.shape().parent {
+            Option::Some(parent_group) => {
+                //parent_group.world_to_object(world_point)
+                unsafe {
+                    let parent_ref: Object =
+                        Box::new((parent_group as *const Group).as_ref().unwrap().clone()).into();
+                    parent_ref.world_to_object(world_point)
+                }
+            }
+            Option::None => world_point,
+        };
+        &self.shape().transformation * &point
+    }
 }
 
 impl<'a> Default for Shape<'a> {
@@ -251,7 +275,7 @@ impl<'a> ShapeBuilder {
         self
     }
 
-    pub fn build(&self) -> Shape<'a> {
+    pub fn build(self) -> Shape<'a> {
         Shape {
             id: Id::new(),
             transformation: self
@@ -270,17 +294,17 @@ pub struct NullBuilder {
 }
 
 impl<'a> NullBuilder {
-    pub fn transformation(&mut self, transformation: Matrix) -> &mut NullBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> NullBuilder {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(&mut self, material: Material) -> &mut NullBuilder {
+    pub fn material(mut self, material: Material) -> NullBuilder {
         self.shape_builder.material(material);
         self
     }
 
-    pub fn build<'b>(&'b self) -> Null<'a> {
+    pub fn build(self) -> Null<'a> {
         Null {
             shape: self.shape_builder.build(),
         }
@@ -317,17 +341,17 @@ pub struct PlaneBuilder {
 }
 
 impl<'a> PlaneBuilder {
-    pub fn transformation(&mut self, transformation: Matrix) -> &mut PlaneBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> PlaneBuilder {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(&mut self, material: Material) -> &mut PlaneBuilder {
+    pub fn material(mut self, material: Material) -> PlaneBuilder {
         self.shape_builder.material(material);
         self
     }
 
-    pub fn build(&self) -> Plane<'a> {
+    pub fn build(self) -> Plane<'a> {
         Plane {
             shape: self.shape_builder.build(),
         }
@@ -367,22 +391,22 @@ pub struct SphereBuilder {
 }
 
 impl<'a> SphereBuilder {
-    pub fn transformation(&mut self, transformation: Matrix) -> &mut SphereBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> SphereBuilder {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(&mut self, material: Material) -> &mut SphereBuilder {
+    pub fn material(mut self, material: Material) -> SphereBuilder {
         self.shape_builder.material(material);
         self
     }
 
-    pub fn origin(&mut self, origin: Point) -> &mut SphereBuilder {
+    pub fn origin(mut self, origin: Point) -> SphereBuilder {
         self.origin = Option::Some(origin);
         self
     }
 
-    pub fn build(&self) -> Sphere<'a> {
+    pub fn build(self) -> Sphere<'a> {
         Sphere {
             shape: self.shape_builder.build(),
             origin: self.origin.unwrap_or(Point::ORIGIN),
@@ -447,17 +471,17 @@ pub struct CubeBuilder {
 }
 
 impl<'a> CubeBuilder {
-    pub fn transformation(&mut self, transformation: Matrix) -> &mut CubeBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> CubeBuilder {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(&mut self, material: Material) -> &mut CubeBuilder {
+    pub fn material(mut self, material: Material) -> CubeBuilder {
         self.shape_builder.material(material);
         self
     }
 
-    pub fn build(&self) -> Cube<'a> {
+    pub fn build(self) -> Cube<'a> {
         Cube {
             shape: self.shape_builder.build(),
         }
@@ -534,17 +558,17 @@ pub struct CylinderBuilder {
 }
 
 impl<'a> CylinderBuilder {
-    pub fn transformation(&mut self, transformation: Matrix) -> &mut CylinderBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> CylinderBuilder {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(&mut self, material: Material) -> &mut CylinderBuilder {
+    pub fn material(mut self, material: Material) -> CylinderBuilder {
         self.shape_builder.material(material);
         self
     }
 
-    pub fn build(&self) -> Cylinder<'a> {
+    pub fn build(self) -> Cylinder<'a> {
         Cylinder {
             shape: self.shape_builder.build(),
             minimum: self.minimum.unwrap_or(-f64::INFINITY),
@@ -552,17 +576,17 @@ impl<'a> CylinderBuilder {
             closed: self.closed.unwrap_or(false),
         }
     }
-    pub fn minimum(&mut self, minimum: f64) -> &mut CylinderBuilder {
+    pub fn minimum(mut self, minimum: f64) -> CylinderBuilder {
         self.minimum = Option::Some(minimum);
         self
     }
 
-    pub fn maximum(&mut self, maximum: f64) -> &mut CylinderBuilder {
+    pub fn maximum(mut self, maximum: f64) -> CylinderBuilder {
         self.maximum = Option::Some(maximum);
         self
     }
 
-    pub fn closed(&mut self, closed: bool) -> &mut CylinderBuilder {
+    pub fn closed(mut self, closed: bool) -> CylinderBuilder {
         self.closed = Option::Some(closed);
         self
     }
@@ -666,17 +690,17 @@ pub struct ConeBuilder {
 }
 
 impl<'a> ConeBuilder {
-    pub fn transformation(&mut self, transformation: Matrix) -> &mut ConeBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> ConeBuilder {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(&mut self, material: Material) -> &mut ConeBuilder {
+    pub fn material(mut self, material: Material) -> ConeBuilder {
         self.shape_builder.material(material);
         self
     }
 
-    pub fn build(&self) -> Cone<'a> {
+    pub fn build(self) -> Cone<'a> {
         Cone {
             shape: self.shape_builder.build(),
             minimum: self.minimum.unwrap_or(-f64::INFINITY),
@@ -684,17 +708,17 @@ impl<'a> ConeBuilder {
             closed: self.closed.unwrap_or(false),
         }
     }
-    pub fn minimum(&mut self, minimum: f64) -> &mut ConeBuilder {
+    pub fn minimum(mut self, minimum: f64) -> ConeBuilder {
         self.minimum = Option::Some(minimum);
         self
     }
 
-    pub fn maximum(&mut self, maximum: f64) -> &mut ConeBuilder {
+    pub fn maximum(mut self, maximum: f64) -> ConeBuilder {
         self.maximum = Option::Some(maximum);
         self
     }
 
-    pub fn closed(&mut self, closed: bool) -> &mut ConeBuilder {
+    pub fn closed(mut self, closed: bool) -> ConeBuilder {
         self.closed = Option::Some(closed);
         self
     }
@@ -813,28 +837,28 @@ pub struct GroupBuilder<'a> {
 }
 
 impl<'a> GroupBuilder<'a> {
-    pub fn transformation(&mut self, transformation: Matrix) -> &mut GroupBuilder<'a> {
+    pub fn transformation(mut self, transformation: Matrix) -> GroupBuilder<'a> {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn build(&self) -> Box<Group<'a>> {
+    pub fn build(self) -> Box<Group<'a>> {
         unsafe {
             // set parent reference on children
-            let parent_group_ref: *mut Group = Box::into_raw(Box::new(Group {
+            let group: *mut Group = Box::into_raw(Box::new(Group {
                 shape: self.shape_builder.build(),
-                children: self.children.clone(),
+                children: self.children,
             }));
 
-            for child in (*parent_group_ref).children.iter_mut() {
-                child.shape_mut().parent = Option::Some(parent_group_ref.clone());
+            for child in (*group).children.iter_mut() {
+                child.shape_mut().parent = Option::Some(group);
             }
 
-            Box::from_raw(parent_group_ref)
+            Box::from_raw(group)
         }
     }
 
-    pub fn add_child(&mut self, child: Object<'a>) -> &mut GroupBuilder<'a> {
+    pub fn add_child(mut self, child: Object<'a>) -> GroupBuilder<'a> {
         self.children.push(child);
         self
     }
@@ -870,4 +894,21 @@ impl<'s> Group<'s> {
     pub(crate) fn local_normal_at(&self, _point: &Point) -> Vector {
         Vector::new(0.0, 0.0, 0.0)
     }
+
+    // // Computes world point relative to object space
+    // pub(crate) fn world_to_object(&self, world_point: Point) -> Point {
+    //     let point = match self.shape.parent {
+    //         Option::Some(parent_group) => {
+    //             //parent_group.world_to_object(world_point)
+    //             unsafe {
+    //                 (parent_group as *const Group)
+    //                     .as_ref()
+    //                     .unwrap()
+    //                     .world_to_object(world_point)
+    //             }
+    //         }
+    //         Option::None => world_point,
+    //     };
+    //     &self.shape.transformation * &point
+    // }
 }

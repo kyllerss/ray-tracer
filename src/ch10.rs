@@ -22,7 +22,7 @@ pub fn run() -> Result<(), Error> {
     );
 
     let t = crate::domain::matrix::IDENTITY.clone(); //Matrix::new_rotation_z(PI / 3.0);
-    let mut plane = Plane::new();
+    let plane = Plane::new();
     let mut floor: Object = plane.transformation(t).build().into();
     floor.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
@@ -39,7 +39,7 @@ pub fn run() -> Result<(), Error> {
 
     let t = &Matrix::new_translation(15.0, 0.0, 5.0)
         * &(&Matrix::new_rotation_z(PI / 2.0) * &Matrix::new_rotation_y(1.5 * PI / 4.0));
-    let mut plane = Plane::new();
+    let plane = Plane::new();
     let mut right_wall: Object = plane.transformation(t).build().into();
     right_wall.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
@@ -56,7 +56,7 @@ pub fn run() -> Result<(), Error> {
 
     let t = &Matrix::new_translation(-15.0, 0.0, 5.0)
         * &(&Matrix::new_rotation_z(PI / 2.0) * &Matrix::new_rotation_y(4.5 * PI / 4.0));
-    let mut plane = Plane::new();
+    let plane = Plane::new();
     let mut left_wall: Object = plane.transformation(t).build().into();
     left_wall.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))

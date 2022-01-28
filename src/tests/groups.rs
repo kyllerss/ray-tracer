@@ -2,6 +2,7 @@ use crate::domain::matrix::Matrix;
 use crate::domain::object::{Group, Null, Object, Sphere};
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
+use std::f64::consts::PI;
 
 #[test]
 fn ch14_test1_creating_new_group() {
@@ -90,4 +91,34 @@ fn ch14_test6_intersecting_transformed_group() {
     let r = Ray::new(Point::new(10.0, 0.0, -10.0), Vector::new(0.0, 0.0, 1.0));
     let xs = g.intersect(&r);
     assert_eq!(xs.len(), 2);
+}
+
+#[test]
+fn ch14_test7_convert_point_from_world_to_object_space() {
+    let s: Object = Sphere::new()
+        .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
+        .build()
+        .into();
+    let g2: Object = Group::new()
+        .transformation(Matrix::new_scaling(2.0, 2.0, 2.0))
+        .add_child(s)
+        .build()
+        .into();
+    let g1 = Group::new()
+        .transformation(Matrix::new_rotation_y(PI / 2.0))
+        .add_child(g2)
+        .build();
+
+    let s_inner: Object = match &g1.children[0] {
+        Object::Group(group) => match &group.children[0] {
+            Object::Sphere(sphere) => sphere.clone(),
+            _ => panic!(),
+        },
+        _ => panic!(),
+    }
+    .into();
+
+    let p = s_inner.world_to_object(Point::new(-2.0, 0.0, -10.0));
+    let p_exp = Point::new(0.0, 0.0, -1.0);
+    assert_eq!(p, p_exp);
 }
