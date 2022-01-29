@@ -59,6 +59,16 @@ pub struct Group<'a> {
     pub children: Vec<Object<'a>>,
 }
 
+#[derive(PartialEq, Debug, Clone)]
+pub struct Triangle {
+    pub p1: Point,
+    pub p2: Point,
+    pub p3: Point,
+    pub e1: Vector,
+    pub e2: Vector,
+    pub normal: Vector,
+}
+
 #[derive(PartialEq, Clone)]
 pub enum Object<'a> {
     Sphere(Sphere<'a>),
@@ -68,6 +78,7 @@ pub enum Object<'a> {
     Cylinder(Cylinder<'a>),
     Cone(Cone<'a>),
     Group(Box<Group<'a>>),
+    Triangle(Triangle),
 }
 
 impl<'a> Debug for Object<'a> {
@@ -124,6 +135,12 @@ impl<'a> From<Box<Group<'a>>> for Object<'a> {
     }
 }
 
+impl<'a> From<Triangle> for Object<'a> {
+    fn from(v: Triangle) -> Self {
+        Object::Triangle(v)
+    }
+}
+
 unsafe impl<'a> Sync for Shape<'a> {}
 unsafe impl<'a> Send for Shape<'a> {}
 
@@ -138,6 +155,7 @@ impl<'s> Object<'s> {
             Object::Cylinder(cylinder) => cylinder.local_intersect(ray, &self),
             Object::Cone(cone) => cone.local_intersect(ray, &self),
             Object::Group(group) => group.local_intersect(ray, &self),
+            Object::Triangle(triangle) => triangle.local_intersect(ray, &self),
         };
         let mut result = Intersections::new();
         ints.drain(..).for_each(|int| {
@@ -156,6 +174,7 @@ impl<'s> Object<'s> {
             Object::Cylinder(cylinder) => cylinder.local_normal_at(point),
             Object::Cone(cone) => cone.local_normal_at(point),
             Object::Group(group) => group.local_normal_at(point),
+            Object::Triangle(triangle) => triangle.local_normal_at(point),
         }
     }
 
@@ -169,6 +188,7 @@ impl<'s> Object<'s> {
             Object::Cylinder(cylinder) => &cylinder.shape,
             Object::Cone(cone) => &cone.shape,
             Object::Group(group) => &group.shape,
+            _ => panic!("Unsupported object on call to shape()."),
         }
     }
 
@@ -182,6 +202,7 @@ impl<'s> Object<'s> {
             Object::Cylinder(cylinder) => &mut cylinder.shape,
             Object::Cone(cone) => &mut cone.shape,
             Object::Group(group) => &mut group.shape,
+            _ => panic!("Unsupported object on call to shape_mut()."),
         }
     }
 
@@ -899,5 +920,35 @@ impl<'s> Group<'s> {
 
     pub(crate) fn local_normal_at(&self, _point: &Point) -> Vector {
         panic!("Group's local_normal_at called!");
+    }
+}
+
+impl Triangle {
+    // Constructor
+    pub fn new(p1: Point, p2: Point, p3: Point) -> Self {
+        let e1 = &p2 - &p1;
+        let e2 = &p3 - &p1;
+        let normal = e2.cross_product(&e1).normalize();
+
+        Triangle {
+            p1,
+            p2,
+            p3,
+            e1,
+            e2,
+            normal,
+        }
+    }
+
+    pub(crate) fn local_intersect<'a>(
+        &self,
+        ray: &Ray,
+        _wrapped_self: &'_ Object<'a>,
+    ) -> Vec<Intersection<'_, 'a>> {
+        vec![]
+    }
+
+    pub(crate) fn local_normal_at<'a>(&'a self, _point: &Point) -> Vector {
+        Vector::new(0.0, 0.0, 0.0)
     }
 }
