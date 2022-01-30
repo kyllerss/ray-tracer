@@ -943,7 +943,7 @@ impl Triangle {
     pub(crate) fn local_intersect<'r, 's: 'r>(
         &self,
         ray: &Ray,
-        _wrapped_self: &'r Object<'s>,
+        wrapped_self: &'r Object<'s>,
     ) -> Vec<Intersection<'r, 's>> {
         let dir_cross_e2 = ray.direction.cross_product(&self.e2);
         let det = self.e1.dot_product(&dir_cross_e2);
@@ -951,7 +951,22 @@ impl Triangle {
             return vec![];
         }
 
-        vec![Intersection::new(1.0, _wrapped_self)]
+        let f = 1.0 / det;
+        let p1_to_origin = &ray.origin - &self.p1;
+        let u = f * p1_to_origin.dot_product(&dir_cross_e2);
+
+        if u < 0.0 || u > 1.0 {
+            return vec![];
+        }
+
+        let origin_cross_e1 = p1_to_origin.cross_product(&self.e1);
+        let v = f * ray.direction.dot_product(&origin_cross_e1);
+        if v < 0.0 || (u + v) > 1.0 {
+            return vec![];
+        }
+
+        let t = f * self.e2.dot_product(&origin_cross_e1);
+        vec![Intersection::new(t, wrapped_self)]
     }
 
     pub(crate) fn local_normal_at<'a>(&'a self, _point: &Point) -> Vector {
