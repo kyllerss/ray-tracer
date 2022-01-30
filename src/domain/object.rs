@@ -949,6 +949,6 @@ impl Triangle {
     }
 
     pub(crate) fn local_normal_at<'a>(&'a self, _point: &Point) -> Vector {
-        Vector::new(0.0, 0.0, 0.0)
+        self.normal
     }
 }

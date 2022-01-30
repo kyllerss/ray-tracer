@@ -17,3 +17,19 @@ fn ch15_test1_constructing_triangle() {
     assert_eq!(t.e2, Vector::new(1.0, -1.0, 0.0));
     assert_eq!(t.normal, Vector::new(0.0, 0.0, -1.0));
 }
+
+#[test]
+fn ch15_test2_finding_normal_on_triangle() {
+    let t = Triangle::new(
+        Point::new(0.0, 1.0, 0.0),
+        Point::new(-1.0, 0.0, 0.0),
+        Point::new(1.0, 0.0, 0.0),
+    );
+    let n1 = t.local_normal_at(&Point::new(0.0, 0.5, 0.0));
+    let n2 = t.local_normal_at(&Point::new(-0.5, 0.75, 0.0));
+    let n3 = t.local_normal_at(&Point::new(0.5, 0.25, 0.0));
+
+    assert_eq!(n1, t.normal);
+    assert_eq!(n2, t.normal);
+    assert_eq!(n3, t.normal);
+}
