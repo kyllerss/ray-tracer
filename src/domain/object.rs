@@ -2,7 +2,7 @@ use crate::domain::intersection::{Intersection, Intersections};
 use crate::domain::material::Material;
 use crate::domain::matrix::Matrix;
 use crate::domain::ray::Ray;
-use crate::domain::{Id, Point, RayTuple, Vector};
+use crate::domain::{Id, Point, RayTuple, Vector, EPSILON};
 use std::fmt::{Debug, Formatter};
 
 #[derive(PartialEq, Debug, Clone)]
@@ -940,12 +940,18 @@ impl Triangle {
         }
     }
 
-    pub(crate) fn local_intersect<'a>(
+    pub(crate) fn local_intersect<'r, 's: 'r>(
         &self,
         ray: &Ray,
-        _wrapped_self: &'_ Object<'a>,
-    ) -> Vec<Intersection<'_, 'a>> {
-        vec![]
+        _wrapped_self: &'r Object<'s>,
+    ) -> Vec<Intersection<'r, 's>> {
+        let dir_cross_e2 = ray.direction.cross_product(&self.e2);
+        let det = self.e1.dot_product(&dir_cross_e2);
+        if det.abs() < EPSILON {
+            return vec![];
+        }
+
+        vec![Intersection::new(1.0, _wrapped_self)]
     }
 
     pub(crate) fn local_normal_at<'a>(&'a self, _point: &Point) -> Vector {
