@@ -16,3 +16,4 @@ mod transformations;
 mod triangles;
 mod tuples;
 mod world;
+mod obj_file;

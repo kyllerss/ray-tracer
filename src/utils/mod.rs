@@ -1,4 +1,5 @@
 pub mod image_writer;
+pub(crate) mod obj_parser;
 
 use crate::domain::canvas::Canvas;
 use crate::utils::image_writer::{Format, ImageWriter};
