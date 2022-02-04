@@ -9,7 +9,7 @@ fn extract_triangle<'r, 's: 'r>(obj: &'r Object<'s>) -> &'r Triangle {
 }
 
 #[test]
-fn ch15_test1_ignore_unrecognized_lines() {
+fn ch15_test7_ignore_unrecognized_lines() {
     let contents = r#"There was a young lady named Bright
         who traveled much faster than light.
         She set out one day
@@ -22,7 +22,7 @@ fn ch15_test1_ignore_unrecognized_lines() {
 }
 
 #[test]
-fn ch15_test2_vertex_records() {
+fn ch15_test8_vertex_records() {
     let contents = r#"
         v -1 1 0
         v -1.0000 0.5000 0.0000
@@ -42,7 +42,7 @@ fn ch15_test2_vertex_records() {
 }
 
 #[test]
-fn ch15_test3_parsing_triangle_faces() {
+fn ch15_test9_parsing_triangle_faces() {
     let contents = r#"
         v -1 1 0
         v -1 0 0
@@ -74,7 +74,7 @@ fn ch15_test3_parsing_triangle_faces() {
 }
 
 #[test]
-fn ch15_test4_triangulating_polygons() {
+fn ch15_test10_triangulating_polygons() {
     let contents = r#"
         v -1 1 0
         v -1 0 0
@@ -109,4 +109,41 @@ fn ch15_test4_triangulating_polygons() {
     assert_eq!(t3.p1, *p.vertex(1).unwrap());
     assert_eq!(t3.p2, *p.vertex(4).unwrap());
     assert_eq!(t3.p3, *p.vertex(5).unwrap());
+}
+
+#[test]
+fn ch15_test11_triangles_in_groups() {
+    let contents = r#"
+        v -1 1 0
+        v -1 0 0
+        v 1 0 0
+        v 1 1 0
+        
+        g FirstGroup
+        f 1 2 3
+        g SecondGroup       
+        f 1 3 4  
+    "#;
+
+    let r = crate::utils::obj_parser::parse_obj_file(contents);
+    assert!(r.is_some());
+
+    let p = r.unwrap();
+    let g1 = p.named_group(&"FirstGroup".to_string());
+    let g2 = p.named_group(&"SecondGroup".to_string());
+
+    assert!(g1.is_some());
+    assert!(g1.unwrap().get(0).is_some());
+    let t1 = extract_triangle(g1.unwrap().get(0).unwrap());
+
+    assert!(g2.is_some());
+    assert!(g2.unwrap().get(0).is_some());
+    let t2 = extract_triangle(g2.unwrap().get(0).unwrap());
+
+    assert_eq!(t1.p1, *p.vertex(1).unwrap());
+    assert_eq!(t1.p2, *p.vertex(2).unwrap());
+    assert_eq!(t1.p3, *p.vertex(3).unwrap());
+    assert_eq!(t2.p1, *p.vertex(1).unwrap());
+    assert_eq!(t2.p2, *p.vertex(3).unwrap());
+    assert_eq!(t2.p3, *p.vertex(4).unwrap());
 }

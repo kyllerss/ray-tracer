@@ -6,7 +6,7 @@ use std::io::{BufRead, BufReader};
 
 pub struct ObjParseResult<'a> {
     vertices: Vec<Point>,
-    pub objects: HashMap<&'a str, Vec<Object<'a>>>,
+    pub objects: HashMap<String, Vec<Object<'a>>>,
     pub skipped: usize,
 }
 
@@ -14,7 +14,7 @@ impl<'a> Default for ObjParseResult<'a> {
     fn default() -> Self {
         ObjParseResult {
             vertices: Vec::new(),
-            objects: HashMap::from([(ObjParseResult::DEFAULT_GROUP_NAME, Vec::new())]),
+            objects: HashMap::from([(ObjParseResult::DEFAULT_GROUP_NAME.to_string(), Vec::new())]),
             skipped: 0,
         }
     }
@@ -34,7 +34,7 @@ impl<'a> ObjParseResult<'a> {
 
     pub fn default_group(&self) -> &Vec<Object<'a>> {
         self.objects
-            .get(ObjParseResult::DEFAULT_GROUP_NAME)
+            .get(ObjParseResult::DEFAULT_GROUP_NAME.into())
             .unwrap()
     }
 
@@ -44,13 +44,24 @@ impl<'a> ObjParseResult<'a> {
             .unwrap()
             .push(obj);
     }
+
+    pub fn named_group(&self, group_name: &String) -> Option<&Vec<Object<'a>>> {
+        self.objects.get(group_name)
+    }
+
+    pub fn add_to_named_group(&mut self, group_name: &String, obj: Object<'a>) {
+        self.objects
+            .entry(group_name.clone())
+            .or_default()
+            .push(obj);
+    }
 }
 
 fn vertex(input: &str) -> IResult<&str, Point> {
     // remove leading whitespace
     let (r, _) = nom::character::complete::space0(input)?;
 
-    let (remainder, (_, _, x, _, y, _, z)) = nom::sequence::tuple((
+    nom::sequence::tuple((
         nom::bytes::complete::tag("v"),
         nom::character::complete::char(' '),
         nom::number::complete::double,
@@ -58,9 +69,8 @@ fn vertex(input: &str) -> IResult<&str, Point> {
         nom::number::complete::double,
         nom::character::complete::char(' '),
         nom::number::complete::double,
-    ))(r)?;
-
-    IResult::Ok((remainder, Point::new(x, y, z)))
+    ))(r)
+    .map(|(remainder, (_, _, x, _, y, _, z))| (remainder, Point::new(x, y, z)))
 }
 
 fn face<'a, 'i>(
@@ -104,12 +114,25 @@ fn face<'a, 'i>(
     IResult::Ok((remainder, triangles))
 }
 
+fn group(input: &str) -> IResult<&str, String> {
+    // remove leading whitespace
+    let (r, _) = nom::character::complete::space0(input)?;
+
+    nom::sequence::tuple((
+        nom::bytes::complete::tag("g"),
+        nom::character::complete::char(' '),
+        nom::character::complete::alphanumeric1,
+    ))(r)
+    .map(|(remainder, (_, _, group_name))| (remainder, group_name.into()))
+}
+
 // Given obj-formatted content, returns Vec of corresponding Objects
 pub fn parse_obj_file<'a>(contents: &str) -> Option<ObjParseResult<'a>> {
     let reader = BufReader::new(contents.as_bytes());
 
     let mut to_return = ObjParseResult::default();
 
+    let mut current_group: Option<String> = Option::None;
     for line in reader.lines() {
         if line.is_err() {
             return Option::None;
@@ -121,8 +144,14 @@ pub fn parse_obj_file<'a>(contents: &str) -> Option<ObjParseResult<'a>> {
             to_return.vertices.push(vertex);
         } else if let IResult::Ok((_, triangles)) = face(l.as_ref(), &to_return) {
             for t in triangles {
-                to_return.add_to_default_group(t.into());
+                if let Option::Some(group_name) = &current_group {
+                    to_return.add_to_named_group(group_name, t.into());
+                } else {
+                    to_return.add_to_default_group(t.into());
+                }
             }
+        } else if let IResult::Ok((_, group_name)) = group(l.as_ref()) {
+            current_group = Option::Some(group_name);
         } else {
             to_return.skipped += 1;
         }
