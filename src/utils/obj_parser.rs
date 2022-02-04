@@ -69,33 +69,39 @@ fn face<'a, 'i>(
 ) -> IResult<&'i str, Vec<Triangle>> {
     // remove leading whitespace
     let (r, _) = nom::character::complete::space0(input)?;
+    let (r, _) = nom::bytes::complete::tag("f")(r)?;
+    let (r, _) = nom::character::complete::space0(r)?;
 
-    let (remainder, (_, _, v1, _, v2, _, v3)) = nom::sequence::tuple((
-        nom::bytes::complete::tag("f"),
+    let r = nom::multi::separated_list1(
         nom::character::complete::char(' '),
         nom::character::complete::digit1,
-        nom::character::complete::char(' '),
-        nom::character::complete::digit1,
-        nom::character::complete::char(' '),
-        nom::character::complete::digit1,
-    ))(r)?;
+    )(r);
+    let (remainder, vertices) = r?;
 
-    // fetch
-    let p1 = parse_result.vertex(v1.parse::<usize>().unwrap());
-    let p2 = parse_result.vertex(v2.parse::<usize>().unwrap());
-    let p3 = parse_result.vertex(v3.parse::<usize>().unwrap());
+    // fan triangles
+    let mut triangles = vec![];
+    for index in 1..(vertices.len() - 1) {
+        let v1_index = 1;
+        let v2_index = vertices[index].parse::<usize>().unwrap();
+        let v3_index = vertices[index + 1].parse::<usize>().unwrap();
 
-    if p1.is_none() || p2.is_none() || p3.is_none() {
-        panic!("Reference to non-existent vertix.");
-    }
-    IResult::Ok((
-        remainder,
-        vec![Triangle::new(
+        let p1 = parse_result.vertex(v1_index);
+        let p2 = parse_result.vertex(v2_index);
+        let p3 = parse_result.vertex(v3_index);
+
+        if p1.is_none() || p2.is_none() || p3.is_none() {
+            panic!("Reference to non-existent vertix.");
+        }
+
+        let t = Triangle::new(
             p1.unwrap().clone(),
             p2.unwrap().clone(),
             p3.unwrap().clone(),
-        )],
-    ))
+        );
+        triangles.push(t);
+    }
+
+    IResult::Ok((remainder, triangles))
 }
 
 // Given obj-formatted content, returns Vec of corresponding Objects

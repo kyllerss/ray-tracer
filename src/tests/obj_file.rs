@@ -72,3 +72,41 @@ fn ch15_test3_parsing_triangle_faces() {
     assert_eq!(t2.p2, *p.vertex(3).unwrap());
     assert_eq!(t2.p3, *p.vertex(4).unwrap());
 }
+
+#[test]
+fn ch15_test4_triangulating_polygons() {
+    let contents = r#"
+        v -1 1 0
+        v -1 0 0
+        v 1 0 0
+        v 1 1 0
+        v 0 2 0
+        
+        f 1 2 3 4 5
+    "#;
+
+    let r = crate::utils::obj_parser::parse_obj_file(contents);
+    assert!(r.is_some());
+
+    let p = r.unwrap();
+    let g = p.default_group();
+
+    assert!(g.get(0).is_some());
+    let t1 = extract_triangle(g.get(0).unwrap());
+
+    assert!(g.get(1).is_some());
+    let t2 = extract_triangle(g.get(1).unwrap());
+
+    assert!(g.get(2).is_some());
+    let t3 = extract_triangle(g.get(2).unwrap());
+
+    assert_eq!(t1.p1, *p.vertex(1).unwrap());
+    assert_eq!(t1.p2, *p.vertex(2).unwrap());
+    assert_eq!(t1.p3, *p.vertex(3).unwrap());
+    assert_eq!(t2.p1, *p.vertex(1).unwrap());
+    assert_eq!(t2.p2, *p.vertex(3).unwrap());
+    assert_eq!(t2.p3, *p.vertex(4).unwrap());
+    assert_eq!(t3.p1, *p.vertex(1).unwrap());
+    assert_eq!(t3.p2, *p.vertex(4).unwrap());
+    assert_eq!(t3.p3, *p.vertex(5).unwrap());
+}
