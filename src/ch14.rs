@@ -1,13 +1,10 @@
 use crate::domain::camera::Camera;
 use crate::domain::color::Color;
 use crate::domain::light::Light;
-use crate::domain::material::{Material, Substance};
 use crate::domain::matrix::Matrix;
 use crate::domain::object::{
-    Cone, Cube, Cylinder, CylinderBuilder, Group, GroupBuilder, Object, Plane, Sphere,
-    SphereBuilder,
+    Cylinder, CylinderBuilder, Group, GroupBuilder, Object, Sphere, SphereBuilder,
 };
-use crate::domain::pattern::Pattern;
 use crate::domain::world::World;
 use crate::domain::{Point, Vector};
 use std::f64::consts::PI;
