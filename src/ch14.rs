@@ -66,7 +66,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
 }
 
 fn build_hexagon<'a>() -> Object<'a> {
-    let mut hex = Group::new();
+    let mut hex = Group::builder();
 
     for n in 0..6 {
         let side = build_hexagon_side()
@@ -79,7 +79,7 @@ fn build_hexagon<'a>() -> Object<'a> {
 }
 
 fn build_hexagon_corner() -> SphereBuilder {
-    Sphere::new().transformation(
+    Sphere::builder().transformation(
         &Matrix::new_translation(0.0, 0.0, -1.0) * &Matrix::new_scaling(0.25, 0.25, 0.25),
     )
 }
@@ -90,7 +90,7 @@ fn build_hexagon_edge() -> CylinderBuilder {
         * &Matrix::new_rotation_z(-PI / 2.0))
         * &Matrix::new_scaling(0.25, 1.0, 0.25);
 
-    Cylinder::new()
+    Cylinder::builder()
         .minimum(0.0)
         .maximum(1.0)
         .transformation(transformation)
@@ -100,5 +100,7 @@ fn build_hexagon_side<'a>() -> GroupBuilder<'a> {
     let corner = build_hexagon_corner().build();
     let edge = build_hexagon_edge().build();
 
-    Group::new().add_child(corner.into()).add_child(edge.into())
+    Group::builder()
+        .add_child(corner.into())
+        .add_child(edge.into())
 }

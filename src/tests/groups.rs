@@ -6,7 +6,7 @@ use std::f64::consts::PI;
 
 #[test]
 fn ch14_test1_creating_new_group() {
-    let g = Group::new().build();
+    let g = Group::builder().build();
     assert_eq!(
         g.shape.transformation,
         crate::domain::matrix::IDENTITY.clone()
@@ -16,14 +16,14 @@ fn ch14_test1_creating_new_group() {
 
 #[test]
 fn ch14_test2_shape_has_parent_attribute() {
-    let s = Null::new().build();
+    let s = Null::builder().build();
     assert_eq!(s.shape.parent(), Option::None);
 }
 
 #[test]
 fn ch14_test3_adding_child_to_group() {
-    let s = Null::new().build();
-    let g = Group::new().add_child(s.clone().into()).build();
+    let s = Null::builder().build();
+    let g = Group::builder().add_child(s.clone().into()).build();
 
     assert_eq!(g.children.len(), 1);
     assert_eq!(g.children[0].shape().id, s.shape.id);
@@ -32,7 +32,7 @@ fn ch14_test3_adding_child_to_group() {
 
 #[test]
 fn ch14_test4_intersecting_ray_with_empty_group() {
-    let g = Group::new().build();
+    let g = Group::builder().build();
     let g_obj = g.clone().into();
     let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
     let xs = g.local_intersect(&r, &g_obj);
@@ -41,16 +41,16 @@ fn ch14_test4_intersecting_ray_with_empty_group() {
 
 #[test]
 fn ch14_test5_intersecting_ray_with_nonempty_group() {
-    let s1: Object = Sphere::new().build().into();
-    let s2: Object = Sphere::new()
+    let s1: Object = Sphere::builder().build().into();
+    let s2: Object = Sphere::builder()
         .transformation(Matrix::new_translation(0.0, 0.0, -3.0))
         .build()
         .into();
-    let s3: Object = Sphere::new()
+    let s3: Object = Sphere::builder()
         .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
         .build()
         .into();
-    let g: Object = Group::new()
+    let g: Object = Group::builder()
         .add_child(s1.clone())
         .add_child(s2.clone())
         .add_child(s3.clone())
@@ -73,11 +73,11 @@ fn ch14_test5_intersecting_ray_with_nonempty_group() {
 
 #[test]
 fn ch14_test6_intersecting_transformed_group() {
-    let s = Sphere::new()
+    let s = Sphere::builder()
         .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
         .build()
         .into();
-    let g: Object = Group::new()
+    let g: Object = Group::builder()
         .transformation(Matrix::new_scaling(2.0, 2.0, 2.0))
         .add_child(s)
         .build()
@@ -90,16 +90,16 @@ fn ch14_test6_intersecting_transformed_group() {
 
 #[test]
 fn ch14_test7_convert_point_from_world_to_object_space() {
-    let s: Object = Sphere::new()
+    let s: Object = Sphere::builder()
         .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
         .build()
         .into();
-    let g2: Object = Group::new()
+    let g2: Object = Group::builder()
         .transformation(Matrix::new_scaling(2.0, 2.0, 2.0))
         .add_child(s)
         .build()
         .into();
-    let g1 = Group::new()
+    let g1 = Group::builder()
         .transformation(Matrix::new_rotation_y(PI / 2.0))
         .add_child(g2)
         .build();
@@ -120,14 +120,14 @@ fn ch14_test7_convert_point_from_world_to_object_space() {
 
 #[test]
 fn ch14_test8_convert_normal_from_object_to_world_space() {
-    let sphere = Sphere::new()
+    let sphere = Sphere::builder()
         .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
         .build();
-    let g2 = Group::new()
+    let g2 = Group::builder()
         .transformation(Matrix::new_scaling(1.0, 2.0, 3.0))
         .add_child(sphere.into())
         .build();
-    let g1 = Group::new()
+    let g1 = Group::builder()
         .transformation(Matrix::new_rotation_y(PI / 2.0))
         .add_child(g2.into())
         .build();
@@ -149,14 +149,14 @@ fn ch14_test8_convert_normal_from_object_to_world_space() {
 
 #[test]
 fn ch14_test9_finding_normal_of_child_object() {
-    let s = Sphere::new()
+    let s = Sphere::builder()
         .transformation(Matrix::new_translation(5.0, 0.0, 0.0))
         .build();
-    let g2 = Group::new()
+    let g2 = Group::builder()
         .transformation(Matrix::new_scaling(1.0, 2.0, 3.0))
         .add_child(s.into())
         .build();
-    let g1 = Group::new()
+    let g1 = Group::builder()
         .transformation(Matrix::new_rotation_y(PI / 2.0))
         .add_child(g2.into())
         .build();

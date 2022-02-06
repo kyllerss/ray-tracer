@@ -14,7 +14,7 @@ pub fn run() -> Result<(), Error> {
     println!("Running ch7...");
 
     // floor
-    let floor: Object = Sphere::new()
+    let floor: Object = Sphere::builder()
         .transformation(Matrix::new_scaling(10.0, 0.01, 10.0))
         .material(
             Material::new()
@@ -26,7 +26,7 @@ pub fn run() -> Result<(), Error> {
         .into();
 
     // left wall
-    let left_wall: Object = Sphere::new()
+    let left_wall: Object = Sphere::builder()
         .transformation(
             &(&(&Matrix::new_translation(0.0, 0.0, 5.0) * &Matrix::new_rotation_y(-PI / 4.0))
                 * &Matrix::new_rotation_x(PI / 2.0))
@@ -37,7 +37,7 @@ pub fn run() -> Result<(), Error> {
         .into();
 
     // right wall
-    let right_wall: Object = Sphere::new()
+    let right_wall: Object = Sphere::builder()
         .transformation(
             &(&(&Matrix::new_translation(0.0, 0.0, 5.0) * &Matrix::new_rotation_y(PI / 4.0))
                 * &Matrix::new_rotation_x(PI / 2.0))
@@ -48,7 +48,7 @@ pub fn run() -> Result<(), Error> {
         .into();
 
     // middle sphere
-    let middle: Object = Sphere::new()
+    let middle: Object = Sphere::builder()
         .transformation(Matrix::new_translation(-0.5, 1.0, 0.5))
         .material(
             Material::new()
@@ -61,7 +61,7 @@ pub fn run() -> Result<(), Error> {
         .into();
 
     // right sphere
-    let right: Object = Sphere::new()
+    let right: Object = Sphere::builder()
         .transformation(
             &Matrix::new_translation(1.5, 0.5, -0.5) * &Matrix::new_scaling(0.5, 0.5, 0.5),
         )
@@ -76,7 +76,7 @@ pub fn run() -> Result<(), Error> {
         .into();
 
     // left sphere
-    let left: Object = Sphere::new()
+    let left: Object = Sphere::builder()
         .transformation(
             &Matrix::new_translation(-1.5, 0.33, -0.75) * &Matrix::new_scaling(0.33, 0.33, 0.33),
         )

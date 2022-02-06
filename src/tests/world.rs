@@ -23,10 +23,10 @@ pub fn build_test_world<'a>() -> World<'a> {
 
     let mc = Color::new(0.8, 1.0, 0.6);
     let m1 = Material::new().color(mc).diffuse(0.7).specular(0.2).build();
-    let s1: Object = Sphere::new().material(m1).build().into();
+    let s1: Object = Sphere::builder().material(m1).build().into();
 
     let t2 = Matrix::new_scaling(0.5, 0.5, 0.5);
-    let s2: Object = Sphere::new().transformation(t2).build().into();
+    let s2: Object = Sphere::builder().transformation(t2).build().into();
 
     let mut w = World::new();
     w.light_source = Some(light);
@@ -157,9 +157,9 @@ fn ch8_test5_no_shadow_when_object_behind_point() {
 fn ch8_test6_shade_hit_is_given_intersection_in_shadow() {
     let mut w = World::new();
     w.light_source = Some(Light::new(Point::new(0.0, 0.0, -10.0), Color::WHITE));
-    let s1: Object = Sphere::new().build().into();
+    let s1: Object = Sphere::builder().build().into();
     w.objects.push(s1);
-    let s2: Object = Sphere::new()
+    let s2: Object = Sphere::builder()
         .transformation(Matrix::new_translation(0.0, 0.0, 10.0))
         .build()
         .into();
@@ -194,7 +194,7 @@ fn ch11_test3_reflected_color_for_nonreflective_material() {
 #[test]
 fn ch11_test4_reflected_color_for_reflected_material() {
     let mut w = build_test_world();
-    let shape: Object = Plane::new()
+    let shape: Object = Plane::builder()
         .material(Material::new().reflective(0.5).build())
         .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
         .build()
@@ -213,7 +213,7 @@ fn ch11_test4_reflected_color_for_reflected_material() {
 #[test]
 fn ch11_test5_shade_hit_with_reflective_material() {
     let mut w = build_test_world();
-    let shape: Object = Plane::new()
+    let shape: Object = Plane::builder()
         .material(Material::new().reflective(0.5).build())
         .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
         .build()
@@ -234,14 +234,14 @@ fn ch11_test6_color_at_with_mutually_reflective_surfaces() {
     let mut w = World::new();
     w.light_source = Option::Some(Light::new(Point::ORIGIN, Color::WHITE));
 
-    let lower = Plane::new()
+    let lower = Plane::builder()
         .material(Material::new().reflective(1.0).build())
         .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
         .build()
         .into();
     w.add_object(lower);
 
-    let upper = Plane::new()
+    let upper = Plane::builder()
         .material(Material::new().reflective(1.0).build())
         .transformation(Matrix::new_translation(0.0, 1.0, 0.0))
         .build()
@@ -256,7 +256,7 @@ fn ch11_test6_color_at_with_mutually_reflective_surfaces() {
 #[test]
 fn ch11_test7_reflected_color_for_reflected_material() {
     let mut w = build_test_world();
-    let shape: Object = Plane::new()
+    let shape: Object = Plane::builder()
         .material(Material::new().reflective(0.5).build())
         .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
         .build()
@@ -395,7 +395,7 @@ fn ch11_test15_refracted_color_with_refracted_ray() {
 
 #[test]
 fn ch11_test16_shade_hit_with_transparent_material() {
-    let floor: Object = Plane::new()
+    let floor: Object = Plane::builder()
         .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
         .material(
             Material::new()
@@ -409,7 +409,7 @@ fn ch11_test16_shade_hit_with_transparent_material() {
         let mut w = build_test_world();
         w.add_object(floor.clone());
 
-        let ball = Sphere::new()
+        let ball = Sphere::builder()
             .material(
                 Material::new()
                     .color(Color::new(1.0, 0.0, 0.0))
@@ -447,7 +447,7 @@ fn ch11_test20_shade_hit_with_reflective_transparent_material() {
         Point::new(0.0, 0.0, -3.0),
         Vector::new(0.0, -(2_f64.sqrt() / 2.0), 2_f64.sqrt() / 2.0),
     );
-    let floor: Object = Plane::new()
+    let floor: Object = Plane::builder()
         .transformation(Matrix::new_translation(0.0, -1.0, 0.0))
         .material(
             Material::new()
@@ -459,7 +459,7 @@ fn ch11_test20_shade_hit_with_reflective_transparent_material() {
         .build()
         .into();
     w.add_object(floor.clone());
-    let ball = Sphere::new()
+    let ball = Sphere::builder()
         .material(
             Material::new()
                 .color(Color::new(1.0, 0.0, 0.0))

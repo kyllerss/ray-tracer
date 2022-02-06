@@ -16,7 +16,7 @@ pub fn run() -> Result<(), Error> {
     // floor
     //let mut t = &Matrix::new_rotation_z(PI / 2.0) * &Matrix::new_translation(0.0, 0.0, 3.0);
     let t = Matrix::new_rotation_z(PI / 3.0);
-    let floor: Object = Plane::new().transformation(t).build().into();
+    let floor: Object = Plane::builder().transformation(t).build().into();
     // Matrix::new_scaling(10.0, 0.01, 10.0)
     // floor.shape_mut().material = Material::new_full(
     //     Color::new(1.0, 0.9, 0.9),
@@ -27,7 +27,7 @@ pub fn run() -> Result<(), Error> {
     // );
 
     // middle sphere
-    let middle: Object = Sphere::new()
+    let middle: Object = Sphere::builder()
         .transformation(Matrix::new_translation(-0.5, 1.0, 0.5))
         .material(
             Material::new()
@@ -40,7 +40,7 @@ pub fn run() -> Result<(), Error> {
         .into();
 
     // right sphere
-    let right: Object = Sphere::new()
+    let right: Object = Sphere::builder()
         .transformation(
             &Matrix::new_translation(1.5, 0.5, -0.5) * &Matrix::new_scaling(0.5, 0.5, 0.5),
         )
@@ -55,7 +55,7 @@ pub fn run() -> Result<(), Error> {
         .into();
 
     // left sphere
-    let left: Object = Sphere::new()
+    let left: Object = Sphere::builder()
         .transformation(
             &Matrix::new_translation(-1.5, 0.33, -0.75) * &Matrix::new_scaling(0.33, 0.33, 0.33),
         )

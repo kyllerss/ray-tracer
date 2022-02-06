@@ -4,7 +4,7 @@ use crate::domain::{Point, Vector};
 
 #[test]
 fn ch12_test1_ray_intersects_cube() {
-    let c = Cube::new().build();
+    let c = Cube::builder().build();
     let c_obj = c.clone().into();
 
     // +x
@@ -59,7 +59,7 @@ fn ch12_test1_ray_intersects_cube() {
 
 #[test]
 fn ch12_test2_ray_misses_cube() {
-    let c = Cube::new().build();
+    let c = Cube::builder().build();
     let c_obj = c.clone().into();
 
     let cases = vec![
@@ -100,7 +100,7 @@ fn ch12_test3_normal_on_surface_of_cube() {
         (Point::new(-1.0, -1.0, -1.0), Vector::new(-1.0, 0.0, 0.0)),
     ];
 
-    let c = Cube::new().build();
+    let c = Cube::builder().build();
     for (point, normal_exp) in cases {
         let normal = c.local_normal_at(&point);
         assert_eq!(normal, normal_exp);

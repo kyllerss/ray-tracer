@@ -17,7 +17,7 @@ pub fn run() -> Result<(), Error> {
     let ray_origin = Point::new(0.0, 0.0, -5.0);
 
     // sphere object
-    let mut sphere: Object = Sphere::new().build().into();
+    let mut sphere: Object = Sphere::builder().build().into();
     let material = Material::new().color(Color::new(1.0, 0.2, 1.0)).build();
     sphere.shape_mut().material = material;
 

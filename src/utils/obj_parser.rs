@@ -22,9 +22,9 @@ impl<'a> Default for ObjParseResult<'a> {
 
 impl<'a> From<ObjParseResult<'a>> for Box<Group<'a>> {
     fn from(parser: ObjParseResult<'a>) -> Self {
-        let mut g = Group::new();
+        let mut g = Group::builder();
         for group in parser.objects.values() {
-            let mut inner_group = Group::new();
+            let mut inner_group = Group::builder();
             for obj in group {
                 inner_group = inner_group.add_child(obj.clone());
             }
@@ -119,7 +119,7 @@ fn face<'a, 'i>(
             panic!("Reference to non-existent vertix.");
         }
 
-        let t = Triangle::new(
+        let t = Triangle::builder(
             p1.unwrap().clone(),
             p2.unwrap().clone(),
             p3.unwrap().clone(),

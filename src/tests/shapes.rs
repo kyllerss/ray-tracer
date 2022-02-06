@@ -7,30 +7,30 @@ use crate::domain::{Point, Vector};
 #[test]
 fn ch0_exercise_unreachable_code() {
     let _ = Shape::new_unit();
-    let _ = Null::new().material(Material::default());
-    let _ = Plane::new().material(Material::default());
-    let _ = Sphere::new().origin(Point::ORIGIN);
+    let _ = Null::builder().material(Material::default());
+    let _ = Plane::builder().material(Material::default());
+    let _ = Sphere::builder().origin(Point::ORIGIN);
 }
 
 #[test]
 fn ch9_test1_default_transformation_and_assigning_on_shapes() {
-    let s: Object = Null::new().build().into();
+    let s: Object = Null::builder().build().into();
     assert_eq!(
         s.shape().transformation,
         crate::domain::matrix::IDENTITY.clone()
     );
 
     let t = Matrix::new_translation(2.0, 3.0, 4.0);
-    let s: Object = Null::new().transformation(t.clone()).build().into();
+    let s: Object = Null::builder().transformation(t.clone()).build().into();
     assert_eq!(s.shape().transformation, t);
 }
 
 #[test]
 fn ch9_test2_default_material_and_assign_on_shapes() {
-    let s: Object = Null::new().build().into();
+    let s: Object = Null::builder().build().into();
     assert_eq!(s.shape().material, Material::default());
 
-    let mut s: Object = Null::new().build().into();
+    let mut s: Object = Null::builder().build().into();
     let m = Material::new().ambient(1.0).build();
     s.shape_mut().material = m.clone();
     assert_eq!(s.shape().material, m);
@@ -51,7 +51,7 @@ fn ch9_test2_default_material_and_assign_on_shapes() {
 
 #[test]
 fn ch9_test4_computing_normal_on_translated_and_transformed_test_shape() {
-    let s: Object = Null::new()
+    let s: Object = Null::builder()
         .transformation(Matrix::new_translation(0.0, 1.0, 0.0))
         .build()
         .into();
@@ -62,7 +62,7 @@ fn ch9_test4_computing_normal_on_translated_and_transformed_test_shape() {
 
 #[test]
 fn ch9_test5_normal_of_plane_is_constant_everywhere() {
-    let p = Plane::new().build();
+    let p = Plane::builder().build();
     let n1 = p.local_normal_at(&Point::new(0.0, 0.0, 0.0));
     let n2 = p.local_normal_at(&Point::new(10.0, 0.0, -10.0));
     let n3 = p.local_normal_at(&Point::new(-5.0, 0.0, 150.0));
@@ -77,14 +77,14 @@ fn ch9_test5_normal_of_plane_is_constant_everywhere() {
 #[test]
 fn ch9_test6_intersect_ray_parallel_to_plane_and_coplanar() {
     // prallel
-    let p = Plane::new().build();
+    let p = Plane::builder().build();
     let p_obj = p.clone().into();
     let r = Ray::new(Point::new(0.0, 10.0, 0.0), Vector::new(0.0, 0.0, 1.0));
     let xs = p.local_intersect(&r, &p_obj);
     assert!(xs.is_empty());
 
     // coplanar
-    let p = Plane::new().build();
+    let p = Plane::builder().build();
     let p_obj = p.clone().into();
     let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
     let xs = p.local_intersect(&r, &p_obj);
@@ -94,7 +94,7 @@ fn ch9_test6_intersect_ray_parallel_to_plane_and_coplanar() {
 #[test]
 fn ch9_test7_ray_intersecting_plane_from_above_and_below() {
     // above
-    let p = Plane::new().build();
+    let p = Plane::builder().build();
     let p_obj = p.clone().into();
     let r = Ray::new(Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
     let xs = p.local_intersect(&r, &p_obj);
@@ -103,7 +103,7 @@ fn ch9_test7_ray_intersecting_plane_from_above_and_below() {
     assert_eq!(xs[0].distance, 1.0);
 
     // below
-    let p = Plane::new().build();
+    let p = Plane::builder().build();
     let p_obj = p.clone().into();
     let r = Ray::new(Point::new(0.0, -1.0, 0.0), Vector::new(0.0, 1.0, 0.0));
     let xs = p.local_intersect(&r, &p_obj);

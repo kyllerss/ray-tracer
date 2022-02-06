@@ -8,7 +8,7 @@ use crate::domain::{Point, Vector};
 #[test]
 fn ch5_test8_intersection_object_encapsulates_t_and_obj() {
     let distance = 3.5;
-    let sphere: Object = Sphere::new().build().into();
+    let sphere: Object = Sphere::builder().build().into();
     let intersection = Intersection::new(distance, &sphere);
     assert_eq!(intersection.distance, distance);
     assert_eq!(intersection.object, &sphere);
@@ -16,7 +16,7 @@ fn ch5_test8_intersection_object_encapsulates_t_and_obj() {
 
 #[test]
 fn ch5_test9_aggregating_intersections() {
-    let s: Object = Sphere::new().build().into();
+    let s: Object = Sphere::builder().build().into();
     let i1 = Intersection::new(1.0, &s);
     let i2 = Intersection::new(2.0, &s);
     let mut xs = Intersections::new();
@@ -31,7 +31,7 @@ fn ch5_test9_aggregating_intersections() {
 #[test]
 fn ch5_test11_hit_tests() {
     // all intersections positive
-    let s: Object = Sphere::new().build().into();
+    let s: Object = Sphere::builder().build().into();
     let i1 = Intersection::new(1.0, &s);
     let i2 = Intersection::new(2.0, &s);
     let mut xs = Intersections::new();
@@ -111,7 +111,7 @@ fn ch5_test11_hit_tests() {
 #[test]
 fn ch7_test4_precomputing_state_of_intersection() {
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let shape: Object = Sphere::new().build().into();
+    let shape: Object = Sphere::builder().build().into();
     let i = Intersection::new(4.0, &shape);
     let comps = Computations::prepare_computations(&i, &r, Option::None);
     assert_eq!(comps.distance, i.distance);
@@ -125,7 +125,7 @@ fn ch7_test4_precomputing_state_of_intersection() {
 fn ch7_test5_prepare_computations_when_hit_outside_and_inside() {
     // outside hit
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let shape: Object = Sphere::new().build().into();
+    let shape: Object = Sphere::builder().build().into();
     let i = Intersection::new(4.0, &shape);
     let comps = Computations::prepare_computations(&i, &r, Option::None);
     assert_eq!(comps.inside, false);
@@ -143,7 +143,7 @@ fn ch7_test5_prepare_computations_when_hit_outside_and_inside() {
 #[test]
 fn ch8_test7_hit_should_offset_point() {
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let shape: Object = Sphere::new()
+    let shape: Object = Sphere::builder()
         .transformation(Matrix::new_translation(0.0, 0.0, 1.0))
         .build()
         .into();
@@ -155,7 +155,7 @@ fn ch8_test7_hit_should_offset_point() {
 
 #[test]
 fn ch11_test2_precomputing_reflection_vector() {
-    let shape: Object = Plane::new().build().into();
+    let shape: Object = Plane::builder().build().into();
     let r = Ray::new(
         Point::new(0.0, 1.0, -1.0),
         Vector::new(0.0, -2_f64.sqrt() / 2_f64, 2_f64.sqrt() / 2_f64),
@@ -170,7 +170,7 @@ fn ch11_test2_precomputing_reflection_vector() {
 
 #[test]
 fn ch11_test10_finding_n1_and_n2_at_various_intersections() {
-    let a = Sphere::new()
+    let a = Sphere::builder()
         .material(
             Material::new()
                 .transparency(1.0)
@@ -180,7 +180,7 @@ fn ch11_test10_finding_n1_and_n2_at_various_intersections() {
         .transformation(Matrix::new_scaling(2.0, 2.0, 2.0))
         .build()
         .into();
-    let b = Sphere::new()
+    let b = Sphere::builder()
         .material(
             Material::new()
                 .transparency(1.0)
@@ -190,7 +190,7 @@ fn ch11_test10_finding_n1_and_n2_at_various_intersections() {
         .transformation(Matrix::new_translation(0.0, 0.0, -0.25))
         .build()
         .into();
-    let c = Sphere::new()
+    let c = Sphere::builder()
         .material(
             Material::new()
                 .transparency(1.0)
@@ -262,7 +262,7 @@ fn ch11_test10_finding_n1_and_n2_at_various_intersections() {
 #[test]
 fn ch11_test11_under_point_is_offset_below_the_surface() {
     let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-    let shape: Object = Sphere::new()
+    let shape: Object = Sphere::builder()
         .transformation(Matrix::new_translation(0.0, 0.0, 1.0))
         .material(Material::new().substance(Substance::GLASS).build())
         .build()
@@ -280,7 +280,7 @@ fn ch11_test11_under_point_is_offset_below_the_surface() {
 
 #[test]
 fn ch11_test17_schlick_approximation_under_total_internal_reflection() {
-    let shape = Sphere::new()
+    let shape = Sphere::builder()
         .material(
             Material::new()
                 .refractive_index_override(1.5)
@@ -307,7 +307,7 @@ fn ch11_test17_schlick_approximation_under_total_internal_reflection() {
 
 #[test]
 fn ch11_test18_schlick_approximation_with_perpendicular_viewing_angle() {
-    let shape = Sphere::new()
+    let shape = Sphere::builder()
         .material(
             Material::new()
                 .refractive_index_override(1.5)
@@ -331,7 +331,7 @@ fn ch11_test18_schlick_approximation_with_perpendicular_viewing_angle() {
 
 #[test]
 fn ch11_test19_schlick_approximation_with_small_angle_and_n2_greater_than_n1() {
-    let shape = Sphere::new()
+    let shape = Sphere::builder()
         .material(
             Material::new()
                 .refractive_index_override(1.5)

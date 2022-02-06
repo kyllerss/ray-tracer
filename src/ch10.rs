@@ -22,7 +22,7 @@ pub fn run() -> Result<(), Error> {
     );
 
     let t = crate::domain::matrix::IDENTITY.clone(); //Matrix::new_rotation_z(PI / 3.0);
-    let plane = Plane::new();
+    let plane = Plane::builder();
     let mut floor: Object = plane.transformation(t).build().into();
     floor.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
@@ -39,7 +39,7 @@ pub fn run() -> Result<(), Error> {
 
     let t = &Matrix::new_translation(15.0, 0.0, 5.0)
         * &(&Matrix::new_rotation_z(PI / 2.0) * &Matrix::new_rotation_y(1.5 * PI / 4.0));
-    let plane = Plane::new();
+    let plane = Plane::builder();
     let mut right_wall: Object = plane.transformation(t).build().into();
     right_wall.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
@@ -56,7 +56,7 @@ pub fn run() -> Result<(), Error> {
 
     let t = &Matrix::new_translation(-15.0, 0.0, 5.0)
         * &(&Matrix::new_rotation_z(PI / 2.0) * &Matrix::new_rotation_y(4.5 * PI / 4.0));
-    let plane = Plane::new();
+    let plane = Plane::builder();
     let mut left_wall: Object = plane.transformation(t).build().into();
     left_wall.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
@@ -71,7 +71,7 @@ pub fn run() -> Result<(), Error> {
         crate::domain::matrix::IDENTITY.clone(),
     );
     let middle = {
-        let mut middle: Object = Sphere::new().build().into();
+        let mut middle: Object = Sphere::builder().build().into();
         middle.shape_mut().transformation =
             &Matrix::new_translation(-0.5, 1.0, 0.5) * &Matrix::new_rotation_x(PI / 4.0);
         middle.shape_mut().material = Material::new()
@@ -89,7 +89,7 @@ pub fn run() -> Result<(), Error> {
         &Matrix::new_scaling(0.1, 0.1, 0.1)
             * &(&Matrix::new_rotation_x(PI / 4.0) * &Matrix::new_rotation_y(PI / 4.0)),
     );
-    let mut right: Object = Sphere::new().build().into();
+    let mut right: Object = Sphere::builder().build().into();
     right.shape_mut().transformation =
         &Matrix::new_translation(2.0, 0.5, -0.5) * &Matrix::new_scaling(0.5, 0.5, 0.5);
     right.shape_mut().material = Material::new()
@@ -104,7 +104,7 @@ pub fn run() -> Result<(), Error> {
         Color::new(0.66, 0.33, 0.66),
         Matrix::new_scaling(0.33, 0.33, 0.33),
     );
-    let mut left: Object = Sphere::new().build().into();
+    let mut left: Object = Sphere::builder().build().into();
     left.shape_mut().transformation =
         &Matrix::new_translation(-2.0, 0.33, -0.75) * &Matrix::new_scaling(0.33, 0.33, 0.33);
     left.shape_mut().material = Material::new()

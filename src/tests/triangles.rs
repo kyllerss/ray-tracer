@@ -8,7 +8,7 @@ fn ch15_test1_constructing_triangle() {
     let p2 = Point::new(-1.0, 0.0, 0.0);
     let p3 = Point::new(1.0, 0.0, 0.0);
 
-    let t = Triangle::new(p1, p2, p3).build();
+    let t = Triangle::builder(p1, p2, p3).build();
 
     assert_eq!(t.p1, p1);
     assert_eq!(t.p2, p2);
@@ -21,7 +21,7 @@ fn ch15_test1_constructing_triangle() {
 
 #[test]
 fn ch15_test2_finding_normal_on_triangle() {
-    let t = Triangle::new(
+    let t = Triangle::builder(
         Point::new(0.0, 1.0, 0.0),
         Point::new(-1.0, 0.0, 0.0),
         Point::new(1.0, 0.0, 0.0),
@@ -38,7 +38,7 @@ fn ch15_test2_finding_normal_on_triangle() {
 
 #[test]
 fn ch15_test3_intersecting_ray_parallel_to_triangle() {
-    let t: Object = Triangle::new(
+    let t: Object = Triangle::builder(
         Point::new(0.0, 1.0, 0.0),
         Point::new(-1.0, 0.0, 0.0),
         Point::new(1.0, 0.0, 0.0),
@@ -54,7 +54,7 @@ fn ch15_test3_intersecting_ray_parallel_to_triangle() {
 
 #[test]
 fn ch15_test4_ray_misses_p1_p3_edge() {
-    let t: Object = Triangle::new(
+    let t: Object = Triangle::builder(
         Point::new(0.0, 1.0, 0.0),
         Point::new(-1.0, 0.0, 0.0),
         Point::new(1.0, 0.0, 0.0),
@@ -70,7 +70,7 @@ fn ch15_test4_ray_misses_p1_p3_edge() {
 
 #[test]
 fn ch15_test5_ray_misses_p1_p2_and_p2_p3_edges() {
-    let t: Object = Triangle::new(
+    let t: Object = Triangle::builder(
         Point::new(0.0, 1.0, 0.0),
         Point::new(-1.0, 0.0, 0.0),
         Point::new(1.0, 0.0, 0.0),
@@ -91,7 +91,7 @@ fn ch15_test5_ray_misses_p1_p2_and_p2_p3_edges() {
 
 #[test]
 fn ch15_test6_ray_strikes_triangle() {
-    let t: Object = Triangle::new(
+    let t: Object = Triangle::builder(
         Point::new(0.0, 1.0, 0.0),
         Point::new(-1.0, 0.0, 0.0),
         Point::new(1.0, 0.0, 0.0),

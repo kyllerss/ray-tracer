@@ -265,12 +265,8 @@ impl<'a> Shape<'a> {
         Shape::default()
     }
 
-    pub fn new(shape_type_name: &str) -> ShapeBuilder {
-        ShapeBuilder {
-            transformation: Option::None,
-            material: Option::None,
-            shape_type_name: shape_type_name.parse().unwrap(),
-        }
+    pub fn builder(shape_type_name: &str) -> ShapeBuilder {
+        ShapeBuilder::new(shape_type_name)
     }
 
     // Translates raw pointer into Object representation.
@@ -293,6 +289,14 @@ pub struct ShapeBuilder {
 }
 
 impl<'a> ShapeBuilder {
+    pub fn new(shape_type_name: &str) -> ShapeBuilder {
+        ShapeBuilder {
+            transformation: Option::None,
+            material: Option::None,
+            shape_type_name: shape_type_name.parse().unwrap(),
+        }
+    }
+
     pub fn transformation(&mut self, transformation: Matrix) -> &mut ShapeBuilder {
         self.transformation = Option::Some(transformation);
         self
@@ -322,6 +326,11 @@ pub struct NullBuilder {
 }
 
 impl<'a> NullBuilder {
+    pub fn new() -> NullBuilder {
+        NullBuilder {
+            shape_builder: Shape::builder("Null"),
+        }
+    }
     pub fn transformation(mut self, transformation: Matrix) -> NullBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -339,10 +348,8 @@ impl<'a> NullBuilder {
     }
 }
 impl<'s> Null<'s> {
-    pub fn new() -> NullBuilder {
-        NullBuilder {
-            shape_builder: Shape::new("Null"),
-        }
+    pub fn builder() -> NullBuilder {
+        NullBuilder::new()
     }
     pub(crate) fn local_intersect<'r>(
         &self,
@@ -369,6 +376,12 @@ pub struct PlaneBuilder {
 }
 
 impl<'a> PlaneBuilder {
+    pub fn new() -> PlaneBuilder {
+        PlaneBuilder {
+            shape_builder: Shape::builder("Plane"),
+        }
+    }
+
     pub fn transformation(mut self, transformation: Matrix) -> PlaneBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -387,10 +400,8 @@ impl<'a> PlaneBuilder {
 }
 
 impl<'s> Plane<'s> {
-    pub fn new() -> PlaneBuilder {
-        PlaneBuilder {
-            shape_builder: Shape::new("Plane"),
-        }
+    pub fn builder() -> PlaneBuilder {
+        PlaneBuilder::new()
     }
 
     pub(crate) fn local_intersect<'r>(
@@ -419,6 +430,14 @@ pub struct SphereBuilder {
 }
 
 impl<'a> SphereBuilder {
+    pub fn new() -> SphereBuilder {
+        SphereBuilder {
+            origin: Option::Some(Point::ORIGIN),
+            //radius: UNIT,
+            shape_builder: Shape::builder("Sphere"),
+        }
+    }
+
     pub fn transformation(mut self, transformation: Matrix) -> SphereBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -453,12 +472,8 @@ impl<'s> Sphere<'s> {
     };
 
     // constructor w/ no transformation matrix (identify matrix default)
-    pub fn new() -> SphereBuilder {
-        SphereBuilder {
-            origin: Option::Some(Point::ORIGIN),
-            //radius: UNIT,
-            shape_builder: Shape::new("Sphere"),
-        }
+    pub fn builder() -> SphereBuilder {
+        SphereBuilder::new()
     }
 
     // Finds intersections of ray against sphere instance
@@ -499,6 +514,12 @@ pub struct CubeBuilder {
 }
 
 impl<'a> CubeBuilder {
+    pub fn new() -> CubeBuilder {
+        CubeBuilder {
+            shape_builder: Shape::builder("Cube"),
+        }
+    }
+
     pub fn transformation(mut self, transformation: Matrix) -> CubeBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -517,10 +538,8 @@ impl<'a> CubeBuilder {
 }
 
 impl<'s> Cube<'s> {
-    pub fn new() -> CubeBuilder {
-        CubeBuilder {
-            shape_builder: Shape::new("Cube"),
-        }
+    pub fn builder() -> CubeBuilder {
+        CubeBuilder::new()
     }
 
     pub(crate) fn local_intersect<'r>(
@@ -586,6 +605,15 @@ pub struct CylinderBuilder {
 }
 
 impl<'a> CylinderBuilder {
+    pub fn new() -> CylinderBuilder {
+        CylinderBuilder {
+            shape_builder: Shape::builder("Cylinder"),
+            minimum: Option::None,
+            maximum: Option::None,
+            closed: Option::None,
+        }
+    }
+
     pub fn transformation(mut self, transformation: Matrix) -> CylinderBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -621,13 +649,8 @@ impl<'a> CylinderBuilder {
 }
 
 impl<'s> Cylinder<'s> {
-    pub fn new() -> CylinderBuilder {
-        CylinderBuilder {
-            shape_builder: Shape::new("Cylinder"),
-            minimum: Option::None,
-            maximum: Option::None,
-            closed: Option::None,
-        }
+    pub fn builder() -> CylinderBuilder {
+        CylinderBuilder::new()
     }
 
     pub(crate) fn local_intersect<'r>(
@@ -718,6 +741,15 @@ pub struct ConeBuilder {
 }
 
 impl<'a> ConeBuilder {
+    pub fn new() -> ConeBuilder {
+        ConeBuilder {
+            shape_builder: Shape::builder("Cone"),
+            minimum: Option::None,
+            maximum: Option::None,
+            closed: Option::None,
+        }
+    }
+
     pub fn transformation(mut self, transformation: Matrix) -> ConeBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -753,13 +785,8 @@ impl<'a> ConeBuilder {
 }
 
 impl<'s> Cone<'s> {
-    pub fn new() -> ConeBuilder {
-        ConeBuilder {
-            shape_builder: Shape::new("Cone"),
-            minimum: Option::None,
-            maximum: Option::None,
-            closed: Option::None,
-        }
+    pub fn builder() -> ConeBuilder {
+        ConeBuilder::new()
     }
 
     pub(crate) fn local_intersect<'r>(
@@ -865,6 +892,13 @@ pub struct GroupBuilder<'a> {
 }
 
 impl<'a> GroupBuilder<'a> {
+    pub fn new() -> GroupBuilder<'a> {
+        GroupBuilder {
+            shape_builder: Shape::builder("Group"),
+            children: Vec::new(),
+        }
+    }
+
     pub fn transformation(mut self, transformation: Matrix) -> GroupBuilder<'a> {
         self.shape_builder.transformation(transformation);
         self
@@ -893,11 +927,8 @@ impl<'a> GroupBuilder<'a> {
 }
 
 impl<'s> Group<'s> {
-    pub fn new() -> GroupBuilder<'s> {
-        GroupBuilder {
-            shape_builder: Shape::new("Group"),
-            children: Vec::new(),
-        }
+    pub fn builder() -> GroupBuilder<'s> {
+        GroupBuilder::new()
     }
 
     pub(crate) fn local_intersect(
@@ -935,6 +966,22 @@ pub struct TriangleBuilder {
 }
 
 impl<'a> TriangleBuilder {
+    pub fn new(p1: Point, p2: Point, p3: Point) -> TriangleBuilder {
+        let e1 = &p2 - &p1;
+        let e2 = &p3 - &p1;
+        let normal = e2.cross_product(&e1).normalize();
+
+        TriangleBuilder {
+            p1,
+            p2,
+            p3,
+            e1,
+            e2,
+            normal,
+            shape_builder: Shape::builder("Triangle"),
+        }
+    }
+
     pub fn transformation(mut self, transformation: Matrix) -> TriangleBuilder {
         self.shape_builder.transformation(transformation);
         self
@@ -960,20 +1007,8 @@ impl<'a> TriangleBuilder {
 
 impl<'a> Triangle<'a> {
     // Constructor
-    pub fn new(p1: Point, p2: Point, p3: Point) -> TriangleBuilder {
-        let e1 = &p2 - &p1;
-        let e2 = &p3 - &p1;
-        let normal = e2.cross_product(&e1).normalize();
-
-        TriangleBuilder {
-            p1,
-            p2,
-            p3,
-            e1,
-            e2,
-            normal,
-            shape_builder: Shape::new("Triangle"),
-        }
+    pub fn builder(p1: Point, p2: Point, p3: Point) -> TriangleBuilder {
+        TriangleBuilder::new(p1, p2, p3)
     }
 
     pub(crate) fn local_intersect<'r, 's: 'r>(

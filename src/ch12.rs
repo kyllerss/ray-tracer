@@ -57,7 +57,7 @@ fn build_example_2<'a>() -> Result<(World<'a>, Camera), Error> {
 
     // wall
     let wall_transform = Matrix::new_translation(0.0, -10.0, 0.0); // * &Matrix::new_rotation_x(PI/);
-    let wall = Plane::new()
+    let wall = Plane::builder()
         .transformation(wall_transform)
         .material(
             Material::new()
@@ -73,7 +73,7 @@ fn build_example_2<'a>() -> Result<(World<'a>, Camera), Error> {
         )
         .build();
 
-    let glass_ball = Sphere::new()
+    let glass_ball = Sphere::builder()
         .material(
             Material::new()
                 .color(Color::new(1.0, 1.0, 1.0))
@@ -89,7 +89,7 @@ fn build_example_2<'a>() -> Result<(World<'a>, Camera), Error> {
         .transformation(Matrix::new_translation(2.0, 0.0, 0.0))
         .build();
 
-    let glass_cube = Cube::new()
+    let glass_cube = Cube::builder()
         .material(
             Material::new()
                 .color(Color::new(0.7, 0.2, 0.0))
@@ -143,7 +143,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
     // wall
     //let wall_transform = &Matrix::new_translation(0.0, 0.0, 10.0) * &Matrix::new_rotation_x(1.5708);
     let wall_transform = Matrix::new_translation(0.0, -10.0, 0.0);
-    let wall = Plane::new()
+    let wall = Plane::builder()
         .transformation(wall_transform)
         .material(
             Material::new()
@@ -159,7 +159,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
         )
         .build();
 
-    let glass_ball = Cube::new()
+    let glass_ball = Cube::builder()
         .material(
             Material::new()
                 .color(Color::new(1.0, 1.0, 1.0))
@@ -174,7 +174,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
         )
         .build();
 
-    let hollow_center = Cube::new()
+    let hollow_center = Cube::builder()
         .transformation(Matrix::new_scaling(0.5, 0.5, 0.5))
         .material(
             Material::new()

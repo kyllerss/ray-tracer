@@ -17,7 +17,7 @@ pub fn run() -> Result<(), Error> {
 
     // sphere object
     let in_front_of_wall_translation = Matrix::new_translation(0.0, 0.0, 0.0);
-    let sphere: Object = Sphere::new()
+    let sphere: Object = Sphere::builder()
         .transformation(in_front_of_wall_translation)
         .build()
         .into();

@@ -57,7 +57,7 @@ fn build_example_3<'a>() -> Result<(World<'a>, Camera), Error> {
 
     // wall
     let wall_transform = &Matrix::new_translation(0.0, 0.0, 10.0) * &Matrix::new_rotation_x(1.5708);
-    let wall = Plane::new()
+    let wall = Plane::builder()
         .transformation(wall_transform)
         .material(
             Material::new()
@@ -73,7 +73,7 @@ fn build_example_3<'a>() -> Result<(World<'a>, Camera), Error> {
         )
         .build();
 
-    let glass_ball = Sphere::new()
+    let glass_ball = Sphere::builder()
         .material(
             Material::new()
                 .color(Color::new(1.0, 1.0, 1.0))
@@ -88,7 +88,7 @@ fn build_example_3<'a>() -> Result<(World<'a>, Camera), Error> {
         )
         .build();
 
-    let hollow_center = Sphere::new()
+    let hollow_center = Sphere::builder()
         .transformation(Matrix::new_scaling(0.5, 0.5, 0.5))
         .material(
             Material::new()
@@ -115,7 +115,7 @@ fn build_example_3<'a>() -> Result<(World<'a>, Camera), Error> {
 }
 
 fn build_example_2<'a>() -> Result<(World<'a>, Camera), Error> {
-    let floor = Plane::new()
+    let floor = Plane::builder()
         .material(
             Material::new()
                 .pattern(Pattern::new_checkered(
@@ -127,7 +127,7 @@ fn build_example_2<'a>() -> Result<(World<'a>, Camera), Error> {
         )
         .build();
 
-    let sphere = Sphere::new()
+    let sphere = Sphere::builder()
         .material(
             Material::new()
                 .substance(Substance::GLASS)
@@ -137,7 +137,7 @@ fn build_example_2<'a>() -> Result<(World<'a>, Camera), Error> {
         .transformation(Matrix::new_scaling(1.5, 1.5, 1.5))
         .build();
 
-    let inner_sphere = Sphere::new()
+    let inner_sphere = Sphere::builder()
         .material(
             Material::new()
                 .substance(Substance::AIR)
@@ -178,7 +178,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
     );
 
     let t = crate::domain::matrix::IDENTITY.clone(); //Matrix::new_rotation_z(PI / 3.0);
-    let mut floor: Object = Plane::new().transformation(t).build().into();
+    let mut floor: Object = Plane::builder().transformation(t).build().into();
     floor.shape_mut().material = Material::new()
         .color(Color::new(1.0, 0.9, 0.9))
         .specular(0.0)
@@ -188,7 +188,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
 
     // back wall
     let t = &Matrix::new_translation(0.0, 0.0, 5.0) * &Matrix::new_rotation_x(PI / 2.0);
-    let mut right_wall: Object = Plane::new().transformation(t).build().into();
+    let mut right_wall: Object = Plane::builder().transformation(t).build().into();
     right_wall.shape_mut().material = Material::new()
         .color(Color::BLACK)
         .specular(0.0)
@@ -197,7 +197,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
         .build();
 
     // middle sphere
-    let mut middle: Object = Sphere::new().build().into();
+    let mut middle: Object = Sphere::builder().build().into();
     middle.shape_mut().transformation =
         &Matrix::new_translation(-0.5, 1.0, 0.5) * &Matrix::new_rotation_x(PI / 4.0);
     middle.shape_mut().material = Material::new()
@@ -212,7 +212,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
         &Matrix::new_scaling(0.1, 0.1, 0.1)
             * &(&Matrix::new_rotation_x(PI / 4.0) * &Matrix::new_rotation_y(PI / 4.0)),
     );
-    let mut right: Object = Sphere::new().build().into();
+    let mut right: Object = Sphere::builder().build().into();
     right.shape_mut().transformation =
         &Matrix::new_translation(2.0, 0.5, -0.5) * &Matrix::new_scaling(0.5, 0.5, 0.5);
     right.shape_mut().material = Material::new()
@@ -227,7 +227,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
         Color::new(0.66, 0.33, 0.66),
         Matrix::new_scaling(0.33, 0.33, 0.33),
     );
-    let mut left: Object = Sphere::new().build().into();
+    let mut left: Object = Sphere::builder().build().into();
     left.shape_mut().transformation =
         &Matrix::new_translation(-2.0, 0.33, -0.75) * &Matrix::new_scaling(0.33, 0.33, 0.33);
     left.shape_mut().material = Material::new()

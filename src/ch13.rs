@@ -55,7 +55,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
     let light_source = Light::new(Point::new(2.0, 10.0, -5.0), Color::new(0.9, 0.9, 0.9));
 
     // floor
-    let floor = Plane::new()
+    let floor = Plane::builder()
         .material(
             Material::new()
                 .pattern(Pattern::new_checkered(
@@ -71,7 +71,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
         .transformation(Matrix::new_translation(0.0, -2.0, 0.0))
         .build();
 
-    let cylinder = Cylinder::new()
+    let cylinder = Cylinder::builder()
         .material(
             Material::new()
                 .color(Color::new(1.0, 1.0, 1.0))
@@ -90,7 +90,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
         )
         .build();
 
-    let ball = Sphere::new()
+    let ball = Sphere::builder()
         .material(
             Material::new()
                 .color(Color::new(1.0, 1.0, 1.0))
@@ -105,7 +105,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
         .transformation(Matrix::new_translation(3.0, 0.0, 0.0))
         .build();
 
-    let cube = Cube::new()
+    let cube = Cube::builder()
         .material(
             Material::new()
                 .color(Color::new(0.7, 0.2, 0.0))
@@ -123,7 +123,7 @@ fn build_example_1<'a>() -> Result<(World<'a>, Camera), Error> {
         )
         .build();
 
-    let cone = Cone::new()
+    let cone = Cone::builder()
         .material(
             Material::new()
                 .color(Color::new(0.5, 0.8, 0.3))
