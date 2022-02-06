@@ -1,7 +1,7 @@
-use crate::domain::object::{Object, Triangle};
+use crate::domain::object::{Group, Object, Triangle};
 use crate::domain::Point;
 
-fn extract_triangle<'r, 's: 'r>(obj: &'r Object<'s>) -> &'r Triangle {
+fn extract_triangle<'r, 's: 'r>(obj: &'r Object<'s>) -> &'r Triangle<'s> {
     match obj {
         Object::Triangle(triangle) => &triangle,
         _ => panic!("Expected triangle!"),
@@ -146,4 +146,25 @@ fn ch15_test11_triangles_in_groups() {
     assert_eq!(t2.p1, *p.vertex(1).unwrap());
     assert_eq!(t2.p2, *p.vertex(3).unwrap());
     assert_eq!(t2.p3, *p.vertex(4).unwrap());
+}
+
+#[test]
+fn ch15_test12_convert_obj_file_to_group() {
+    let contents = r#"
+        v -1 1 0
+        v -1 0 0
+        v 1 0 0
+        v 1 1 0
+        
+        g FirstGroup
+        f 1 2 3
+        g SecondGroup       
+        f 1 3 4  
+    "#;
+
+    let r = crate::utils::obj_parser::parse_obj_file(contents);
+    assert!(r.is_some());
+
+    let g: Box<Group> = r.unwrap().into();
+    assert_eq!(g.children.len(), 2);
 }

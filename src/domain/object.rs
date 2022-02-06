@@ -60,7 +60,8 @@ pub struct Group<'a> {
 }
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Triangle {
+pub struct Triangle<'a> {
+    pub shape: Shape<'a>,
     pub p1: Point,
     pub p2: Point,
     pub p3: Point,
@@ -78,7 +79,7 @@ pub enum Object<'a> {
     Cylinder(Cylinder<'a>),
     Cone(Cone<'a>),
     Group(Box<Group<'a>>),
-    Triangle(Triangle),
+    Triangle(Triangle<'a>),
 }
 
 impl<'a> Debug for Object<'a> {
@@ -135,8 +136,8 @@ impl<'a> From<Box<Group<'a>>> for Object<'a> {
     }
 }
 
-impl<'a> From<Triangle> for Object<'a> {
-    fn from(v: Triangle) -> Self {
+impl<'a> From<Triangle<'a>> for Object<'a> {
+    fn from(v: Triangle<'a>) -> Self {
         Object::Triangle(v)
     }
 }
@@ -188,7 +189,7 @@ impl<'s> Object<'s> {
             Object::Cylinder(cylinder) => &cylinder.shape,
             Object::Cone(cone) => &cone.shape,
             Object::Group(group) => &group.shape,
-            _ => panic!("Unsupported object on call to shape()."),
+            Object::Triangle(triangle) => &triangle.shape,
         }
     }
 
@@ -202,7 +203,7 @@ impl<'s> Object<'s> {
             Object::Cylinder(cylinder) => &mut cylinder.shape,
             Object::Cone(cone) => &mut cone.shape,
             Object::Group(group) => &mut group.shape,
-            _ => panic!("Unsupported object on call to shape_mut()."),
+            Object::Triangle(triangle) => &mut triangle.shape,
         }
     }
 
@@ -923,20 +924,55 @@ impl<'s> Group<'s> {
     }
 }
 
-impl Triangle {
+pub struct TriangleBuilder {
+    p1: Point,
+    p2: Point,
+    p3: Point,
+    e1: Vector,
+    e2: Vector,
+    normal: Vector,
+    shape_builder: ShapeBuilder,
+}
+
+impl<'a> TriangleBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> TriangleBuilder {
+        self.shape_builder.transformation(transformation);
+        self
+    }
+
+    pub fn material(mut self, material: Material) -> TriangleBuilder {
+        self.shape_builder.material(material);
+        self
+    }
+
+    pub fn build(self) -> Triangle<'a> {
+        Triangle {
+            p1: self.p1,
+            p2: self.p2,
+            p3: self.p3,
+            e1: self.e1,
+            e2: self.e2,
+            normal: self.normal,
+            shape: self.shape_builder.build(),
+        }
+    }
+}
+
+impl<'a> Triangle<'a> {
     // Constructor
-    pub fn new(p1: Point, p2: Point, p3: Point) -> Self {
+    pub fn new(p1: Point, p2: Point, p3: Point) -> TriangleBuilder {
         let e1 = &p2 - &p1;
         let e2 = &p3 - &p1;
         let normal = e2.cross_product(&e1).normalize();
 
-        Triangle {
+        TriangleBuilder {
             p1,
             p2,
             p3,
             e1,
             e2,
             normal,
+            shape_builder: Shape::new("Triangle"),
         }
     }
 
@@ -969,7 +1005,7 @@ impl Triangle {
         vec![Intersection::new(t, wrapped_self)]
     }
 
-    pub(crate) fn local_normal_at<'a>(&'a self, _point: &Point) -> Vector {
+    pub(crate) fn local_normal_at<'r>(&'r self, _point: &Point) -> Vector {
         self.normal
     }
 }

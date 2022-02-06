@@ -1,4 +1,4 @@
-use crate::domain::object::{Object, Triangle};
+use crate::domain::object::{Group, Object, Triangle};
 use crate::domain::Point;
 use nom::IResult;
 use std::collections::HashMap;
@@ -14,9 +14,25 @@ impl<'a> Default for ObjParseResult<'a> {
     fn default() -> Self {
         ObjParseResult {
             vertices: Vec::new(),
-            objects: HashMap::from([(ObjParseResult::DEFAULT_GROUP_NAME.to_string(), Vec::new())]),
+            objects: HashMap::new(),
             skipped: 0,
         }
+    }
+}
+
+impl<'a> From<ObjParseResult<'a>> for Box<Group<'a>> {
+    fn from(parser: ObjParseResult<'a>) -> Self {
+        let mut g = Group::new();
+        for group in parser.objects.values() {
+            let mut inner_group = Group::new();
+            for obj in group {
+                inner_group = inner_group.add_child(obj.clone());
+            }
+
+            g = g.add_child(inner_group.build().into());
+        }
+
+        g.build()
     }
 }
 
@@ -40,8 +56,8 @@ impl<'a> ObjParseResult<'a> {
 
     pub fn add_to_default_group(&mut self, obj: Object<'a>) {
         self.objects
-            .get_mut(ObjParseResult::DEFAULT_GROUP_NAME)
-            .unwrap()
+            .entry(ObjParseResult::DEFAULT_GROUP_NAME.to_string())
+            .or_default()
             .push(obj);
     }
 
@@ -76,7 +92,7 @@ fn vertex(input: &str) -> IResult<&str, Point> {
 fn face<'a, 'i>(
     input: &'i str,
     parse_result: &ObjParseResult<'a>,
-) -> IResult<&'i str, Vec<Triangle>> {
+) -> IResult<&'i str, Vec<Triangle<'a>>> {
     // remove leading whitespace
     let (r, _) = nom::character::complete::space0(input)?;
     let (r, _) = nom::bytes::complete::tag("f")(r)?;
@@ -107,7 +123,8 @@ fn face<'a, 'i>(
             p1.unwrap().clone(),
             p2.unwrap().clone(),
             p3.unwrap().clone(),
-        );
+        )
+        .build();
         triangles.push(t);
     }
 
