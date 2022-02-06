@@ -261,7 +261,7 @@ impl<'a> Default for Shape<'a> {
 
 impl<'a> Shape<'a> {
     // default constructor
-    pub fn new_unit() -> Shape<'a> {
+    pub fn new_unit() -> Self {
         Shape::default()
     }
 
@@ -289,20 +289,20 @@ pub struct ShapeBuilder {
 }
 
 impl<'a> ShapeBuilder {
-    pub fn new(shape_type_name: &str) -> ShapeBuilder {
-        ShapeBuilder {
+    pub fn new(shape_type_name: &str) -> Self {
+        Self {
             transformation: Option::None,
             material: Option::None,
             shape_type_name: shape_type_name.parse().unwrap(),
         }
     }
 
-    pub fn transformation(&mut self, transformation: Matrix) -> &mut ShapeBuilder {
+    pub fn transformation(&mut self, transformation: Matrix) -> &mut Self {
         self.transformation = Option::Some(transformation);
         self
     }
 
-    pub fn material(&mut self, material: Material) -> &mut ShapeBuilder {
+    pub fn material(&mut self, material: Material) -> &mut Self {
         self.material = Option::Some(material);
         self
     }
@@ -326,17 +326,17 @@ pub struct NullBuilder {
 }
 
 impl<'a> NullBuilder {
-    pub fn new() -> NullBuilder {
-        NullBuilder {
+    pub fn new() -> Self {
+        Self {
             shape_builder: Shape::builder("Null"),
         }
     }
-    pub fn transformation(mut self, transformation: Matrix) -> NullBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> Self {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(mut self, material: Material) -> NullBuilder {
+    pub fn material(mut self, material: Material) -> Self {
         self.shape_builder.material(material);
         self
     }
@@ -376,18 +376,18 @@ pub struct PlaneBuilder {
 }
 
 impl<'a> PlaneBuilder {
-    pub fn new() -> PlaneBuilder {
-        PlaneBuilder {
+    pub fn new() -> Self {
+        Self {
             shape_builder: Shape::builder("Plane"),
         }
     }
 
-    pub fn transformation(mut self, transformation: Matrix) -> PlaneBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> Self {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(mut self, material: Material) -> PlaneBuilder {
+    pub fn material(mut self, material: Material) -> Self {
         self.shape_builder.material(material);
         self
     }
@@ -430,25 +430,25 @@ pub struct SphereBuilder {
 }
 
 impl<'a> SphereBuilder {
-    pub fn new() -> SphereBuilder {
-        SphereBuilder {
+    pub fn new() -> Self {
+        Self {
             origin: Option::Some(Point::ORIGIN),
             //radius: UNIT,
             shape_builder: Shape::builder("Sphere"),
         }
     }
 
-    pub fn transformation(mut self, transformation: Matrix) -> SphereBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> Self {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(mut self, material: Material) -> SphereBuilder {
+    pub fn material(mut self, material: Material) -> Self {
         self.shape_builder.material(material);
         self
     }
 
-    pub fn origin(mut self, origin: Point) -> SphereBuilder {
+    pub fn origin(mut self, origin: Point) -> Self {
         self.origin = Option::Some(origin);
         self
     }
@@ -514,18 +514,18 @@ pub struct CubeBuilder {
 }
 
 impl<'a> CubeBuilder {
-    pub fn new() -> CubeBuilder {
-        CubeBuilder {
+    pub fn new() -> Self {
+        Self {
             shape_builder: Shape::builder("Cube"),
         }
     }
 
-    pub fn transformation(mut self, transformation: Matrix) -> CubeBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> Self {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(mut self, material: Material) -> CubeBuilder {
+    pub fn material(mut self, material: Material) -> Self {
         self.shape_builder.material(material);
         self
     }
@@ -605,8 +605,8 @@ pub struct CylinderBuilder {
 }
 
 impl<'a> CylinderBuilder {
-    pub fn new() -> CylinderBuilder {
-        CylinderBuilder {
+    pub fn new() -> Self {
+        Self {
             shape_builder: Shape::builder("Cylinder"),
             minimum: Option::None,
             maximum: Option::None,
@@ -614,13 +614,28 @@ impl<'a> CylinderBuilder {
         }
     }
 
-    pub fn transformation(mut self, transformation: Matrix) -> CylinderBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> Self {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(mut self, material: Material) -> CylinderBuilder {
+    pub fn material(mut self, material: Material) -> Self {
         self.shape_builder.material(material);
+        self
+    }
+
+    pub fn minimum(mut self, minimum: f64) -> Self {
+        self.minimum = Option::Some(minimum);
+        self
+    }
+
+    pub fn maximum(mut self, maximum: f64) -> Self {
+        self.maximum = Option::Some(maximum);
+        self
+    }
+
+    pub fn closed(mut self, closed: bool) -> Self {
+        self.closed = Option::Some(closed);
         self
     }
 
@@ -631,20 +646,6 @@ impl<'a> CylinderBuilder {
             maximum: self.maximum.unwrap_or(f64::INFINITY),
             closed: self.closed.unwrap_or(false),
         }
-    }
-    pub fn minimum(mut self, minimum: f64) -> CylinderBuilder {
-        self.minimum = Option::Some(minimum);
-        self
-    }
-
-    pub fn maximum(mut self, maximum: f64) -> CylinderBuilder {
-        self.maximum = Option::Some(maximum);
-        self
-    }
-
-    pub fn closed(mut self, closed: bool) -> CylinderBuilder {
-        self.closed = Option::Some(closed);
-        self
     }
 }
 
@@ -741,8 +742,8 @@ pub struct ConeBuilder {
 }
 
 impl<'a> ConeBuilder {
-    pub fn new() -> ConeBuilder {
-        ConeBuilder {
+    pub fn new() -> Self {
+        Self {
             shape_builder: Shape::builder("Cone"),
             minimum: Option::None,
             maximum: Option::None,
@@ -750,12 +751,12 @@ impl<'a> ConeBuilder {
         }
     }
 
-    pub fn transformation(mut self, transformation: Matrix) -> ConeBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> Self {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(mut self, material: Material) -> ConeBuilder {
+    pub fn material(mut self, material: Material) -> Self {
         self.shape_builder.material(material);
         self
     }
@@ -768,17 +769,17 @@ impl<'a> ConeBuilder {
             closed: self.closed.unwrap_or(false),
         }
     }
-    pub fn minimum(mut self, minimum: f64) -> ConeBuilder {
+    pub fn minimum(mut self, minimum: f64) -> Self {
         self.minimum = Option::Some(minimum);
         self
     }
 
-    pub fn maximum(mut self, maximum: f64) -> ConeBuilder {
+    pub fn maximum(mut self, maximum: f64) -> Self {
         self.maximum = Option::Some(maximum);
         self
     }
 
-    pub fn closed(mut self, closed: bool) -> ConeBuilder {
+    pub fn closed(mut self, closed: bool) -> Self {
         self.closed = Option::Some(closed);
         self
     }
@@ -892,14 +893,14 @@ pub struct GroupBuilder<'a> {
 }
 
 impl<'a> GroupBuilder<'a> {
-    pub fn new() -> GroupBuilder<'a> {
-        GroupBuilder {
+    pub fn new() -> Self {
+        Self {
             shape_builder: Shape::builder("Group"),
             children: Vec::new(),
         }
     }
 
-    pub fn transformation(mut self, transformation: Matrix) -> GroupBuilder<'a> {
+    pub fn transformation(mut self, transformation: Matrix) -> Self {
         self.shape_builder.transformation(transformation);
         self
     }
@@ -920,7 +921,7 @@ impl<'a> GroupBuilder<'a> {
         }
     }
 
-    pub fn add_child(mut self, child: Object<'a>) -> GroupBuilder<'a> {
+    pub fn add_child(mut self, child: Object<'a>) -> Self {
         self.children.push(child);
         self
     }
@@ -966,12 +967,12 @@ pub struct TriangleBuilder {
 }
 
 impl<'a> TriangleBuilder {
-    pub fn new(p1: Point, p2: Point, p3: Point) -> TriangleBuilder {
+    pub fn new(p1: Point, p2: Point, p3: Point) -> Self {
         let e1 = &p2 - &p1;
         let e2 = &p3 - &p1;
         let normal = e2.cross_product(&e1).normalize();
 
-        TriangleBuilder {
+        Self {
             p1,
             p2,
             p3,
@@ -982,12 +983,12 @@ impl<'a> TriangleBuilder {
         }
     }
 
-    pub fn transformation(mut self, transformation: Matrix) -> TriangleBuilder {
+    pub fn transformation(mut self, transformation: Matrix) -> Self {
         self.shape_builder.transformation(transformation);
         self
     }
 
-    pub fn material(mut self, material: Material) -> TriangleBuilder {
+    pub fn material(mut self, material: Material) -> Self {
         self.shape_builder.material(material);
         self
     }
