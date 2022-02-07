@@ -9,12 +9,33 @@ use std::fmt::{Debug, Formatter};
 pub struct Intersection<'r, 's> {
     pub object: &'r Object<'s>,
     pub distance: f64,
+    pub u: Option<f64>,
+    pub v: Option<f64>,
 }
 
 impl<'r, 's: 'r> Intersection<'r, 's> {
     // constructor
     pub fn new(distance: f64, object: &'r Object<'s>) -> Intersection<'r, 's> {
-        Intersection { object, distance }
+        Intersection {
+            object,
+            distance,
+            u: Option::None,
+            v: Option::None,
+        }
+    }
+
+    pub fn new_with_uv(
+        distance: f64,
+        object: &'r Object<'s>,
+        u: f64,
+        v: f64,
+    ) -> Intersection<'r, 's> {
+        Intersection {
+            object,
+            distance,
+            u: Option::Some(u),
+            v: Option::Some(v),
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::material::{Material, Substance};
 use crate::domain::matrix::Matrix;
-use crate::domain::object::{Object, Plane, Sphere};
+use crate::domain::object::{Object, Plane, Sphere, Triangle};
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
 
@@ -350,4 +350,18 @@ fn ch11_test19_schlick_approximation_with_small_angle_and_n2_greater_than_n1() {
     let comps = Computations::prepare_computations(&int, &r, Option::Some(&xs));
     let reflectance = comps.schlick();
     assert!(crate::domain::epsilon_eq(reflectance, 0.48873));
+}
+
+#[test]
+fn ch15_test14_intersection_can_encapsulate_u_and_v() {
+    let s = Triangle::builder(
+        Point::new(0.0, 1.0, 0.0),
+        Point::new(-1.0, 0.0, 0.0),
+        Point::new(1.0, 0.0, 0.0),
+    )
+    .build()
+    .into();
+    let i = Intersection::new_with_uv(3.5, &s, 0.2, 0.4);
+    assert_eq!(i.u, Option::Some(0.2));
+    assert_eq!(i.v, Option::Some(0.4));
 }

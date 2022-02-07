@@ -70,6 +70,17 @@ pub struct Triangle<'a> {
     pub normal: Vector,
 }
 
+#[derive(PartialEq, Debug, Clone)]
+pub struct SmoothTriangle<'a> {
+    pub shape: Shape<'a>,
+    pub p1: Point,
+    pub p2: Point,
+    pub p3: Point,
+    pub n1: Vector,
+    pub n2: Vector,
+    pub n3: Vector,
+}
+
 #[derive(PartialEq, Clone)]
 pub enum Object<'a> {
     Sphere(Sphere<'a>),
@@ -80,6 +91,7 @@ pub enum Object<'a> {
     Cone(Cone<'a>),
     Group(Box<Group<'a>>),
     Triangle(Triangle<'a>),
+    SmoothTriangle(SmoothTriangle<'a>),
 }
 
 impl<'a> Debug for Object<'a> {
@@ -157,6 +169,7 @@ impl<'s> Object<'s> {
             Object::Cone(cone) => cone.local_intersect(ray, &self),
             Object::Group(group) => group.local_intersect(ray, &self),
             Object::Triangle(triangle) => triangle.local_intersect(ray, &self),
+            Object::SmoothTriangle(smooth_triangle) => smooth_triangle.local_intersect(ray, &self),
         };
         let mut result = Intersections::new();
         ints.drain(..).for_each(|int| {
@@ -176,6 +189,7 @@ impl<'s> Object<'s> {
             Object::Cone(cone) => cone.local_normal_at(point),
             Object::Group(group) => group.local_normal_at(point),
             Object::Triangle(triangle) => triangle.local_normal_at(point),
+            Object::SmoothTriangle(smooth_triangle) => smooth_triangle.local_normal_at(point),
         }
     }
 
@@ -190,6 +204,7 @@ impl<'s> Object<'s> {
             Object::Cone(cone) => &cone.shape,
             Object::Group(group) => &group.shape,
             Object::Triangle(triangle) => &triangle.shape,
+            Object::SmoothTriangle(smooth_triangle) => &smooth_triangle.shape,
         }
     }
 
@@ -204,6 +219,7 @@ impl<'s> Object<'s> {
             Object::Cone(cone) => &mut cone.shape,
             Object::Group(group) => &mut group.shape,
             Object::Triangle(triangle) => &mut triangle.shape,
+            Object::SmoothTriangle(smooth_triangle) => &mut smooth_triangle.shape,
         }
     }
 
@@ -1043,5 +1059,77 @@ impl<'a> Triangle<'a> {
 
     pub(crate) fn local_normal_at<'r>(&'r self, _point: &Point) -> Vector {
         self.normal
+    }
+}
+
+pub struct SmoothTriangleBuilder {
+    p1: Point,
+    p2: Point,
+    p3: Point,
+    n1: Vector,
+    n2: Vector,
+    n3: Vector,
+    shape_builder: ShapeBuilder,
+}
+
+impl<'a> SmoothTriangleBuilder {
+    pub fn new(p1: Point, p2: Point, p3: Point, n1: Vector, n2: Vector, n3: Vector) -> Self {
+        Self {
+            p1,
+            p2,
+            p3,
+            n1,
+            n2,
+            n3,
+            shape_builder: Shape::builder("SmoothTriangle"),
+        }
+    }
+
+    pub fn transformation(mut self, transformation: Matrix) -> Self {
+        self.shape_builder.transformation(transformation);
+        self
+    }
+
+    pub fn material(mut self, material: Material) -> Self {
+        self.shape_builder.material(material);
+        self
+    }
+
+    pub fn build(self) -> SmoothTriangle<'a> {
+        SmoothTriangle {
+            p1: self.p1,
+            p2: self.p2,
+            p3: self.p3,
+            n1: self.n1,
+            n2: self.n2,
+            n3: self.n3,
+            shape: self.shape_builder.build(),
+        }
+    }
+}
+
+impl<'a> SmoothTriangle<'a> {
+    // Constructor
+    pub fn builder(
+        p1: Point,
+        p2: Point,
+        p3: Point,
+        n1: Vector,
+        n2: Vector,
+        n3: Vector,
+    ) -> SmoothTriangleBuilder {
+        SmoothTriangleBuilder::new(p1, p2, p3, n1, n2, n3)
+    }
+
+    pub(crate) fn local_intersect<'r, 's: 'r>(
+        &self,
+        _ray: &Ray,
+        _wrapped_self: &'r Object<'s>,
+    ) -> Vec<Intersection<'r, 's>> {
+        vec![]
+    }
+
+    pub(crate) fn local_normal_at<'r>(&'r self, _point: &Point) -> Vector {
+        self.n1
     }
 }
