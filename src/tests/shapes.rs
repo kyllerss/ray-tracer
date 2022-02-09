@@ -55,7 +55,7 @@ fn ch9_test4_computing_normal_on_translated_and_transformed_test_shape() {
         .transformation(Matrix::new_translation(0.0, 1.0, 0.0))
         .build()
         .into();
-    let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711));
+    let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711), Option::None);
     let n_exp = Vector::new(0.0, 0.70711, -0.70711);
     assert_eq!(n, n_exp);
 }

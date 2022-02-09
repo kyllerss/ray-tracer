@@ -210,7 +210,9 @@ impl<'r, 's: 'r> Computations<'r, 's> {
     ) -> Computations<'r, 's> {
         let point = ray.position(hit_intersection.distance);
         let eye_v = -ray.direction;
-        let mut normal_v = hit_intersection.object.normal_at(&point);
+        let mut normal_v = hit_intersection
+            .object
+            .normal_at(&point, Option::Some(&hit_intersection));
 
         let inside;
         if normal_v.dot_product(&eye_v) < 0.0 {

@@ -53,7 +53,7 @@ pub fn run() -> Result<(), Error> {
                 let intersection = intersections.hit_unchecked().unwrap();
                 let object = intersection.object;
                 let point = ray.position(intersection.distance);
-                let normal = object.normal_at(&point);
+                let normal = object.normal_at(&point, Option::Some(&intersection));
                 let eye = -ray.direction;
 
                 let intersection_color = Light::lighting(

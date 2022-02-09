@@ -166,7 +166,7 @@ fn ch14_test9_finding_normal_of_child_object() {
         _ => panic!("Unexpected structure!"),
     };
 
-    let n = inner_sphere.normal_at(&Point::new(1.7321, 1.1547, -5.5774));
+    let n = inner_sphere.normal_at(&Point::new(1.7321, 1.1547, -5.5774), Option::None);
     let n_exp = Vector::new(0.2857, 0.4286, -0.8571);
 
     assert_eq!(n, n_exp);

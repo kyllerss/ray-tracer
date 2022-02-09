@@ -1,3 +1,4 @@
+use crate::domain::intersection::Intersection;
 use crate::domain::object::{Object, SmoothTriangle};
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
@@ -35,4 +36,12 @@ fn ch15_test15_intersection_with_smooth_triangle_stores_u_v() {
     assert!(xs[0].v.is_some());
     assert!(crate::domain::epsilon_eq(xs[0].u.unwrap(), 0.45));
     assert!(crate::domain::epsilon_eq(xs[0].v.unwrap(), 0.25));
+}
+
+#[test]
+fn ch15_test16_smooth_triangle_uses_u_v_to_iterpolate_normal() {
+    let t = build_smooth_triangle().into();
+    let i = Intersection::new_with_uv(1.0, &t, 0.45, 0.25);
+    let n = t.normal_at(&Point::new(0.0, 0.0, 0.0), Option::Some(&i));
+    assert_eq!(n, Vector::new(-0.5547, 0.83205, 0.0));
 }

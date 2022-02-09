@@ -106,26 +106,25 @@ fn ch5_test14_intersecting_scaled_translated_sphere_with_ray() {
 fn ch6_test1_normal_on_a_sphere() {
     // normal on an x-axis
     let s: Object = Sphere::builder().build().into();
-    let n = s.normal_at(&Point::new(1.0, 0.0, 0.0));
+    let n = s.normal_at(&Point::new(1.0, 0.0, 0.0), Option::None);
     let exp_n = Vector::new(1.0, 0.0, 0.0);
     assert_eq!(n, exp_n);
 
     // normal on a y-axis
-    let n = s.normal_at(&Point::new(0.0, 1.0, 0.0));
+    let n = s.normal_at(&Point::new(0.0, 1.0, 0.0), Option::None);
     let exp_n = Vector::new(0.0, 1.0, 0.0);
     assert_eq!(n, exp_n);
 
     // normal on a z-axis
-    let n = s.normal_at(&Point::new(0.0, 0.0, 1.0));
+    let n = s.normal_at(&Point::new(0.0, 0.0, 1.0), Option::None);
     let exp_n = Vector::new(0.0, 0.0, 1.0);
     assert_eq!(n, exp_n);
 
     // normal on a nonaxial point
-    let n = s.normal_at(&Point::new(
-        3_f64.sqrt() / 3.0,
-        3_f64.sqrt() / 3.0,
-        3_f64.sqrt() / 3.0,
-    ));
+    let n = s.normal_at(
+        &Point::new(3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0),
+        Option::None,
+    );
     let exp_n = Vector::new(3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0);
     assert_eq!(n, exp_n);
 }
@@ -133,11 +132,10 @@ fn ch6_test1_normal_on_a_sphere() {
 #[test]
 fn ch6_test2_normal_is_normalized() {
     let s: Object = Sphere::builder().build().into();
-    let n = s.normal_at(&Point::new(
-        3_f64.sqrt() / 3.0,
-        3_f64.sqrt() / 3.0,
-        3_f64.sqrt() / 3.0,
-    ));
+    let n = s.normal_at(
+        &Point::new(3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0, 3_f64.sqrt() / 3.0),
+        Option::None,
+    );
     let normalized = n.normalize();
 
     assert_eq!(n, normalized);
@@ -148,14 +146,17 @@ fn ch6_test3_computing_normal_of_modified_sphere() {
     // translated sphere
     let t = Matrix::new_translation(0.0, 1.0, 0.0);
     let s: Object = Sphere::builder().transformation(t).build().into();
-    let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711));
+    let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711), Option::None);
     let exp_n = Vector::new(0.0, 0.70711, -0.70711);
 
     assert_eq!(n, exp_n);
 
     let t = &Matrix::new_scaling(1.0, 0.5, 1.0) * &Matrix::new_rotation_z(PI / 0.5);
     let s: Object = Sphere::builder().transformation(t).build().into();
-    let n = s.normal_at(&Point::new(0.0, 2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0));
+    let n = s.normal_at(
+        &Point::new(0.0, 2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0),
+        Option::None,
+    );
     let exp_n = Vector::new(0.0, 0.97014, -0.24254);
 
     assert_eq!(n, exp_n);

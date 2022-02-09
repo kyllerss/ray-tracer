@@ -187,7 +187,11 @@ impl<'s> Object<'s> {
     }
 
     // TODO Define trait that returns these, so that the match is not necessary.
-    fn local_normal_at(&self, point: &Point) -> Vector {
+    fn local_normal_at(
+        &self,
+        point: &Point,
+        intersection: Option<&Intersection<'_, 's>>,
+    ) -> Vector {
         match self {
             Object::Sphere(sphere) => sphere.local_normal_at(point),
             Object::Null(null) => null.local_normal_at(point),
@@ -197,7 +201,12 @@ impl<'s> Object<'s> {
             Object::Cone(cone) => cone.local_normal_at(point),
             Object::Group(group) => group.local_normal_at(point),
             Object::Triangle(triangle) => triangle.local_normal_at(point),
-            Object::SmoothTriangle(smooth_triangle) => smooth_triangle.local_normal_at(point),
+            Object::SmoothTriangle(smooth_triangle) => smooth_triangle.local_normal_at(
+                point,
+                intersection.expect(
+                    "Need an intersection reference for SmoothTriangle normal calculation!",
+                ),
+            ),
         }
     }
 
@@ -243,9 +252,13 @@ impl<'s> Object<'s> {
     }
 
     // Computes the normal at given point.
-    pub fn normal_at(&self, world_point: &Point) -> Vector {
+    pub fn normal_at(
+        &self,
+        world_point: &Point,
+        intersection: Option<&Intersection<'_, 's>>,
+    ) -> Vector {
         let local_point = self.world_to_object(world_point);
-        let local_normal = self.local_normal_at(&local_point);
+        let local_normal = self.local_normal_at(&local_point, intersection);
         self.normal_to_world(&local_normal)
     }
 
@@ -1093,13 +1106,13 @@ impl<'a> TriangleBuilder {
     }
 }
 
-impl<'a> Triangle<'a> {
+impl<'r, 's: 'r> Triangle<'s> {
     // Constructor
     pub fn builder(p1: Point, p2: Point, p3: Point) -> TriangleBuilder {
         TriangleBuilder::new(p1, p2, p3)
     }
 
-    pub(crate) fn local_intersect<'r, 's: 'r>(
+    pub(crate) fn local_intersect(
         &self,
         ray: &Ray,
         wrapped_self: &'r Object<'s>,
@@ -1107,7 +1120,7 @@ impl<'a> Triangle<'a> {
         self.base_triangle.local_intersect(ray, wrapped_self)
     }
 
-    pub(crate) fn local_normal_at<'r>(&'r self, _point: &Point) -> Vector {
+    pub(crate) fn local_normal_at(&'r self, _point: &Point) -> Vector {
         self.normal
     }
 
@@ -1171,7 +1184,7 @@ impl<'a> SmoothTriangleBuilder {
     }
 }
 
-impl<'a> SmoothTriangle<'a> {
+impl<'r, 's: 'r> SmoothTriangle<'s> {
     // Constructor
     pub fn builder(
         p1: Point,
@@ -1184,7 +1197,7 @@ impl<'a> SmoothTriangle<'a> {
         SmoothTriangleBuilder::new(p1, p2, p3, n1, n2, n3)
     }
 
-    pub(crate) fn local_intersect<'r, 's: 'r>(
+    pub(crate) fn local_intersect(
         &self,
         ray: &Ray,
         wrapped_self: &'r Object<'s>,
@@ -1192,8 +1205,19 @@ impl<'a> SmoothTriangle<'a> {
         self.base_triangle.local_intersect(ray, wrapped_self)
     }
 
-    pub(crate) fn local_normal_at<'r>(&'r self, _point: &Point) -> Vector {
-        self.n1
+    pub(crate) fn local_normal_at(
+        &'r self,
+        _point: &Point,
+        intersection: &Intersection<'_, 's>,
+    ) -> Vector {
+        assert!(intersection.u.is_some());
+        assert!(intersection.v.is_some());
+        let u = intersection.u.unwrap();
+        let v = intersection.v.unwrap();
+        let part_1 = &self.n2 * u;
+        let part_2 = &self.n3 * v;
+        let part_3 = &self.n1 * (1.0 - u - v);
+        &(&part_1 + &part_2) + &part_3
     }
 
     pub fn p1(&self) -> Point {
