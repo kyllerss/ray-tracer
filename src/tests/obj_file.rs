@@ -22,7 +22,7 @@ fn extract_triangle_two_level<'r, 's>(target_group: &'r Object<'s>) -> &'r Trian
 }
 
 fn weak_triangle_equality_check<'r, 's>(t1: &'r Triangle<'s>, t2: &'r Triangle<'s>) -> bool {
-    t1.p1 == t2.p1 && t1.p2 == t2.p2 && t1.p3 == t2.p3
+    t1.p1() == t2.p1() && t1.p2() == t2.p2() && t1.p3() == t2.p3()
 }
 
 #[test]
@@ -82,12 +82,12 @@ fn ch15_test9_parsing_triangle_faces() {
     assert!(g.get(1).is_some());
     let t2 = extract_triangle_one_level(g.get(1).unwrap());
 
-    assert_eq!(t1.p1, *p.vertex(1).unwrap());
-    assert_eq!(t1.p2, *p.vertex(2).unwrap());
-    assert_eq!(t1.p3, *p.vertex(3).unwrap());
-    assert_eq!(t2.p1, *p.vertex(1).unwrap());
-    assert_eq!(t2.p2, *p.vertex(3).unwrap());
-    assert_eq!(t2.p3, *p.vertex(4).unwrap());
+    assert_eq!(t1.p1(), *p.vertex(1).unwrap());
+    assert_eq!(t1.p2(), *p.vertex(2).unwrap());
+    assert_eq!(t1.p3(), *p.vertex(3).unwrap());
+    assert_eq!(t2.p1(), *p.vertex(1).unwrap());
+    assert_eq!(t2.p2(), *p.vertex(3).unwrap());
+    assert_eq!(t2.p3(), *p.vertex(4).unwrap());
 }
 
 #[test]
@@ -117,15 +117,15 @@ fn ch15_test10_triangulating_polygons() {
     assert!(g.get(2).is_some());
     let t3 = extract_triangle_one_level(g.get(2).unwrap());
 
-    assert_eq!(t1.p1, *p.vertex(1).unwrap());
-    assert_eq!(t1.p2, *p.vertex(2).unwrap());
-    assert_eq!(t1.p3, *p.vertex(3).unwrap());
-    assert_eq!(t2.p1, *p.vertex(1).unwrap());
-    assert_eq!(t2.p2, *p.vertex(3).unwrap());
-    assert_eq!(t2.p3, *p.vertex(4).unwrap());
-    assert_eq!(t3.p1, *p.vertex(1).unwrap());
-    assert_eq!(t3.p2, *p.vertex(4).unwrap());
-    assert_eq!(t3.p3, *p.vertex(5).unwrap());
+    assert_eq!(t1.p1(), *p.vertex(1).unwrap());
+    assert_eq!(t1.p2(), *p.vertex(2).unwrap());
+    assert_eq!(t1.p3(), *p.vertex(3).unwrap());
+    assert_eq!(t2.p1(), *p.vertex(1).unwrap());
+    assert_eq!(t2.p2(), *p.vertex(3).unwrap());
+    assert_eq!(t2.p3(), *p.vertex(4).unwrap());
+    assert_eq!(t3.p1(), *p.vertex(1).unwrap());
+    assert_eq!(t3.p2(), *p.vertex(4).unwrap());
+    assert_eq!(t3.p3(), *p.vertex(5).unwrap());
 }
 
 #[test]
@@ -157,12 +157,12 @@ fn ch15_test11_triangles_in_groups() {
     assert!(g2.unwrap().get(0).is_some());
     let t2 = extract_triangle_one_level(g2.unwrap().get(0).unwrap());
 
-    assert_eq!(t1.p1, *p.vertex(1).unwrap());
-    assert_eq!(t1.p2, *p.vertex(2).unwrap());
-    assert_eq!(t1.p3, *p.vertex(3).unwrap());
-    assert_eq!(t2.p1, *p.vertex(1).unwrap());
-    assert_eq!(t2.p2, *p.vertex(3).unwrap());
-    assert_eq!(t2.p3, *p.vertex(4).unwrap());
+    assert_eq!(t1.p1(), *p.vertex(1).unwrap());
+    assert_eq!(t1.p2(), *p.vertex(2).unwrap());
+    assert_eq!(t1.p3(), *p.vertex(3).unwrap());
+    assert_eq!(t2.p1(), *p.vertex(1).unwrap());
+    assert_eq!(t2.p2(), *p.vertex(3).unwrap());
+    assert_eq!(t2.p3(), *p.vertex(4).unwrap());
 }
 
 #[test]
