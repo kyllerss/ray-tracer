@@ -1,4 +1,4 @@
-use crate::domain::intersection::Intersection;
+use crate::domain::intersection::{Computations, Intersection, Intersections};
 use crate::domain::object::{Object, SmoothTriangle};
 use crate::domain::ray::Ray;
 use crate::domain::{Point, Vector};
@@ -44,4 +44,19 @@ fn ch15_test16_smooth_triangle_uses_u_v_to_iterpolate_normal() {
     let i = Intersection::new_with_uv(1.0, &t, 0.45, 0.25);
     let n = t.normal_at(&Point::new(0.0, 0.0, 0.0), Option::Some(&i));
     assert_eq!(n, Vector::new(-0.5547, 0.83205, 0.0));
+}
+
+#[test]
+fn ch15_test17_preparing_normal_on_smooth_triangle() {
+    let t = build_smooth_triangle().into();
+    let i = Intersection::new_with_uv(1.0, &t, 0.45, 0.25);
+    let r = Ray::new(Point::new(-0.2, 0.3, -2.0), Vector::new(0.0, 0.0, 1.0));
+    let xs = {
+        let mut xs = Intersections::new();
+        xs.push(i.clone());
+        xs
+    };
+
+    let comps = Computations::prepare_computations(&i, &r, Option::Some(&xs));
+    assert_eq!(comps.normal_v, Vector::new(-0.5547, 0.83205, 0.0));
 }
