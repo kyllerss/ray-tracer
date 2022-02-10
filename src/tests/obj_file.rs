@@ -1,10 +1,17 @@
-use crate::domain::object::{Group, Object, Triangle};
+use crate::domain::object::{Group, Object, SmoothTriangle, Triangle};
 use crate::domain::Point;
 
 fn extract_triangle_one_level<'r, 's: 'r>(obj: &'r Object<'s>) -> &'r Triangle<'s> {
     match obj {
         Object::Triangle(triangle) => &triangle,
         _ => panic!("Expected Object::Triangle!"),
+    }
+}
+
+fn extract_smooth_triangle_one_level<'r, 's: 'r>(obj: &'r Object<'s>) -> &'r SmoothTriangle<'s> {
+    match obj {
+        Object::SmoothTriangle(triangle) => &triangle,
+        _ => panic!("Expected Object::SmoothTriangle!"),
     }
 }
 
@@ -76,6 +83,9 @@ fn ch15_test9_parsing_triangle_faces() {
     let p = r.unwrap();
     let g = p.default_group();
 
+    assert!(g.is_some());
+    let g = g.unwrap();
+
     assert!(g.get(0).is_some());
     let t1 = extract_triangle_one_level(g.get(0).unwrap());
 
@@ -107,6 +117,9 @@ fn ch15_test10_triangulating_polygons() {
 
     let p = r.unwrap();
     let g = p.default_group();
+
+    assert!(g.is_some());
+    let g = g.unwrap();
 
     assert!(g.get(0).is_some());
     let t1 = extract_triangle_one_level(g.get(0).unwrap());
@@ -210,4 +223,49 @@ fn ch15_test12_convert_obj_file_to_group() {
     } else {
         assert!(false);
     }
+}
+
+#[test]
+fn ch15_test18_faces_with_normals() {
+    let contents = r#"
+        v 0 1 0
+        v -1 0 0
+        v 1 0 0
+
+        vn -1 0 0
+        vn 1 0 0
+        vn 0 1 0
+        
+        f 1//3 2//1 3//2 
+        f 1/0/3 2/102/1 3/14/2
+    "#;
+
+    let r = crate::utils::obj_parser::parse_obj_file(contents);
+    assert!(r.is_some());
+
+    let p = r.unwrap();
+    let g = p.default_group();
+
+    assert!(g.is_some());
+    let g = g.unwrap();
+
+    assert!(g.get(0).is_some());
+    let t1 = extract_smooth_triangle_one_level(g.get(0).unwrap());
+
+    assert!(g.get(1).is_some());
+    let t2 = extract_smooth_triangle_one_level(g.get(1).unwrap());
+
+    assert_eq!(t1.p1(), *p.vertex(1).unwrap());
+    assert_eq!(t1.p2(), *p.vertex(2).unwrap());
+    assert_eq!(t1.p3(), *p.vertex(3).unwrap());
+    assert_eq!(t1.n1, *p.normal(3).unwrap());
+    assert_eq!(t1.n2, *p.normal(1).unwrap());
+    assert_eq!(t1.n3, *p.normal(2).unwrap());
+
+    assert_eq!(t2.p1(), *p.vertex(1).unwrap());
+    assert_eq!(t2.p2(), *p.vertex(2).unwrap());
+    assert_eq!(t2.p3(), *p.vertex(3).unwrap());
+    assert_eq!(t2.n1, *p.normal(3).unwrap());
+    assert_eq!(t2.n2, *p.normal(1).unwrap());
+    assert_eq!(t2.n3, *p.normal(2).unwrap());
 }
