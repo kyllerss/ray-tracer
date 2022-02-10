@@ -11,6 +11,7 @@ mod ch11;
 mod ch12;
 mod ch13;
 mod ch14;
+mod ch15;
 mod ch5;
 mod ch6;
 mod ch7;
@@ -99,6 +100,10 @@ fn main() -> Result<(), Error> {
         14 => {
             println!("Chapter 14..");
             ch14::run()
+        }
+        15 => {
+            println!("Chapter 15..");
+            ch15::run()
         }
         _ => {
             panic!("Unsupported chapter {}!", chapter);

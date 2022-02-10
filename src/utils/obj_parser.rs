@@ -79,6 +79,20 @@ impl<'a> ObjParseResult<'a> {
             .or_default()
             .push(obj);
     }
+
+    pub fn collapse_to_single_group(&self) -> Option<Box<Object<'a>>> {
+        if self.objects.is_empty() {
+            return Option::None;
+        }
+
+        let mut result = Group::builder();
+        for obj in self.objects.values().flatten() {
+            result = result.add_child(obj.clone());
+        }
+
+        let g: Object = result.build().into();
+        Option::Some(g.into())
+    }
 }
 
 fn vertex(input: &str) -> IResult<&str, Point> {
@@ -87,11 +101,11 @@ fn vertex(input: &str) -> IResult<&str, Point> {
 
     nom::sequence::tuple((
         nom::bytes::complete::tag("v"),
-        nom::character::complete::char(' '),
+        nom::character::complete::space1,
         nom::number::complete::double,
-        nom::character::complete::char(' '),
+        nom::character::complete::space1,
         nom::number::complete::double,
-        nom::character::complete::char(' '),
+        nom::character::complete::space1,
         nom::number::complete::double,
     ))(r)
     .map(|(remainder, (_, _, x, _, y, _, z))| (remainder, Point::new(x, y, z)))
@@ -103,11 +117,11 @@ fn normal(input: &str) -> IResult<&str, Vector> {
 
     nom::sequence::tuple((
         nom::bytes::complete::tag("vn"),
-        nom::character::complete::char(' '),
+        nom::character::complete::space1,
         nom::number::complete::double,
-        nom::character::complete::char(' '),
+        nom::character::complete::space1,
         nom::number::complete::double,
-        nom::character::complete::char(' '),
+        nom::character::complete::space1,
         nom::number::complete::double,
     ))(r)
     .map(|(remainder, (_, _, x, _, y, _, z))| (remainder, Vector::new(x, y, z)))

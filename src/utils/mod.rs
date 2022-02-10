@@ -26,3 +26,8 @@ pub fn write_imagefile<T: Into<String> + Display>(
     fs::write(filename, ppm)?;
     Ok(())
 }
+
+// extracts contents of a given file
+pub fn extract_contents(target_filename: &str) -> Result<String, Error> {
+    fs::read_to_string(target_filename)
+}
